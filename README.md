@@ -1,5 +1,9 @@
 # ⚡ TeslaMate Private Charging Costs
 
+[![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue?logo=docker)](https://github.com/YOUR_USERNAME/teslamate-supercharger-costs/pkgs/container/teslamate-supercharger-costs)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue?logo=python)](https://www.python.org)
+
 Automatically calculate charging costs for **private AC locations** (home, work, cottage, …) using time-of-use tariffs and GPS detection.
 
 ---
