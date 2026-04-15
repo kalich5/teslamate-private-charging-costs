@@ -1,0 +1,56 @@
+# ─────────────────────────────────────────────
+# TeslaMate Private Charging Costs — config.yaml
+# ─────────────────────────────────────────────
+
+# Currency all costs are stored in (ISO 4217).
+BASE_CURRENCY: CHF
+
+# ── Database connection ───────────────────────
+# These defaults match the standard TeslaMate docker-compose setup.
+DATABASE:
+  host: database
+  port: 5432
+  dbname: teslamate
+  user: teslamate
+  password: teslamate
+
+# ── Locations ─────────────────────────────────
+# Each location defines a geofence and a tariff structure.
+# Sessions whose GPS coordinates fall within `radius_m` metres of
+# (lat, lon) are priced using the tariffs below.
+#
+# currency: the local currency for electricity bills at this location.
+# The importer converts it to BASE_CURRENCY using historical FX rates.
+#
+# tariff prices are in currency-unit per kWh (e.g. CZK/kWh).
+#
+# Time blocks must cover 00:00–24:00 without gaps.
+# Use "24:00" for the last block end — it is handled correctly.
+LOCATIONS:
+  - name: home
+    lat: 49.1951
+    lon: 16.6068
+    radius_m: 150
+    currency: CZK
+
+    tariffs:
+      weekday:
+        - { from: "00:00", to: "06:00", price: 4.0 }   # low tariff (NT)
+        - { from: "06:00", to: "12:00", price: 7.5 }   # high tariff (VT)
+        - { from: "12:00", to: "15:00", price: 4.0 }   # low tariff (NT)
+        - { from: "15:00", to: "24:00", price: 7.5 }   # high tariff (VT)
+
+      weekend:
+        - { from: "00:00", to: "24:00", price: 4.0 }   # flat low tariff
+
+  # Example: second location with a different currency
+  # - name: cottage
+  #   lat: 48.8566
+  #   lon: 2.3522
+  #   radius_m: 200
+  #   currency: EUR
+  #   tariffs:
+  #     weekday:
+  #       - { from: "00:00", to: "24:00", price: 0.22 }
+  #     weekend:
+  #       - { from: "00:00", to: "24:00", price: 0.22 }

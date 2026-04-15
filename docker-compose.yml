@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  private-costs:
+    build: .
+    container_name: teslamate-private-costs
+    restart: "no"   # run-and-exit; use cron for scheduling
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+    networks:
+      - teslamate
+
+# Attach to the same network as your TeslaMate stack so the container
+# can reach the `database` service by hostname.
+# If your TeslaMate network has a different name, update this accordingly.
+networks:
+  teslamate:
+    external: true
