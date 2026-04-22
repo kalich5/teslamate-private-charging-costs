@@ -16,4 +16,4 @@ COPY *.py ./
 RUN useradd --no-create-home appuser
 USER appuser
 
-CMD ["python", "importer.py"]
+ENTRYPOINT ["python", "importer.py"]

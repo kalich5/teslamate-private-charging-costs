@@ -1,3 +1,4 @@
+import argparse
 import logging
 import os
 import sys
@@ -35,7 +36,7 @@ def db_connect(cfg):
 
 
 # TeslaMate stores GPS coordinates in the `positions` table linked via
-# the car's positions at charge start.  We join on the position closest
+# the car's positions at charge start. We join on the position closest
 # to the start of the charging process.
 FETCH_QUERY = """
 SELECT
@@ -96,10 +97,59 @@ def process_session(session, locations, base_currency):
 
 
 def main():
-    config = load_config()
+    arg_parser = argparse.ArgumentParser(
+        description="Calculate and write home charging costs into TeslaMate",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Preview what would be written without touching the database
+  python importer.py --dry-run
+
+  # Use a custom config file location
+  python importer.py --config /data/my_config.yaml
+
+  # Verbose output (show skipped sessions)
+  python importer.py --verbose
+        """,
+    )
+    arg_parser.add_argument(
+        "--dry-run", "-n",
+        action="store_true",
+        help="Preview changes without writing to the database",
+    )
+    arg_parser.add_argument(
+        "--config", "-c",
+        default="config.yaml",
+        metavar="FILE",
+        help="Path to config.yaml (default: config.yaml)",
+    )
+    arg_parser.add_argument(
+        "--verbose", "-v",
+        action="store_true",
+        help="Show debug messages including skipped sessions",
+    )
+    args = arg_parser.parse_args()
+
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+
+    config = load_config(args.config)
     locations = config["LOCATIONS"]
     base_currency = config["BASE_CURRENCY"]
     db_cfg = config.get("DATABASE", {})
+
+    log.info("=" * 50)
+    log.info("  TeslaMate Private Charging Cost Importer")
+    log.info("  DB:        %s@%s:%s/%s",
+             db_cfg.get("user", "teslamate"),
+             db_cfg.get("host", "database"),
+             db_cfg.get("port", 5432),
+             db_cfg.get("dbname", "teslamate"))
+    log.info("  Currency:  %s", base_currency)
+    log.info("  Locations: %s", ", ".join(loc["name"] for loc in locations))
+    if args.dry_run:
+        log.info("  Mode:      DRY-RUN (no writes)")
+    log.info("=" * 50)
 
     try:
         conn = db_connect(db_cfg)
@@ -114,24 +164,25 @@ def main():
 
     updated = 0
     skipped = 0
+    errors  = 0
 
     for row in rows:
         tm_id, start, end, lat, lon, kwh = row
 
         session = {
-            "id": tm_id,
+            "id":         tm_id,
             "start_date": start.isoformat() if start else None,
-            "end_date": end.isoformat() if end else None,
-            "latitude": lat,
-            "longitude": lon,
-            "kwh": kwh,
+            "end_date":   end.isoformat()   if end   else None,
+            "latitude":   lat,
+            "longitude":  lon,
+            "kwh":        kwh,
         }
 
         try:
             result = process_session(session, locations, base_currency)
         except Exception as e:
             log.error("Session %s: unexpected error — %s", tm_id, e)
-            skipped += 1
+            errors += 1
             continue
 
         if result is None:
@@ -139,15 +190,38 @@ def main():
             continue
 
         cost, location_name = result
-        cur.execute(UPDATE_QUERY, (cost, tm_id))
-        log.info("Session %s @ %s → %.4f %s", tm_id, location_name, cost, base_currency)
-        updated += 1
 
-    conn.commit()
+        if args.dry_run:
+            log.info("  DRY-RUN  Session %s @ %s -> %.4f %s", tm_id, location_name, cost, base_currency)
+            updated += 1
+            continue
+
+        try:
+            cur.execute(UPDATE_QUERY, (cost, tm_id))
+            # Commit immediately after each successful update so that a DB error
+            # on a later row cannot roll back costs that have already been written.
+            conn.commit()
+            log.info("  UPDATED  Session %s @ %s -> %.4f %s", tm_id, location_name, cost, base_currency)
+            updated += 1
+        except Exception as e:
+            log.error("DB error updating session %s: %s", tm_id, e)
+            conn.rollback()
+            errors += 1
+
     cur.close()
     conn.close()
 
-    log.info("Done. Updated: %d, Skipped: %d", updated, skipped)
+    log.info("-" * 50)
+    if args.dry_run:
+        log.info("  DRY-RUN SUMMARY")
+        log.info("  Would be updated: %d", updated)
+    else:
+        log.info("  SUMMARY")
+        log.info("  Updated:  %d", updated)
+    log.info("  Skipped:  %d", skipped)
+    if errors:
+        log.warning("  Errors:   %d", errors)
+    log.info("-" * 50)
 
 
 if __name__ == "__main__":
