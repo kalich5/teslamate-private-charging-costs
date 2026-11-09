@@ -1,6 +1,5 @@
 # ⚡ TeslaMate Private Charging Costs
 
-[![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue?logo=docker)](https://github.com/YOUR_USERNAME/teslamate-supercharger-costs/pkgs/container/teslamate-supercharger-costs)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue?logo=python)](https://www.python.org)
 
@@ -171,23 +170,23 @@ Run daily at 06:00:
 
 ## 📊 Grafana Examples
 
-### Average price per kWh
+### Average price per kWh (from the grid)
 
 ```sql
 SELECT
   date_trunc('month', start_date) AS time,
-  ROUND(AVG(cost / NULLIF(charge_energy_added, 0))::numeric, 4) AS "CHF/kWh"
+  ROUND(SUM(cost) / NULLIF(SUM(GREATEST(charge_energy_used, charge_energy_added)), 0), 4) AS "CHF/kWh"
 FROM charging_processes
 WHERE cost IS NOT NULL
 GROUP BY 1
 ORDER BY 1
 ```
 
-### Cost per 100 km (assuming ~18 kWh/100 km)
+### Cost per 100 km (assuming ~18 kWh/100 km from the battery)
 
 ```sql
 SELECT
-  ROUND(AVG(cost / NULLIF(charge_energy_added, 0) * 18)::numeric, 2) AS "CHF/100km"
+  ROUND(SUM(cost) / NULLIF(SUM(charge_energy_added), 0) * 18, 2) AS "CHF/100km"
 FROM charging_processes
 WHERE cost IS NOT NULL
 ```
@@ -201,6 +200,7 @@ importer.py        Main entry point — DB read/write loop
 pricing.py         Tariff engine — minute-by-minute cost calculation
 geo.py             Geofencing — Haversine distance matching
 fx.py              Currency conversion — Frankfurter API with in-process cache
+tests.py           Unit tests (pytest)
 config.yaml        User configuration
 requirements.txt   Python dependencies
 Dockerfile
