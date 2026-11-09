@@ -10,12 +10,6 @@ BASE_CURRENCY: CHF
 # with its own `timezone:` key.
 TIMEZONE: Europe/Prague
 
-# Which energy value to bill:
-#   used  – energy drawn from the grid incl. charging losses (what your meter
-#           measures; recommended).  Falls back to `added` if missing.
-#   added – energy stored in the battery (excludes ~10–15 % AC losses).
-ENERGY_SOURCE: used
-
 # ── Database connection ───────────────────────
 # These defaults match the standard TeslaMate docker-compose setup.
 DATABASE:

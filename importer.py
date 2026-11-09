@@ -71,25 +71,17 @@ def to_float(value):
     return None if value is None else float(value)
 
 
-ENERGY_SOURCES = ("used", "added")
-
-
-def billed_energy(added, used, source="used"):
+def billed_energy(added, used):
     """
     Return the kWh to bill for a session.
 
-    ``used``  (default): energy drawn from the grid, including charging losses —
-              this is what the electricity meter measures.  Falls back to
-              ``added`` when ``used`` is missing, and never goes below
-              ``added`` (``used`` is computed by TeslaMate from sparse power
-              samples and can come out too low).
-    ``added``: energy stored in the battery (excludes charging losses).
+    The bill follows the electricity meter, i.e. energy drawn from the grid
+    including charging losses (``charge_energy_used``).  Falls back to
+    ``charge_energy_added`` when ``used`` is missing, and never goes below
+    ``added`` (``used`` is computed by TeslaMate from sparse power samples and
+    can come out too low).
     """
-    added = to_float(added)
-    used = to_float(used)
-    if source == "added":
-        return added
-    candidates = [v for v in (used, added) if v is not None]
+    candidates = [v for v in (to_float(used), to_float(added)) if v is not None]
     return max(candidates) if candidates else None
 
 
@@ -210,10 +202,6 @@ Examples:
             log.error("Invalid config: %s", e)
             sys.exit(1)
     db_cfg = config.get("DATABASE", {})
-    energy_source = config.get("ENERGY_SOURCE", "used")
-    if energy_source not in ENERGY_SOURCES:
-        log.error("ENERGY_SOURCE must be one of %s, got '%s'.", ", ".join(ENERGY_SOURCES), energy_source)
-        sys.exit(1)
 
     log.info("=" * 50)
     log.info("  TeslaMate Private Charging Cost Importer")
@@ -223,7 +211,6 @@ Examples:
              db_cfg.get("port", 5432),
              db_cfg.get("dbname", "teslamate"))
     log.info("  Currency:  %s", base_currency)
-    log.info("  Energy:    charge_energy_%s", energy_source)
     log.info("  Locations: %s", ", ".join(f'{loc["name"]} ({loc["timezone"]})' for loc in locations))
     if args.dry_run:
         log.info("  Mode:      DRY-RUN (no writes)")
@@ -258,7 +245,7 @@ Examples:
             "end_date":   end,
             "latitude":   to_float(lat),
             "longitude":  to_float(lon),
-            "kwh":        billed_energy(added, used, energy_source),
+            "kwh":        billed_energy(added, used),
         }
 
         try:

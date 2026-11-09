@@ -352,7 +352,3 @@ class TestBilledEnergy:
     def test_used_never_below_added(self):
         from importer import billed_energy
         assert billed_energy(Decimal("10.00"), Decimal("9.00")) == pytest.approx(10.0)
-
-    def test_added_source(self):
-        from importer import billed_energy
-        assert billed_energy(Decimal("10.00"), Decimal("11.50"), "added") == pytest.approx(10.0)

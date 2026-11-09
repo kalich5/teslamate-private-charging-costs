@@ -73,7 +73,6 @@ Copy `config.yaml` and edit it:
 ```yaml
 BASE_CURRENCY: CHF
 TIMEZONE: Europe/Prague     # tariff times are local; DST handled automatically
-ENERGY_SOURCE: used         # used = from grid incl. losses (meter), added = into battery
 
 DATABASE:
   host: database       # hostname of the TeslaMate PostgreSQL container
@@ -102,6 +101,7 @@ LOCATIONS:
 ### Tariff rules
 
 - Prices are in `currency` per kWh.
+- Cost is calculated from `charge_energy_used` (energy drawn from the grid incl. charging losses — what your meter measures), falling back to `charge_energy_added` if missing.
 - Time blocks use `HH:MM` format. Use `"24:00"` for the end of the last block.
 - Blocks must cover the full 24 hours without gaps or overlaps. The config is validated at startup and the importer refuses to run otherwise, so no session is ever written with a partial cost.
 - Blocks are `[from, to)` — `06:00` belongs to the block starting at 06:00.
