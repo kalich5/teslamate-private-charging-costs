@@ -35,9 +35,9 @@ def db_connect(cfg):
     )
 
 
-# TeslaMate stores GPS coordinates in the `positions` table linked via
-# the car's positions at charge start. We join on the position closest
-# to the start of the charging process.
+# TeslaMate links every charging process to the position recorded when it
+# started (charging_processes.position_id), so a direct join is enough — no
+# need to scan the (very large) positions table per session.
 FETCH_QUERY = """
 SELECT
     cp.id,
@@ -48,16 +48,11 @@ SELECT
     cp.charge_energy_added,
     cp.charge_energy_used
 FROM charging_processes cp
-LEFT JOIN positions p ON p.id = (
-    SELECT id FROM positions
-    WHERE car_id = cp.car_id
-      AND date <= cp.start_date
-    ORDER BY date DESC
-    LIMIT 1
-)
+LEFT JOIN positions p ON p.id = cp.position_id
 WHERE cp.cost IS NULL
   AND cp.end_date IS NOT NULL
   AND (cp.charge_energy_added > 0 OR cp.charge_energy_used > 0)
+ORDER BY cp.id
 """
 
 # Per-sample charging data, used to find *when* the energy was actually
