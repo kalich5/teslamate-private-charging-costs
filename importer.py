@@ -5,8 +5,7 @@ import sys
 
 import psycopg2
 import yaml
-from dateutil import parser
-from datetime import timezone
+from datetime import datetime, timezone
 
 from geo import find_location
 from pricing import calculate_cost
@@ -68,6 +67,19 @@ def to_float(value):
     return None if value is None else float(value)
 
 
+def as_utc(dt: datetime) -> datetime:
+    """
+    Return *dt* as a timezone-aware UTC datetime.
+
+    TeslaMate stores timestamps as ``timestamp without time zone`` in UTC, so
+    psycopg2 returns naive datetimes.  These must be tagged as UTC — calling
+    ``.astimezone()`` on them would interpret them in the host's local zone.
+    """
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
 def process_session(session, locations, base_currency):
     lat = session.get("latitude")
     lon = session.get("longitude")
@@ -77,8 +89,8 @@ def process_session(session, locations, base_currency):
         log.debug("Session %s: no matching location (lat=%s, lon=%s)", session["id"], lat, lon)
         return None
 
-    start = parser.parse(session["start_date"]).astimezone(timezone.utc)
-    end = parser.parse(session["end_date"]).astimezone(timezone.utc)
+    start = as_utc(session["start_date"])
+    end = as_utc(session["end_date"])
 
     if end <= start:
         log.warning("Session %s: end_date (%s) <= start_date (%s), skipping", session["id"], end, start)
@@ -176,8 +188,8 @@ Examples:
 
         session = {
             "id":         tm_id,
-            "start_date": start.isoformat() if start else None,
-            "end_date":   end.isoformat()   if end   else None,
+            "start_date": start,
+            "end_date":   end,
             "latitude":   to_float(lat),
             "longitude":  to_float(lon),
             "kwh":        to_float(kwh),

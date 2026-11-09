@@ -157,3 +157,27 @@ class TestCalculateCost:
         cost = calculate_cost(start, end, 2.0, LOCATION)
         # 1 kWh * 4.0 + 1 kWh * 7.5 = 11.5
         assert cost == pytest.approx(11.5, rel=1e-2)
+
+
+# ─── importer.py ──────────────────────────────────────────────────────────────
+
+class TestAsUtc:
+    def test_naive_is_treated_as_utc(self, monkeypatch):
+        import time
+        from importer import as_utc
+        # Even with a non-UTC host timezone, naive DB timestamps are UTC.
+        monkeypatch.setenv("TZ", "America/New_York")
+        time.tzset()
+        try:
+            dt = as_utc(datetime(2026, 1, 12, 5, 30))
+        finally:
+            monkeypatch.delenv("TZ")
+            time.tzset()
+        assert dt == datetime(2026, 1, 12, 5, 30, tzinfo=timezone.utc)
+
+    def test_aware_is_converted(self):
+        from datetime import timedelta
+        from importer import as_utc
+        cet = timezone(timedelta(hours=1))
+        assert as_utc(datetime(2026, 1, 12, 6, 30, tzinfo=cet)) == \
+            datetime(2026, 1, 12, 5, 30, tzinfo=timezone.utc)
