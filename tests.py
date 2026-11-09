@@ -292,3 +292,21 @@ class TestAsUtc:
         cet = timezone(timedelta(hours=1))
         assert as_utc(datetime(2026, 1, 12, 6, 30, tzinfo=cet)) == \
             datetime(2026, 1, 12, 5, 30, tzinfo=timezone.utc)
+
+
+class TestBilledEnergy:
+    def test_prefers_used(self):
+        from importer import billed_energy
+        assert billed_energy(Decimal("10.00"), Decimal("11.50")) == pytest.approx(11.5)
+
+    def test_used_missing_falls_back_to_added(self):
+        from importer import billed_energy
+        assert billed_energy(Decimal("10.00"), None) == pytest.approx(10.0)
+
+    def test_used_never_below_added(self):
+        from importer import billed_energy
+        assert billed_energy(Decimal("10.00"), Decimal("9.00")) == pytest.approx(10.0)
+
+    def test_added_source(self):
+        from importer import billed_energy
+        assert billed_energy(Decimal("10.00"), Decimal("11.50"), "added") == pytest.approx(10.0)

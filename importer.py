@@ -45,7 +45,8 @@ SELECT
     cp.end_date,
     p.latitude,
     p.longitude,
-    cp.charge_energy_added
+    cp.charge_energy_added,
+    cp.charge_energy_used
 FROM charging_processes cp
 LEFT JOIN positions p ON p.id = (
     SELECT id FROM positions
@@ -56,8 +57,7 @@ LEFT JOIN positions p ON p.id = (
 )
 WHERE cp.cost IS NULL
   AND cp.end_date IS NOT NULL
-  AND cp.charge_energy_added IS NOT NULL
-  AND cp.charge_energy_added > 0
+  AND (cp.charge_energy_added > 0 OR cp.charge_energy_used > 0)
 """
 
 # Per-sample charging data, used to find *when* the energy was actually
@@ -75,6 +75,28 @@ UPDATE_QUERY = "UPDATE charging_processes SET cost = %s WHERE id = %s"
 def to_float(value):
     """Convert DB numeric values (psycopg2 returns ``Decimal``) to float; keep None."""
     return None if value is None else float(value)
+
+
+ENERGY_SOURCES = ("used", "added")
+
+
+def billed_energy(added, used, source="used"):
+    """
+    Return the kWh to bill for a session.
+
+    ``used``  (default): energy drawn from the grid, including charging losses —
+              this is what the electricity meter measures.  Falls back to
+              ``added`` when ``used`` is missing, and never goes below
+              ``added`` (``used`` is computed by TeslaMate from sparse power
+              samples and can come out too low).
+    ``added``: energy stored in the battery (excludes charging losses).
+    """
+    added = to_float(added)
+    used = to_float(used)
+    if source == "added":
+        return added
+    candidates = [v for v in (used, added) if v is not None]
+    return max(candidates) if candidates else None
 
 
 def as_utc(dt: datetime) -> datetime:
@@ -192,6 +214,10 @@ Examples:
             log.error("Location '%s': unknown timezone '%s'.", loc["name"], loc["timezone"])
             sys.exit(1)
     db_cfg = config.get("DATABASE", {})
+    energy_source = config.get("ENERGY_SOURCE", "used")
+    if energy_source not in ENERGY_SOURCES:
+        log.error("ENERGY_SOURCE must be one of %s, got '%s'.", ", ".join(ENERGY_SOURCES), energy_source)
+        sys.exit(1)
 
     log.info("=" * 50)
     log.info("  TeslaMate Private Charging Cost Importer")
@@ -201,6 +227,7 @@ Examples:
              db_cfg.get("port", 5432),
              db_cfg.get("dbname", "teslamate"))
     log.info("  Currency:  %s", base_currency)
+    log.info("  Energy:    charge_energy_%s", energy_source)
     log.info("  Locations: %s", ", ".join(f'{loc["name"]} ({loc["timezone"]})' for loc in locations))
     if args.dry_run:
         log.info("  Mode:      DRY-RUN (no writes)")
@@ -227,7 +254,7 @@ Examples:
     errors  = 0
 
     for row in rows:
-        tm_id, start, end, lat, lon, kwh = row
+        tm_id, start, end, lat, lon, added, used = row
 
         session = {
             "id":         tm_id,
@@ -235,7 +262,7 @@ Examples:
             "end_date":   end,
             "latitude":   to_float(lat),
             "longitude":  to_float(lon),
-            "kwh":        to_float(kwh),
+            "kwh":        billed_energy(added, used, energy_source),
         }
 
         try:

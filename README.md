@@ -72,6 +72,8 @@ Copy `config.yaml` and edit it:
 
 ```yaml
 BASE_CURRENCY: CHF
+TIMEZONE: Europe/Prague     # tariff times are local; DST handled automatically
+ENERGY_SOURCE: used         # used = from grid incl. losses (meter), added = into battery
 
 DATABASE:
   host: database       # hostname of the TeslaMate PostgreSQL container
