@@ -12,12 +12,15 @@ TIMEZONE: Europe/Prague
 
 # ── Database connection ───────────────────────
 # These defaults match the standard TeslaMate docker-compose setup.
+# Every value can be overridden by an environment variable with the same name
+# TeslaMate uses: DATABASE_HOST, DATABASE_PORT, DATABASE_NAME, DATABASE_USER,
+# DATABASE_PASS.  Prefer DATABASE_PASS (e.g. in .env) over writing your real
+# password here.
 DATABASE:
   host: database
   port: 5432
   dbname: teslamate
   user: teslamate
-  password: teslamate
 
 # ── Locations ─────────────────────────────────
 # Each location defines a geofence and a tariff structure.

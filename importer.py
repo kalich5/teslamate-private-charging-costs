@@ -24,14 +24,37 @@ def load_config(path="config.yaml"):
         return yaml.safe_load(f)
 
 
-def db_connect(cfg):
-    return psycopg2.connect(
-        host=cfg.get("host", "database"),
-        port=cfg.get("port", 5432),
-        dbname=cfg.get("dbname", "teslamate"),
-        user=cfg.get("user", "teslamate"),
-        password=cfg.get("password", "teslamate"),
-    )
+# Environment variables override config.yaml.  Names match TeslaMate's own,
+# so the same .env file can be shared with the TeslaMate stack.
+DB_ENV_VARS = {
+    "host": "DATABASE_HOST",
+    "port": "DATABASE_PORT",
+    "dbname": "DATABASE_NAME",
+    "user": "DATABASE_USER",
+    "password": "DATABASE_PASS",
+}
+
+DB_DEFAULTS = {
+    "host": "database",
+    "port": 5432,
+    "dbname": "teslamate",
+    "user": "teslamate",
+    "password": "teslamate",
+}
+
+
+def db_settings(cfg: dict | None, env=os.environ) -> dict:
+    """Merge DB settings: environment variables > config.yaml > defaults."""
+    settings = {**DB_DEFAULTS, **(cfg or {})}
+    for key, var in DB_ENV_VARS.items():
+        if env.get(var):
+            settings[key] = env[var]
+    settings["port"] = int(settings["port"])
+    return settings
+
+
+def db_connect(settings):
+    return psycopg2.connect(**settings)
 
 
 # TeslaMate links every charging process to the position recorded when it
@@ -201,15 +224,12 @@ Examples:
         except ValueError as e:
             log.error("Invalid config: %s", e)
             sys.exit(1)
-    db_cfg = config.get("DATABASE", {})
+    db_cfg = db_settings(config.get("DATABASE"))
 
     log.info("=" * 50)
     log.info("  TeslaMate Private Charging Cost Importer")
     log.info("  DB:        %s@%s:%s/%s",
-             db_cfg.get("user", "teslamate"),
-             db_cfg.get("host", "database"),
-             db_cfg.get("port", 5432),
-             db_cfg.get("dbname", "teslamate"))
+             db_cfg["user"], db_cfg["host"], db_cfg["port"], db_cfg["dbname"])
     log.info("  Currency:  %s", base_currency)
     log.info("  Locations: %s", ", ".join(f'{loc["name"]} ({loc["timezone"]})' for loc in locations))
     if args.dry_run:

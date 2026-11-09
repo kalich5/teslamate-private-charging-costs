@@ -352,3 +352,21 @@ class TestBilledEnergy:
     def test_used_never_below_added(self):
         from importer import billed_energy
         assert billed_energy(Decimal("10.00"), Decimal("9.00")) == pytest.approx(10.0)
+
+
+class TestDbSettings:
+    def test_defaults(self):
+        from importer import db_settings
+        assert db_settings(None, env={}) == {
+            "host": "database", "port": 5432, "dbname": "teslamate",
+            "user": "teslamate", "password": "teslamate"}
+
+    def test_env_overrides_config(self):
+        from importer import db_settings
+        cfg = {"host": "db", "port": 5432, "password": "from-config"}
+        env = {"DATABASE_PASS": "secret", "DATABASE_PORT": "6543", "DATABASE_HOST": ""}
+        settings = db_settings(cfg, env=env)
+        assert settings["password"] == "secret"
+        assert settings["port"] == 6543
+        assert settings["host"] == "db"  # empty env var is ignored
+
