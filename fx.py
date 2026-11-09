@@ -50,7 +50,12 @@ def _get_eur_rate(date: datetime, currency: str) -> float:
 
     rate = float(rates[currency])
     _cache[cache_key] = rate
-    log.debug("FX rate: 1 EUR = %.6f %s (on %s)", rate, currency, date_str)
+    # On weekends/holidays the API returns the last published rate.
+    rate_date = data.get("date", date_str)
+    if rate_date != date_str:
+        log.debug("FX rate: 1 EUR = %.6f %s (for %s, published %s)", rate, currency, date_str, rate_date)
+    else:
+        log.debug("FX rate: 1 EUR = %.6f %s (on %s)", rate, currency, date_str)
     return rate
 
 
