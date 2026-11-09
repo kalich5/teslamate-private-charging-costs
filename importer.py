@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from geo import find_location
-from pricing import calculate_cost
+from pricing import calculate_cost_profile, energy_profile
 from fx import convert
 
 logging.basicConfig(
@@ -60,6 +60,15 @@ WHERE cp.cost IS NULL
   AND cp.charge_energy_added > 0
 """
 
+# Per-sample charging data, used to find *when* the energy was actually
+# delivered (e.g. plugged in at 18:00 but scheduled charging starts at 00:00).
+CHARGES_QUERY = """
+SELECT date, charge_energy_added, charger_power
+FROM charges
+WHERE charging_process_id = %s
+ORDER BY date
+"""
+
 UPDATE_QUERY = "UPDATE charging_processes SET cost = %s WHERE id = %s"
 
 
@@ -81,7 +90,14 @@ def as_utc(dt: datetime) -> datetime:
     return dt.astimezone(timezone.utc)
 
 
-def process_session(session, locations, base_currency):
+def process_session(session, locations, base_currency, load_samples=None):
+    """
+    Price one charging session.
+
+    *load_samples* is an optional callable ``(session_id) -> [(date, energy, power)]``
+    returning the session's ``charges`` rows.  It is only called for sessions
+    that match a location.  Without samples, energy is spread evenly.
+    """
     lat = session.get("latitude")
     lon = session.get("longitude")
 
@@ -102,7 +118,13 @@ def process_session(session, locations, base_currency):
         log.warning("Session %s: energy_added is zero, skipping", session["id"])
         return None
 
-    local_cost = calculate_cost(start, end, kwh, location)
+    samples = load_samples(session["id"]) if load_samples else []
+    samples = [(as_utc(d), e, p) for d, e, p in samples if d is not None]
+    profile = energy_profile(samples, start, end, kwh)
+    if len(profile) == 1 and samples:
+        log.debug("Session %s: charges samples unusable, spreading energy evenly", session["id"])
+
+    local_cost = calculate_cost_profile(profile, location)
 
     final_cost = convert(
         local_cost,
@@ -191,6 +213,11 @@ Examples:
         sys.exit(1)
 
     cur = conn.cursor()
+
+    def load_samples(session_id):
+        cur.execute(CHARGES_QUERY, (session_id,))
+        return cur.fetchall()
+
     cur.execute(FETCH_QUERY)
     rows = cur.fetchall()
     log.info("Found %d charging session(s) with missing cost.", len(rows))
@@ -212,7 +239,7 @@ Examples:
         }
 
         try:
-            result = process_session(session, locations, base_currency)
+            result = process_session(session, locations, base_currency, load_samples)
         except Exception as e:
             log.error("Session %s: unexpected error — %s", tm_id, e)
             errors += 1

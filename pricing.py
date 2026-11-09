@@ -60,20 +60,74 @@ def find_tariff(blocks: list, current_time: time) -> dict | None:
     return None
 
 
-def calculate_cost(start: datetime, end: datetime, kwh: float, location: dict) -> float:
+def energy_profile(samples: list, start: datetime, end: datetime, total_kwh: float) -> list:
     """
-    Calculate the electricity cost for a charging session.
-
-    The session is split into buckets aligned to whole clock minutes (the
-    first and last bucket may be shorter).  Energy is spread evenly over the
-    session and each bucket is priced at the tariff active during it.  As
-    tariff boundaries fall on whole minutes, every bucket lies in exactly
-    one tariff block.
+    Distribute *total_kwh* over time using TeslaMate ``charges`` samples.
 
     Args:
-        start:    Session start (timezone-aware datetime).
-        end:      Session end   (timezone-aware datetime).
-        kwh:      Total energy delivered in kWh.
+        samples:   ``[(date, charge_energy_added, charger_power_kw), ...]`` sorted
+                   by date; dates are timezone-aware, energy is cumulative kWh.
+        start/end: Session boundaries, used for the uniform fallback.
+        total_kwh: Energy to distribute (the profile is scaled to this total).
+
+    Returns:
+        ``[(segment_start, segment_end, kwh), ...]``.
+
+    Each interval between two consecutive samples is weighted by the increase
+    of the cumulative ``charge_energy_added``.  If that gives nothing usable,
+    the average ``charger_power`` × duration is used instead.  If the samples
+    carry no information at all, the energy is spread evenly over the session.
+    Periods where the car is plugged in but not charging thus get no energy.
+    """
+    total_kwh = float(total_kwh)
+    uniform = [(start, end, total_kwh)]
+
+    def weighted(pairs):
+        return [(a, b, w) for a, b, w in pairs if w > 0 and b > a]
+
+    # 1) Increase of cumulative energy between consecutive samples.
+    with_energy = [(d, float(e)) for d, e, _ in samples if e is not None]
+    segments = weighted(
+        (d1, d2, e2 - e1) for (d1, e1), (d2, e2) in zip(with_energy, with_energy[1:])
+    )
+
+    # 2) Fallback: average charger power × time.
+    if not segments:
+        with_power = [(d, float(p)) for d, _, p in samples if p is not None]
+        segments = weighted(
+            (d1, d2, (p1 + p2) / 2 * (d2 - d1).total_seconds() / 3600)
+            for (d1, p1), (d2, p2) in zip(with_power, with_power[1:])
+        )
+
+    if not segments:
+        return uniform
+
+    weight_sum = sum(w for _, _, w in segments)
+    scale = total_kwh / weight_sum
+    return [(a, b, w * scale) for a, b, w in segments]
+
+
+def calculate_cost(start: datetime, end: datetime, kwh: float, location: dict) -> float:
+    """
+    Calculate the cost of a session with energy spread evenly over its duration.
+
+    See :func:`calculate_cost_profile` for details; this is the single-segment case.
+    """
+    return calculate_cost_profile([(start, end, kwh)], location)
+
+
+def calculate_cost_profile(segments: list, location: dict) -> float:
+    """
+    Calculate the electricity cost of an energy profile.
+
+    Each segment ``(start, end, kwh)`` is split into buckets aligned to whole
+    clock minutes (the first and last bucket may be shorter).  The segment's
+    energy is spread evenly over its buckets and each bucket is priced at the
+    tariff active during it.  As tariff boundaries fall on whole minutes,
+    every bucket lies in exactly one tariff block.
+
+    Args:
+        segments: ``[(start, end, kwh), ...]`` with timezone-aware datetimes.
         location: Location config dict (must contain 'tariffs', 'name' and
                   'timezone').  Tariff times and weekday/weekend are evaluated
                   in the location's local time, including DST changes.
@@ -81,33 +135,35 @@ def calculate_cost(start: datetime, end: datetime, kwh: float, location: dict) -
     Returns:
         Total cost in the location's currency (rounded to 4 decimal places).
     """
-    kwh = float(kwh)  # psycopg2 returns numeric columns as Decimal
-    duration_s = (end - start).total_seconds()
-    if duration_s <= 0:
-        return 0.0
-
     tz = location_zone(location)
-    kwh_per_s = kwh / duration_s
-    current = start
     cost = 0.0
     gap_minutes = 0.0
 
-    while current < end:
-        # Advance to the next whole minute (or the session end).
-        next_minute = current.replace(second=0, microsecond=0) + timedelta(minutes=1)
-        step_end = min(next_minute, end)
-        step_s = (step_end - current).total_seconds()
+    for start, end, kwh in segments:
+        kwh = float(kwh)  # psycopg2 returns numeric columns as Decimal
+        duration_s = (end - start).total_seconds()
+        if duration_s <= 0:
+            continue
 
-        local = current.astimezone(tz)
-        blocks = get_tariff_blocks(location, local)
-        tariff = find_tariff(blocks, local.time())
+        kwh_per_s = kwh / duration_s
+        current = start
 
-        if tariff is None:
-            gap_minutes += step_s / 60
-        else:
-            cost += kwh_per_s * step_s * tariff["price"]
+        while current < end:
+            # Advance to the next whole minute (or the segment end).
+            next_minute = current.replace(second=0, microsecond=0) + timedelta(minutes=1)
+            step_end = min(next_minute, end)
+            step_s = (step_end - current).total_seconds()
 
-        current = step_end
+            local = current.astimezone(tz)
+            blocks = get_tariff_blocks(location, local)
+            tariff = find_tariff(blocks, local.time())
+
+            if tariff is None:
+                gap_minutes += step_s / 60
+            else:
+                cost += kwh_per_s * step_s * tariff["price"]
+
+            current = step_end
 
     if gap_minutes:
         log.warning(

@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 import pytest
 
 from geo import distance_m, find_location
-from pricing import parse_time, find_tariff, calculate_cost
+from pricing import parse_time, find_tariff, calculate_cost, energy_profile
 
 
 # ─── geo.py ───────────────────────────────────────────────────────────────────
@@ -205,6 +205,69 @@ class TestCalculateCost:
         loc = {k: v for k, v in LOCATION.items() if k != "timezone"}
         with pytest.raises(ValueError):
             calculate_cost(self._utc(2026, 1, 12, 5, 0), self._utc(2026, 1, 12, 6, 0), 1.0, loc)
+
+
+class TestEnergyProfile:
+    START = datetime(2026, 4, 13, 18, 0, tzinfo=timezone.utc)
+    END = datetime(2026, 4, 14, 2, 0, tzinfo=timezone.utc)
+
+    def _t(self, day, hour, minute=0):
+        return datetime(2026, 4, day, hour, minute, tzinfo=timezone.utc)
+
+    def test_no_samples_is_uniform(self):
+        assert energy_profile([], self.START, self.END, 10.0) == [(self.START, self.END, 10.0)]
+
+    def test_uses_energy_deltas_and_scales_to_total(self):
+        samples = [
+            (self._t(13, 18), Decimal("0.00"), 0),
+            (self._t(14, 0), Decimal("0.00"), 0),   # waiting for scheduled start
+            (self._t(14, 1), Decimal("5.00"), 11),
+            (self._t(14, 2), Decimal("10.00"), 11),
+        ]
+        profile = energy_profile(samples, self.START, self.END, 12.0)  # e.g. energy_used
+        assert [(a, b) for a, b, _ in profile] == [
+            (self._t(14, 0), self._t(14, 1)), (self._t(14, 1), self._t(14, 2))]
+        assert sum(k for _, _, k in profile) == pytest.approx(12.0)
+        assert profile[0][2] == pytest.approx(6.0)
+
+    def test_falls_back_to_power(self):
+        samples = [
+            (self._t(13, 18), None, 0),
+            (self._t(14, 0), None, 0),
+            (self._t(14, 1), None, 10),
+            (self._t(14, 2), None, 10),
+        ]
+        profile = energy_profile(samples, self.START, self.END, 10.0)
+        # 18:00–00:00 avg 0 kW → no energy; 00:00–01:00 avg 5 kW; 01:00–02:00 avg 10 kW
+        assert [k for _, _, k in profile] == [pytest.approx(10 / 3), pytest.approx(20 / 3)]
+
+    def test_useless_samples_are_uniform(self):
+        samples = [(self._t(13, 18), Decimal("1.0"), 0), (self._t(13, 19), Decimal("1.0"), 0)]
+        assert energy_profile(samples, self.START, self.END, 5.0) == [(self.START, self.END, 5.0)]
+
+
+class TestProcessSession:
+    LOC = {**LOCATION, "timezone": "UTC"}
+
+    def test_scheduled_charging_priced_in_actual_charging_window(self):
+        """Plugged in 18:00 (VT), charged only 00:00–02:00 (NT) → NT price."""
+        from importer import process_session
+        session = {
+            "id": 1,
+            "start_date": datetime(2026, 4, 13, 18, 0),  # naive UTC, Monday
+            "end_date": datetime(2026, 4, 14, 2, 0),
+            "latitude": Decimal("49.195100"),
+            "longitude": Decimal("16.606800"),
+            "kwh": 10.0,
+        }
+        samples = [
+            (datetime(2026, 4, 13, 18, 0), Decimal("0.00"), 0),
+            (datetime(2026, 4, 14, 0, 0), Decimal("0.00"), 0),
+            (datetime(2026, 4, 14, 2, 0), Decimal("10.00"), 5),
+        ]
+        cost, name = process_session(session, [self.LOC], "CZK", lambda _id: samples)
+        assert name == "home"
+        assert cost == pytest.approx(40.0)  # 10 kWh × 4.0 NT
 
 
 # ─── importer.py ──────────────────────────────────────────────────────────────

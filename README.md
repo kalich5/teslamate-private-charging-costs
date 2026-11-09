@@ -11,7 +11,7 @@ Automatically calculate charging costs for **private AC locations** (home, work,
 ## 🚀 Overview
 
 TeslaMate does not natively support dynamic electricity tariffs (VT/NT, weekend rates, etc.).  
-This project fills that gap by reading charging sessions from the TeslaMate PostgreSQL database, matching them to configured locations, splitting each session into 1-minute buckets, applying the correct tariff per minute, and writing the result back as `charging_processes.cost`.
+This project fills that gap by reading charging sessions from the TeslaMate PostgreSQL database, matching them to configured locations, distributing the energy over time according to TeslaMate's per-sample `charges` data, applying the correct local-time tariff per minute, and writing the result back as `charging_processes.cost`.
 
 ---
 
@@ -51,10 +51,11 @@ TeslaMate DB
   GPS match → find location in config
         │
         ▼
-  Split session into 1-minute buckets
+  Distribute energy over time using `charges` samples
+  (scheduled charging / pauses get no energy)
         │
         ▼
-  Apply tariff price per minute
+  Apply local-time tariff price per minute
         │
         ▼
   Convert currency (e.g. CZK → CHF)
