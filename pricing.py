@@ -53,6 +53,7 @@ def calculate_cost(start: datetime, end: datetime, kwh: float, location: dict) -
     Returns:
         Total cost in the location's currency (rounded to 4 decimal places).
     """
+    kwh = float(kwh)  # psycopg2 returns numeric columns as Decimal
     duration_min = (end - start).total_seconds() / 60.0
     if duration_min <= 0:
         return 0.0

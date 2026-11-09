@@ -7,6 +7,7 @@ Run with:
 """
 
 import math
+from decimal import Decimal
 from datetime import datetime, timezone
 
 import pytest
@@ -48,6 +49,11 @@ class TestFindLocation:
         # Prague coordinates → far from home
         loc = find_location(50.0755, 14.4378, self.LOCATIONS)
         assert loc is None
+
+    def test_decimal_coordinates(self):
+        # psycopg2 returns TeslaMate numeric columns as Decimal
+        loc = find_location(Decimal("49.195100"), Decimal("16.606800"), self.LOCATIONS)
+        assert loc is not None
 
     def test_missing_coordinates(self):
         assert find_location(None, None, self.LOCATIONS) is None
@@ -124,6 +130,12 @@ class TestCalculateCost:
         end = self._utc(2026, 4, 13, 11, 0)
         cost = calculate_cost(start, end, 1.0, loc)
         assert cost == pytest.approx(5.0, rel=1e-3)
+
+    def test_decimal_kwh(self):
+        loc = {**LOCATION, "tariffs": {"weekday": FLAT_TARIFFS, "weekend": FLAT_TARIFFS}}
+        start = self._utc(2026, 4, 13, 10, 0)
+        end = self._utc(2026, 4, 13, 11, 0)
+        assert calculate_cost(start, end, Decimal("1.00"), loc) == pytest.approx(5.0, rel=1e-3)
 
     def test_zero_duration(self):
         start = end = self._utc(2026, 4, 13, 10, 0)

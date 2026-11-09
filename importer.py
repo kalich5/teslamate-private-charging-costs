@@ -63,6 +63,11 @@ WHERE cp.cost IS NULL
 UPDATE_QUERY = "UPDATE charging_processes SET cost = %s WHERE id = %s"
 
 
+def to_float(value):
+    """Convert DB numeric values (psycopg2 returns ``Decimal``) to float; keep None."""
+    return None if value is None else float(value)
+
+
 def process_session(session, locations, base_currency):
     lat = session.get("latitude")
     lon = session.get("longitude")
@@ -173,9 +178,9 @@ Examples:
             "id":         tm_id,
             "start_date": start.isoformat() if start else None,
             "end_date":   end.isoformat()   if end   else None,
-            "latitude":   lat,
-            "longitude":  lon,
-            "kwh":        kwh,
+            "latitude":   to_float(lat),
+            "longitude":  to_float(lon),
+            "kwh":        to_float(kwh),
         }
 
         try:
