@@ -79,7 +79,7 @@ DATABASE:
   port: 5432
   dbname: teslamate
   user: teslamate
-  password: teslamate
+  # password: set DATABASE_PASS in .env instead (see below)
 
 LOCATIONS:
   - name: home
@@ -98,6 +98,20 @@ LOCATIONS:
         - { from: "00:00", to: "24:00", price: 4.0 }
 ```
 
+### Database credentials
+
+Environment variables override the `DATABASE` section. They use the same names as TeslaMate, so you can reuse its values:
+
+| Variable | Default |
+|---|---|
+| `DATABASE_HOST` | `database` |
+| `DATABASE_PORT` | `5432` |
+| `DATABASE_NAME` | `teslamate` |
+| `DATABASE_USER` | `teslamate` |
+| `DATABASE_PASS` | `teslamate` |
+
+With Docker, copy `.env.example` to `.env` and set at least `DATABASE_PASS`. `.env` is git-ignored.
+
 ### Tariff rules
 
 - Prices are in `currency` per kWh.
@@ -115,14 +129,21 @@ LOCATIONS:
 
 ### Prerequisites
 
-Your TeslaMate stack must be running and the `teslamate` Docker network must exist.  
-Check with:
+Your TeslaMate stack must be running. The container joins TeslaMate's Docker network, which Compose names `<folder>_default` — `teslamate_default` by default. Check the name with:
 
 ```bash
 docker network ls | grep teslamate
 ```
 
-If the network name is different, update `docker-compose.yml` accordingly.
+If it differs, set `TESLAMATE_NETWORK` in `.env`:
+
+```bash
+cp .env.example .env
+```
+
+```bash
+nano .env   # set DATABASE_PASS and, if needed, TESLAMATE_NETWORK
+```
 
 ### Build
 
@@ -184,6 +205,7 @@ config.yaml        User configuration
 requirements.txt   Python dependencies
 Dockerfile
 docker-compose.yml
+.env.example       Template for DB password / Docker network name
 ```
 
 ---
