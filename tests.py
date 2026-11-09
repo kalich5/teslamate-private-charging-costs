@@ -64,12 +64,11 @@ class TestFindLocation:
 
 class TestParseTime:
     def test_normal_time(self):
-        from datetime import time
-        assert parse_time("06:00") == time(6, 0)
+        assert parse_time("06:00") == 360
+        assert parse_time("00:00") == 0
 
     def test_midnight_end(self):
-        from pricing import _END_OF_DAY
-        assert parse_time("24:00") == _END_OF_DAY
+        assert parse_time("24:00") == 1440
 
     def test_invalid(self):
         with pytest.raises(ValueError):
@@ -114,6 +113,12 @@ class TestFindTariff:
         block = find_tariff(WEEKDAY_TARIFFS, time(9, 0))
         assert block["price"] == 7.5
 
+    def test_boundary_belongs_to_next_block(self):
+        from datetime import time
+        assert find_tariff(WEEKDAY_TARIFFS, time(6, 0))["price"] == 7.5
+        assert find_tariff(WEEKDAY_TARIFFS, time(5, 59, 59))["price"] == 4.0
+        assert find_tariff(WEEKDAY_TARIFFS, time(23, 59, 59))["price"] == 7.5
+
     def test_no_match_returns_none(self):
         # Empty block list → always None
         assert find_tariff([], __import__("datetime").time(12, 0)) is None
@@ -157,7 +162,21 @@ class TestCalculateCost:
         end = self._utc(2026, 4, 13, 7, 0)
         cost = calculate_cost(start, end, 2.0, LOCATION)
         # 1 kWh * 4.0 + 1 kWh * 7.5 = 11.5
-        assert cost == pytest.approx(11.5, rel=1e-2)
+        assert cost == pytest.approx(11.5, rel=1e-9)
+
+    def test_partial_last_minute_not_overcounted(self):
+        """30 s session with 1 kWh at flat 5.0 must cost 5.0, not 10.0."""
+        loc = {**LOCATION, "tariffs": {"weekday": FLAT_TARIFFS, "weekend": FLAT_TARIFFS}}
+        start = self._utc(2026, 4, 13, 10, 0)
+        end = start.replace(second=30)
+        assert calculate_cost(start, end, 1.0, loc) == pytest.approx(5.0, rel=1e-9)
+
+    def test_unaligned_start_and_end(self):
+        """Seconds offsets on both ends are priced exactly across a tariff boundary."""
+        # Monday 05:59:30–06:00:30 UTC: half at 4.0, half at 7.5 → 2 kWh → 11.5
+        start = datetime(2026, 4, 13, 5, 59, 30, tzinfo=timezone.utc)
+        end = datetime(2026, 4, 13, 6, 0, 30, tzinfo=timezone.utc)
+        assert calculate_cost(start, end, 2.0, LOCATION) == pytest.approx(11.5, rel=1e-9)
 
     def test_tariff_uses_local_time_winter(self):
         """06:30–07:30 CET is VT (7.5) even though it is 05:30–06:30 UTC."""

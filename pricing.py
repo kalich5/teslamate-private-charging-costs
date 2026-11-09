@@ -5,15 +5,20 @@ from zoneinfo import ZoneInfo
 
 log = logging.getLogger(__name__)
 
-# Sentinel used to represent "end of day" (24:00 → 00:00 next day).
-_END_OF_DAY = time(23, 59, 59, 999999)
+MINUTES_PER_DAY = 24 * 60
 
 
-def parse_time(t: str) -> time:
-    """Parse HH:MM time string.  '24:00' is treated as end-of-day."""
-    if t.strip() == "24:00":
-        return _END_OF_DAY
-    return datetime.strptime(t.strip(), "%H:%M").time()
+def parse_time(t: str) -> int:
+    """
+    Parse an ``HH:MM`` string into minutes since midnight (0–1440).
+
+    ``"24:00"`` is allowed and means end of day (1440).
+    """
+    t = t.strip()
+    if t == "24:00":
+        return MINUTES_PER_DAY
+    parsed = datetime.strptime(t, "%H:%M").time()
+    return parsed.hour * 60 + parsed.minute
 
 
 @lru_cache(maxsize=None)
@@ -42,12 +47,15 @@ def get_tariff_blocks(location: dict, dt: datetime) -> list:
 
 
 def find_tariff(blocks: list, current_time: time) -> dict | None:
-    """Return the tariff block that covers *current_time*, or None."""
+    """
+    Return the tariff block that covers *current_time*, or None.
+
+    Blocks are half-open intervals ``[from, to)``, so a boundary minute such as
+    06:00 belongs to the block that *starts* at 06:00.
+    """
+    minute = current_time.hour * 60 + current_time.minute + current_time.second / 60
     for block in blocks:
-        start = parse_time(block["from"])
-        end = parse_time(block["to"])
-        # Handle midnight-spanning blocks that end at 24:00 (stored as _END_OF_DAY).
-        if start <= current_time <= end:
+        if parse_time(block["from"]) <= minute < parse_time(block["to"]):
             return block
     return None
 
@@ -56,8 +64,11 @@ def calculate_cost(start: datetime, end: datetime, kwh: float, location: dict) -
     """
     Calculate the electricity cost for a charging session.
 
-    The session is split into 1-minute buckets.  Each bucket's energy
-    consumption is priced at the tariff rate active at that minute.
+    The session is split into buckets aligned to whole clock minutes (the
+    first and last bucket may be shorter).  Energy is spread evenly over the
+    session and each bucket is priced at the tariff active during it.  As
+    tariff boundaries fall on whole minutes, every bucket lies in exactly
+    one tariff block.
 
     Args:
         start:    Session start (timezone-aware datetime).
@@ -71,31 +82,36 @@ def calculate_cost(start: datetime, end: datetime, kwh: float, location: dict) -
         Total cost in the location's currency (rounded to 4 decimal places).
     """
     kwh = float(kwh)  # psycopg2 returns numeric columns as Decimal
-    duration_min = (end - start).total_seconds() / 60.0
-    if duration_min <= 0:
+    duration_s = (end - start).total_seconds()
+    if duration_s <= 0:
         return 0.0
 
     tz = location_zone(location)
-    kwh_per_min = kwh / duration_min
+    kwh_per_s = kwh / duration_s
     current = start
     cost = 0.0
-    gap_minutes = 0
+    gap_minutes = 0.0
 
     while current < end:
+        # Advance to the next whole minute (or the session end).
+        next_minute = current.replace(second=0, microsecond=0) + timedelta(minutes=1)
+        step_end = min(next_minute, end)
+        step_s = (step_end - current).total_seconds()
+
         local = current.astimezone(tz)
         blocks = get_tariff_blocks(location, local)
         tariff = find_tariff(blocks, local.time())
 
         if tariff is None:
-            gap_minutes += 1
+            gap_minutes += step_s / 60
         else:
-            cost += kwh_per_min * tariff["price"]
+            cost += kwh_per_s * step_s * tariff["price"]
 
-        current += timedelta(minutes=1)
+        current = step_end
 
     if gap_minutes:
         log.warning(
-            "Location '%s': %d minute(s) had no matching tariff and were priced at 0. "
+            "Location '%s': %.1f minute(s) had no matching tariff and were priced at 0. "
             "Check your tariff config for gaps.",
             location["name"],
             gap_minutes,
