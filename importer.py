@@ -8,7 +8,7 @@ import yaml
 from datetime import datetime, timezone
 
 from geo import find_location
-from pricing import calculate_cost_profile, energy_profile, validate_location
+from pricing import calculate_cost_profile, energy_profile, location_zone, validate_location
 from fx import convert
 
 logging.basicConfig(
@@ -157,11 +157,13 @@ def process_session(session, locations, base_currency, load_samples=None):
 
     local_cost = calculate_cost_profile(profile, location)
 
+    # Use the session's local calendar date for the FX rate (a session
+    # starting 00:30 CET on the 13th is 23:30 UTC on the 12th).
     final_cost = convert(
         local_cost,
         location["currency"],
         base_currency,
-        start,
+        start.astimezone(location_zone(location)),
     )
 
     return final_cost, location["name"]

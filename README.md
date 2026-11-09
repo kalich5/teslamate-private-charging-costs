@@ -220,13 +220,13 @@ docker-compose.yml
 
 ## 🌍 Currency Conversion
 
-Uses the free [Frankfurter API](https://www.frankfurter.app/) with EUR as the pivot:
+Uses the free [Frankfurter API](https://frankfurter.dev/) (ECB reference rates) with EUR as the pivot:
 
 ```
 from_currency → EUR → to_currency (BASE_CURRENCY)
 ```
 
-Rates are fetched once per currency per date and cached in-process.
+The rate is taken for the session's local start date (on weekends and holidays the last published rate). Rates are fetched once per currency per date and cached in-process.
 
 ---
 

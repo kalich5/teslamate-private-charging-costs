@@ -370,3 +370,60 @@ class TestDbSettings:
         assert settings["port"] == 6543
         assert settings["host"] == "db"  # empty env var is ignored
 
+
+# ─── fx.py ────────────────────────────────────────────────────────────────────
+
+class _FakeResponse:
+    def __init__(self, rates):
+        self._rates = rates
+
+    def raise_for_status(self):
+        pass
+
+    def json(self):
+        return {"base": "EUR", "rates": self._rates}
+
+
+@pytest.fixture
+def fake_fx(monkeypatch):
+    """Patch requests.get in fx with fixed EUR rates and record the calls."""
+    import fx
+    calls = []
+    rates = {"CZK": 25.0, "CHF": 0.95}
+
+    def fake_get(url, params, timeout):
+        calls.append((url, params))
+        return _FakeResponse({params["symbols"]: rates[params["symbols"]]})
+
+    monkeypatch.setattr(fx.requests, "get", fake_get)
+    monkeypatch.setattr(fx, "_cache", {})
+    return calls
+
+
+class TestFx:
+    def test_convert_via_eur(self, fake_fx):
+        from fx import convert
+        # 25 CZK = 1 EUR = 0.95 CHF
+        assert convert(25.0, "CZK", "CHF", datetime(2026, 1, 13)) == pytest.approx(0.95)
+        url, params = fake_fx[0]
+        assert url == "https://api.frankfurter.dev/v1/2026-01-13"
+        assert params == {"base": "EUR", "symbols": "CZK"}
+
+    def test_same_currency_no_request(self, fake_fx):
+        from fx import convert
+        assert convert(10.0, "czk", "CZK", datetime(2026, 1, 13)) == 10.0
+        assert fake_fx == []
+
+    def test_process_session_uses_local_date(self, fake_fx):
+        """Session at 00:30 CET on Jan 13 = 23:30 UTC on Jan 12 → rate of Jan 13."""
+        from importer import process_session
+        loc = {**LOCATION, "timezone": "Europe/Prague"}
+        session = {
+            "id": 1,
+            "start_date": datetime(2026, 1, 12, 23, 30),  # naive UTC
+            "end_date": datetime(2026, 1, 13, 0, 30),
+            "latitude": 49.1951, "longitude": 16.6068, "kwh": 1.0,
+        }
+        process_session(session, [loc], "CHF")
+        assert {url for url, _ in fake_fx} == {"https://api.frankfurter.dev/v1/2026-01-13"}
+
