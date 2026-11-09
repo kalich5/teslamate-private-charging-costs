@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   private-costs:
     build: .
@@ -7,12 +5,23 @@ services:
     restart: "no"   # run-and-exit; use cron for scheduling
     volumes:
       - ./config.yaml:/app/config.yaml:ro
+    # Database settings override config.yaml.  Put them in a .env file next to
+    # this one (e.g. DATABASE_PASS=...) — same names as in TeslaMate.
+    environment:
+      - DATABASE_HOST
+      - DATABASE_PORT
+      - DATABASE_NAME
+      - DATABASE_USER
+      - DATABASE_PASS
     networks:
       - teslamate
 
-# Attach to the same network as your TeslaMate stack so the container
-# can reach the `database` service by hostname.
-# If your TeslaMate network has a different name, update this accordingly.
+# Attach to the same network as your TeslaMate stack so the container can
+# reach the `database` service by hostname.  Docker Compose names the default
+# network "<project>_default"; for a TeslaMate stack in a folder called
+# "teslamate" that is "teslamate_default".  Override with TESLAMATE_NETWORK
+# in .env if yours differs (see `docker network ls`).
 networks:
   teslamate:
+    name: ${TESLAMATE_NETWORK:-teslamate_default}
     external: true

@@ -1,6 +1,5 @@
 # ⚡ TeslaMate Private Charging Costs
 
-[![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue?logo=docker)](https://github.com/YOUR_USERNAME/teslamate-supercharger-costs/pkgs/container/teslamate-supercharger-costs)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue?logo=python)](https://www.python.org)
 
@@ -11,7 +10,7 @@ Automatically calculate charging costs for **private AC locations** (home, work,
 ## 🚀 Overview
 
 TeslaMate does not natively support dynamic electricity tariffs (VT/NT, weekend rates, etc.).  
-This project fills that gap by reading charging sessions from the TeslaMate PostgreSQL database, matching them to configured locations, splitting each session into 1-minute buckets, applying the correct tariff per minute, and writing the result back as `charging_processes.cost`.
+This project fills that gap by reading charging sessions from the TeslaMate PostgreSQL database, matching them to configured locations, distributing the energy over time according to TeslaMate's per-sample `charges` data, applying the correct local-time tariff per minute, and writing the result back as `charging_processes.cost`.
 
 ---
 
@@ -51,10 +50,11 @@ TeslaMate DB
   GPS match → find location in config
         │
         ▼
-  Split session into 1-minute buckets
+  Distribute energy over time using `charges` samples
+  (scheduled charging / pauses get no energy)
         │
         ▼
-  Apply tariff price per minute
+  Apply local-time tariff price per minute
         │
         ▼
   Convert currency (e.g. CZK → CHF)
@@ -71,13 +71,14 @@ Copy `config.yaml` and edit it:
 
 ```yaml
 BASE_CURRENCY: CHF
+TIMEZONE: Europe/Prague     # tariff times are local; DST handled automatically
 
 DATABASE:
   host: database       # hostname of the TeslaMate PostgreSQL container
   port: 5432
   dbname: teslamate
   user: teslamate
-  password: teslamate
+  # password: set DATABASE_PASS in .env instead (see below)
 
 LOCATIONS:
   - name: home
@@ -96,11 +97,29 @@ LOCATIONS:
         - { from: "00:00", to: "24:00", price: 4.0 }
 ```
 
+### Database credentials
+
+Environment variables override the `DATABASE` section. They use the same names as TeslaMate, so you can reuse its values:
+
+| Variable | Default |
+|---|---|
+| `DATABASE_HOST` | `database` |
+| `DATABASE_PORT` | `5432` |
+| `DATABASE_NAME` | `teslamate` |
+| `DATABASE_USER` | `teslamate` |
+| `DATABASE_PASS` | `teslamate` |
+
+With Docker, copy `.env.example` to `.env` and set at least `DATABASE_PASS`. `.env` is git-ignored.
+
 ### Tariff rules
 
 - Prices are in `currency` per kWh.
+- Cost is calculated from `charge_energy_used` (energy drawn from the grid incl. charging losses — what your meter measures), falling back to `charge_energy_added` if missing.
 - Time blocks use `HH:MM` format. Use `"24:00"` for the end of the last block.
-- Blocks must cover the full 24 hours without gaps. A gap logs a warning and prices that time at 0.
+- Blocks must cover the full 24 hours without gaps or overlaps. The config is validated at startup and the importer refuses to run otherwise, so no session is ever written with a partial cost.
+- Blocks are `[from, to)` — `06:00` belongs to the block starting at 06:00.
+- A block crossing midnight (e.g. NT 22:00–06:00) must be split into `22:00–24:00` and `00:00–06:00`.
+- Times are local time in `TIMEZONE` (or the location's `timezone`).
 - `weekday` = Monday–Friday, `weekend` = Saturday–Sunday.
 
 ---
@@ -109,14 +128,21 @@ LOCATIONS:
 
 ### Prerequisites
 
-Your TeslaMate stack must be running and the `teslamate` Docker network must exist.  
-Check with:
+Your TeslaMate stack must be running. The container joins TeslaMate's Docker network, which Compose names `<folder>_default` — `teslamate_default` by default. Check the name with:
 
 ```bash
 docker network ls | grep teslamate
 ```
 
-If the network name is different, update `docker-compose.yml` accordingly.
+If it differs, set `TESLAMATE_NETWORK` in `.env`:
+
+```bash
+cp .env.example .env
+```
+
+```bash
+nano .env   # set DATABASE_PASS and, if needed, TESLAMATE_NETWORK
+```
 
 ### Build
 
@@ -144,23 +170,23 @@ Run daily at 06:00:
 
 ## 📊 Grafana Examples
 
-### Average price per kWh
+### Average price per kWh (from the grid)
 
 ```sql
 SELECT
   date_trunc('month', start_date) AS time,
-  ROUND(AVG(cost / NULLIF(charge_energy_added, 0))::numeric, 4) AS "CHF/kWh"
+  ROUND(SUM(cost) / NULLIF(SUM(GREATEST(charge_energy_used, charge_energy_added)), 0), 4) AS "CHF/kWh"
 FROM charging_processes
 WHERE cost IS NOT NULL
 GROUP BY 1
 ORDER BY 1
 ```
 
-### Cost per 100 km (assuming ~18 kWh/100 km)
+### Cost per 100 km (assuming ~18 kWh/100 km from the battery)
 
 ```sql
 SELECT
-  ROUND(AVG(cost / NULLIF(charge_energy_added, 0) * 18)::numeric, 2) AS "CHF/100km"
+  ROUND(SUM(cost) / NULLIF(SUM(charge_energy_added), 0) * 18, 2) AS "CHF/100km"
 FROM charging_processes
 WHERE cost IS NOT NULL
 ```
@@ -174,10 +200,12 @@ importer.py        Main entry point — DB read/write loop
 pricing.py         Tariff engine — minute-by-minute cost calculation
 geo.py             Geofencing — Haversine distance matching
 fx.py              Currency conversion — Frankfurter API with in-process cache
+tests.py           Unit tests (pytest)
 config.yaml        User configuration
 requirements.txt   Python dependencies
 Dockerfile
 docker-compose.yml
+.env.example       Template for DB password / Docker network name
 ```
 
 ---
@@ -192,13 +220,13 @@ docker-compose.yml
 
 ## 🌍 Currency Conversion
 
-Uses the free [Frankfurter API](https://www.frankfurter.app/) with EUR as the pivot:
+Uses the free [Frankfurter API](https://frankfurter.dev/) (ECB reference rates) with EUR as the pivot:
 
 ```
 from_currency → EUR → to_currency (BASE_CURRENCY)
 ```
 
-Rates are fetched once per currency per date and cached in-process.
+The rate is taken for the session's local start date (on weekends and holidays the last published rate). Rates are fetched once per currency per date and cached in-process.
 
 ---
 

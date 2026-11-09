@@ -7,7 +7,8 @@ log = logging.getLogger(__name__)
 
 _cache: dict[tuple, float] = {}
 
-FRANKFURTER_BASE_URL = "https://api.frankfurter.app"
+# api.frankfurter.app is the legacy domain; the API now lives under /v1 on .dev.
+FRANKFURTER_BASE_URL = "https://api.frankfurter.dev/v1"
 REQUEST_TIMEOUT = 10  # seconds
 
 
@@ -28,7 +29,7 @@ def _get_eur_rate(date: datetime, currency: str) -> float:
         return _cache[cache_key]
 
     url = f"{FRANKFURTER_BASE_URL}/{date_str}"
-    params = {"from": "EUR", "to": currency}
+    params = {"base": "EUR", "symbols": currency}
 
     try:
         resp = requests.get(url, params=params, timeout=REQUEST_TIMEOUT)
@@ -49,7 +50,12 @@ def _get_eur_rate(date: datetime, currency: str) -> float:
 
     rate = float(rates[currency])
     _cache[cache_key] = rate
-    log.debug("FX rate: 1 EUR = %.6f %s (on %s)", rate, currency, date_str)
+    # On weekends/holidays the API returns the last published rate.
+    rate_date = data.get("date", date_str)
+    if rate_date != date_str:
+        log.debug("FX rate: 1 EUR = %.6f %s (for %s, published %s)", rate, currency, date_str, rate_date)
+    else:
+        log.debug("FX rate: 1 EUR = %.6f %s (on %s)", rate, currency, date_str)
     return rate
 
 
@@ -63,7 +69,10 @@ def convert(amount: float, from_cur: str, to_cur: str, date: datetime) -> float:
         amount:   The value to convert.
         from_cur: ISO 4217 source currency code (e.g. "CZK").
         to_cur:   ISO 4217 target currency code (e.g. "CHF").
-        date:     Date for which the historical rate should be fetched.
+        date:     Date for which the historical rate should be fetched.  Its
+                  calendar date is used as-is, so pass a datetime in the
+                  location's local timezone.  For weekends/holidays the API
+                  returns the last published rate.
 
     Returns:
         Converted amount rounded to 4 decimal places.

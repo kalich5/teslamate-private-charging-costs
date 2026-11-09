@@ -7,6 +7,8 @@ log = logging.getLogger(__name__)
 def distance_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     """Return the great-circle distance in metres between two GPS coordinates."""
     R = 6_371_000  # Earth radius in metres
+    # Accept Decimal (psycopg2 numeric) as well as float inputs.
+    lat1, lon1, lat2, lon2 = float(lat1), float(lon1), float(lat2), float(lon2)
     phi1 = math.radians(lat1)
     phi2 = math.radians(lat2)
     dphi = math.radians(lat2 - lat1)
