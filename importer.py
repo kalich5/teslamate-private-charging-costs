@@ -6,10 +6,9 @@ import sys
 import psycopg2
 import yaml
 from datetime import datetime, timezone
-from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from geo import find_location
-from pricing import calculate_cost_profile, energy_profile
+from pricing import calculate_cost_profile, energy_profile, validate_location
 from fx import convert
 
 logging.basicConfig(
@@ -201,12 +200,14 @@ Examples:
         loc.setdefault("timezone", default_tz)
         if not loc["timezone"]:
             log.error("Location '%s' has no timezone. Set TIMEZONE (e.g. Europe/Prague) "
-                      "in config.yaml or 'timezone' on the location.", loc["name"])
+                      "in config.yaml or 'timezone' on the location.", loc.get("name"))
             sys.exit(1)
+        # Fail fast on config errors (gaps, overlaps, midnight-crossing blocks…)
+        # instead of writing wrong costs that would never be recalculated.
         try:
-            ZoneInfo(loc["timezone"])
-        except (ZoneInfoNotFoundError, ValueError):
-            log.error("Location '%s': unknown timezone '%s'.", loc["name"], loc["timezone"])
+            validate_location(loc)
+        except ValueError as e:
+            log.error("Invalid config: %s", e)
             sys.exit(1)
     db_cfg = config.get("DATABASE", {})
     energy_source = config.get("ENERGY_SOURCE", "used")

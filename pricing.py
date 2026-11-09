@@ -60,6 +60,67 @@ def find_tariff(blocks: list, current_time: time) -> dict | None:
     return None
 
 
+class TariffGapError(ValueError):
+    """Raised when part of a session is not covered by any tariff block."""
+
+
+def validate_location(location: dict) -> None:
+    """
+    Check a location config and raise ``ValueError`` with a clear message.
+
+    Each of ``weekday`` / ``weekend`` must be a list of blocks that together
+    cover 00:00–24:00 exactly once (no gaps, no overlaps) with ``from < to``.
+    A block crossing midnight (e.g. 22:00–06:00) must be split into
+    22:00–24:00 and 00:00–06:00.
+    """
+    name = location.get("name", "<unnamed>")
+    for key in ("name", "lat", "lon", "radius_m", "currency", "tariffs"):
+        if key not in location:
+            raise ValueError(f"Location '{name}': missing '{key}'.")
+
+    if not location.get("timezone"):
+        raise ValueError(f"Location '{name}': missing 'timezone'.")
+    try:
+        ZoneInfo(location["timezone"])
+    except Exception as e:  # ZoneInfoNotFoundError, malformed keys
+        raise ValueError(f"Location '{name}': unknown timezone '{location.get('timezone')}'.") from e
+
+    for day_type in ("weekday", "weekend"):
+        blocks = location["tariffs"].get(day_type)
+        if not blocks:
+            raise ValueError(f"Location '{name}': no tariffs defined for '{day_type}'.")
+
+        parsed = []
+        for block in blocks:
+            where = f"Location '{name}', {day_type} block {block}"
+            try:
+                start, end = parse_time(str(block["from"])), parse_time(str(block["to"]))
+                price = float(block["price"])
+            except (KeyError, TypeError, ValueError) as e:
+                raise ValueError(f"{where}: invalid block ({e}). "
+                                 f"Expected {{from: 'HH:MM', to: 'HH:MM', price: number}}.") from e
+            if start >= end:
+                raise ValueError(f"{where}: 'from' must be before 'to'. "
+                                 "Split blocks crossing midnight into two (…–24:00 and 00:00–…).")
+            if price < 0:
+                raise ValueError(f"{where}: negative price.")
+            parsed.append((start, end))
+
+        expected = 0
+        for start, end in sorted(parsed):
+            if start > expected:
+                raise ValueError(f"Location '{name}', {day_type}: no tariff between "
+                                 f"{expected // 60:02d}:{expected % 60:02d} and "
+                                 f"{start // 60:02d}:{start % 60:02d}.")
+            if start < expected:
+                raise ValueError(f"Location '{name}', {day_type}: overlapping blocks around "
+                                 f"{start // 60:02d}:{start % 60:02d}.")
+            expected = end
+        if expected != MINUTES_PER_DAY:
+            raise ValueError(f"Location '{name}', {day_type}: no tariff after "
+                             f"{expected // 60:02d}:{expected % 60:02d} (last block must end at 24:00).")
+
+
 def energy_profile(samples: list, start: datetime, end: datetime, total_kwh: float) -> list:
     """
     Distribute *total_kwh* over time using TeslaMate ``charges`` samples.
@@ -134,6 +195,9 @@ def calculate_cost_profile(segments: list, location: dict) -> float:
 
     Returns:
         Total cost in the location's currency (rounded to 4 decimal places).
+
+    Raises:
+        TariffGapError: if any part of the profile has no matching tariff.
     """
     tz = location_zone(location)
     cost = 0.0
@@ -166,11 +230,11 @@ def calculate_cost_profile(segments: list, location: dict) -> float:
             current = step_end
 
     if gap_minutes:
-        log.warning(
-            "Location '%s': %.1f minute(s) had no matching tariff and were priced at 0. "
-            "Check your tariff config for gaps.",
-            location["name"],
-            gap_minutes,
+        # Never return a partial cost: once written, a session is not
+        # recalculated (cost IS NULL filter), so a wrong value would stick.
+        raise TariffGapError(
+            f"Location '{location['name']}': {gap_minutes:.1f} minute(s) had no matching "
+            "tariff. Check your tariff config for gaps."
         )
 
     return round(cost, 4)

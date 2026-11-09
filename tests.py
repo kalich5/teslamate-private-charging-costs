@@ -13,7 +13,8 @@ from datetime import datetime, timezone
 import pytest
 
 from geo import distance_m, find_location
-from pricing import parse_time, find_tariff, calculate_cost, energy_profile
+from pricing import (parse_time, find_tariff, calculate_cost, energy_profile,
+                     validate_location, TariffGapError)
 
 
 # ─── geo.py ───────────────────────────────────────────────────────────────────
@@ -205,6 +206,51 @@ class TestCalculateCost:
         loc = {k: v for k, v in LOCATION.items() if k != "timezone"}
         with pytest.raises(ValueError):
             calculate_cost(self._utc(2026, 1, 12, 5, 0), self._utc(2026, 1, 12, 6, 0), 1.0, loc)
+    def test_gap_raises_instead_of_pricing_zero(self):
+        gap = [{"from": "00:00", "to": "06:00", "price": 4.0},
+               {"from": "07:00", "to": "24:00", "price": 7.5}]
+        loc = {**LOCATION, "tariffs": {"weekday": gap, "weekend": gap}}
+        with pytest.raises(TariffGapError):
+            calculate_cost(self._utc(2026, 4, 13, 5, 0), self._utc(2026, 4, 13, 8, 0), 1.0, loc)
+
+
+class TestValidateLocation:
+    def _loc(self, weekday):
+        return {**LOCATION, "tariffs": {"weekday": weekday, "weekend": FLAT_TARIFFS}}
+
+    def test_valid_config(self):
+        validate_location(LOCATION)
+
+    def test_shipped_config_is_valid(self):
+        import yaml
+        cfg = yaml.safe_load(open("config.yaml"))
+        for loc in cfg["LOCATIONS"]:
+            validate_location({**loc, "timezone": loc.get("timezone", cfg["TIMEZONE"])})
+
+    @pytest.mark.parametrize("weekday, message", [
+        ([{"from": "00:00", "to": "06:00", "price": 1}, {"from": "07:00", "to": "24:00", "price": 1}],
+         "no tariff between 06:00 and 07:00"),
+        ([{"from": "00:00", "to": "12:00", "price": 1}, {"from": "11:00", "to": "24:00", "price": 1}],
+         "overlapping"),
+        ([{"from": "00:00", "to": "22:00", "price": 1}], "no tariff after 22:00"),
+        ([{"from": "22:00", "to": "06:00", "price": 1}, {"from": "06:00", "to": "22:00", "price": 1}],
+         "crossing midnight"),
+        ([{"from": "00:00", "to": "24:00"}], "invalid block"),
+        ([{"from": "00:00", "to": "24:00", "price": -1}], "negative price"),
+        ([], "no tariffs defined"),
+    ])
+    def test_invalid_tariffs(self, weekday, message):
+        with pytest.raises(ValueError, match=message):
+            validate_location(self._loc(weekday))
+
+    def test_unknown_timezone(self):
+        with pytest.raises(ValueError, match="unknown timezone"):
+            validate_location({**LOCATION, "timezone": "Mars/Olympus"})
+
+    def test_missing_key(self):
+        loc = {k: v for k, v in LOCATION.items() if k != "currency"}
+        with pytest.raises(ValueError, match="missing 'currency'"):
+            validate_location(loc)
 
 
 class TestEnergyProfile:

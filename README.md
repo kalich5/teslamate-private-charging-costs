@@ -103,7 +103,10 @@ LOCATIONS:
 
 - Prices are in `currency` per kWh.
 - Time blocks use `HH:MM` format. Use `"24:00"` for the end of the last block.
-- Blocks must cover the full 24 hours without gaps. A gap logs a warning and prices that time at 0.
+- Blocks must cover the full 24 hours without gaps or overlaps. The config is validated at startup and the importer refuses to run otherwise, so no session is ever written with a partial cost.
+- Blocks are `[from, to)` — `06:00` belongs to the block starting at 06:00.
+- A block crossing midnight (e.g. NT 22:00–06:00) must be split into `22:00–24:00` and `00:00–06:00`.
+- Times are local time in `TIMEZONE` (or the location's `timezone`).
 - `weekday` = Monday–Friday, `weekend` = Saturday–Sunday.
 
 ---
