@@ -6,6 +6,7 @@ import sys
 import psycopg2
 import yaml
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from geo import find_location
 from pricing import calculate_cost
@@ -153,6 +154,21 @@ Examples:
     config = load_config(args.config)
     locations = config["LOCATIONS"]
     base_currency = config["BASE_CURRENCY"]
+
+    # Tariff times are local wall-clock times.  Each location may override the
+    # global TIMEZONE (e.g. a cottage abroad).
+    default_tz = config.get("TIMEZONE")
+    for loc in locations:
+        loc.setdefault("timezone", default_tz)
+        if not loc["timezone"]:
+            log.error("Location '%s' has no timezone. Set TIMEZONE (e.g. Europe/Prague) "
+                      "in config.yaml or 'timezone' on the location.", loc["name"])
+            sys.exit(1)
+        try:
+            ZoneInfo(loc["timezone"])
+        except (ZoneInfoNotFoundError, ValueError):
+            log.error("Location '%s': unknown timezone '%s'.", loc["name"], loc["timezone"])
+            sys.exit(1)
     db_cfg = config.get("DATABASE", {})
 
     log.info("=" * 50)
@@ -163,7 +179,7 @@ Examples:
              db_cfg.get("port", 5432),
              db_cfg.get("dbname", "teslamate"))
     log.info("  Currency:  %s", base_currency)
-    log.info("  Locations: %s", ", ".join(loc["name"] for loc in locations))
+    log.info("  Locations: %s", ", ".join(f'{loc["name"]} ({loc["timezone"]})' for loc in locations))
     if args.dry_run:
         log.info("  Mode:      DRY-RUN (no writes)")
     log.info("=" * 50)

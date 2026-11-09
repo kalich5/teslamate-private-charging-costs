@@ -1,5 +1,7 @@
 import logging
 from datetime import datetime, timedelta, time
+from functools import lru_cache
+from zoneinfo import ZoneInfo
 
 log = logging.getLogger(__name__)
 
@@ -14,8 +16,21 @@ def parse_time(t: str) -> time:
     return datetime.strptime(t.strip(), "%H:%M").time()
 
 
+@lru_cache(maxsize=None)
+def _zone(name: str) -> ZoneInfo:
+    return ZoneInfo(name)
+
+
+def location_zone(location: dict) -> ZoneInfo:
+    """Return the timezone in which the location's tariff times are defined."""
+    name = location.get("timezone")
+    if not name:
+        raise ValueError(f"Location '{location['name']}' has no 'timezone' defined.")
+    return _zone(name)
+
+
 def get_tariff_blocks(location: dict, dt: datetime) -> list:
-    """Return the correct tariff block list for the given datetime."""
+    """Return the correct tariff block list for the given (local) datetime."""
     is_weekday = dt.weekday() < 5
     key = "weekday" if is_weekday else "weekend"
     blocks = location["tariffs"].get(key, [])
@@ -45,10 +60,12 @@ def calculate_cost(start: datetime, end: datetime, kwh: float, location: dict) -
     consumption is priced at the tariff rate active at that minute.
 
     Args:
-        start:    Session start (timezone-aware UTC datetime).
-        end:      Session end   (timezone-aware UTC datetime).
+        start:    Session start (timezone-aware datetime).
+        end:      Session end   (timezone-aware datetime).
         kwh:      Total energy delivered in kWh.
-        location: Location config dict (must contain 'tariffs' and 'name').
+        location: Location config dict (must contain 'tariffs', 'name' and
+                  'timezone').  Tariff times and weekday/weekend are evaluated
+                  in the location's local time, including DST changes.
 
     Returns:
         Total cost in the location's currency (rounded to 4 decimal places).
@@ -58,14 +75,16 @@ def calculate_cost(start: datetime, end: datetime, kwh: float, location: dict) -
     if duration_min <= 0:
         return 0.0
 
+    tz = location_zone(location)
     kwh_per_min = kwh / duration_min
     current = start
     cost = 0.0
     gap_minutes = 0
 
     while current < end:
-        blocks = get_tariff_blocks(location, current)
-        tariff = find_tariff(blocks, current.time())
+        local = current.astimezone(tz)
+        blocks = get_tariff_blocks(location, local)
+        tariff = find_tariff(blocks, local.time())
 
         if tariff is None:
             gap_minutes += 1

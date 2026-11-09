@@ -93,6 +93,7 @@ LOCATION = {
     "lon": 16.6068,
     "radius_m": 150,
     "currency": "CZK",
+    "timezone": "UTC",
     "tariffs": {
         "weekday": WEEKDAY_TARIFFS,
         "weekend": [{"from": "00:00", "to": "24:00", "price": 4.0}],
@@ -157,6 +158,34 @@ class TestCalculateCost:
         cost = calculate_cost(start, end, 2.0, LOCATION)
         # 1 kWh * 4.0 + 1 kWh * 7.5 = 11.5
         assert cost == pytest.approx(11.5, rel=1e-2)
+
+    def test_tariff_uses_local_time_winter(self):
+        """06:30–07:30 CET is VT (7.5) even though it is 05:30–06:30 UTC."""
+        loc = {**LOCATION, "timezone": "Europe/Prague"}
+        start = self._utc(2026, 1, 12, 5, 30)  # Monday
+        end = self._utc(2026, 1, 12, 6, 30)
+        assert calculate_cost(start, end, 1.0, loc) == pytest.approx(7.5, rel=1e-3)
+
+    def test_tariff_uses_local_time_summer(self):
+        """04:30–05:30 UTC in summer is 06:30–07:30 CEST → VT."""
+        loc = {**LOCATION, "timezone": "Europe/Prague"}
+        start = self._utc(2026, 7, 13, 4, 30)  # Monday
+        end = self._utc(2026, 7, 13, 5, 30)
+        assert calculate_cost(start, end, 1.0, loc) == pytest.approx(7.5, rel=1e-3)
+
+    def test_weekend_boundary_uses_local_time(self):
+        """Sunday 23:30 UTC is already Monday 00:30 CET → weekday NT 4.0, not weekend."""
+        loc = {**LOCATION, "timezone": "Europe/Prague",
+               "tariffs": {"weekday": FLAT_TARIFFS,
+                           "weekend": [{"from": "00:00", "to": "24:00", "price": 1.0}]}}
+        start = self._utc(2026, 1, 11, 23, 30)  # Sunday UTC
+        end = self._utc(2026, 1, 12, 0, 30)
+        assert calculate_cost(start, end, 1.0, loc) == pytest.approx(5.0, rel=1e-3)
+
+    def test_missing_timezone_raises(self):
+        loc = {k: v for k, v in LOCATION.items() if k != "timezone"}
+        with pytest.raises(ValueError):
+            calculate_cost(self._utc(2026, 1, 12, 5, 0), self._utc(2026, 1, 12, 6, 0), 1.0, loc)
 
 
 # ─── importer.py ──────────────────────────────────────────────────────────────
