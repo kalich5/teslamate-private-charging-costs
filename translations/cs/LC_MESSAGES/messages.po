@@ -1,0 +1,474 @@
+# Czech translations for teslamate-private-charging-costs.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the teslamate-private-charging-costs project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: teslamate-private-charging-costs VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-27 21:41+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: cs\n"
+"Language-Team: cs <https://github.com/kalich5/teslamate-private-charging-costs>\n"
+"Plural-Forms: nplurals=3; plural=(n == 1 ? 0 : n >= 2 && n <= 4 ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.19.0\n"
+
+#, python-format
+msgid "%(days)s from %(date)s"
+msgstr "%(days)s od %(date)s"
+
+#, python-format
+msgid "%(days)s: '%(price)s' is not a valid price."
+msgstr "%(days)s: „%(price)s“ není platná cena."
+
+#, python-format
+msgid "%(field)s: '%(value)s' is not a valid number."
+msgstr "%(field)s: „%(value)s“ není platné číslo."
+
+msgid "0 = only when you click “Calculate and save”."
+msgstr "0 = jen po kliknutí na „Spočítat a uložit“."
+
+msgid "A location needs at least one price list."
+msgstr "Místo musí mít alespoň jeden ceník."
+
+msgid "Add location"
+msgstr "Přidat místo"
+
+msgid "Add time block"
+msgstr "Přidat časový úsek"
+
+msgid "Another run is in progress, try again in a moment."
+msgstr "Právě probíhá jiný výpočet, zkuste to za chvíli znovu."
+
+msgid "Automatic runs are off."
+msgstr "Automatické spouštění je vypnuté."
+
+msgid "Back"
+msgstr "Zpět"
+
+msgid "By default the language of your browser is used, as in TeslaMate."
+msgstr "Ve výchozím stavu se použije jazyk prohlížeče, stejně jako v TeslaMate."
+
+msgid "Calculate and save"
+msgstr "Spočítat a uložit"
+
+msgid ""
+"Calculates the cost of every finished charge at your locations that has no cost yet. Existing "
+"costs are never changed."
+msgstr ""
+"Spočítá cenu každého dokončeného nabíjení na vašich místech, které ji ještě nemá. Existující ceny"
+" se nikdy nemění."
+
+msgid "Cancel"
+msgstr "Zrušit"
+
+#, python-format
+msgid "Cannot connect to the TeslaMate database: %(error)s"
+msgstr "Nelze se připojit k databázi TeslaMate: %(error)s"
+
+#, python-format
+msgid "Cannot read sessions from the TeslaMate database: %(error)s"
+msgstr "Nelze načíst nabíjení z databáze TeslaMate: %(error)s"
+
+msgid "Charges"
+msgstr "Nabíjení"
+
+#, python-format
+msgid "Charges to be updated: %(n)s"
+msgstr "Nabíjení k aktualizaci: %(n)s"
+
+msgid "Charging Costs"
+msgstr "Náklady na nabíjení"
+
+msgid "Config is empty or not a mapping."
+msgstr "Nastavení je prázdné nebo neplatné."
+
+#, python-format
+msgid "Configuration problem: %(problem)s"
+msgstr "Problém v nastavení: %(problem)s"
+
+msgid "Coordinates are out of range."
+msgstr "Souřadnice jsou mimo rozsah."
+
+msgid "Cost"
+msgstr "Cena"
+
+msgid "Costs are converted to this currency using the ECB rate of the charging day."
+msgstr "Ceny se převádějí do této měny kurzem ECB ze dne nabíjení."
+
+msgid "Costs saved"
+msgstr "Ceny uloženy"
+
+msgid "Could not load geo-fences from TeslaMate."
+msgstr "Geofence z TeslaMate se nepodařilo načíst."
+
+msgid "Currency in TeslaMate"
+msgstr "Měna v TeslaMate"
+
+msgid "Currency must be a 3-letter code, e.g. CZK."
+msgstr "Měna musí být třípísmenný kód, např. CZK."
+
+msgid "Currency of your bill"
+msgstr "Měna vašeho vyúčtování"
+
+msgid "Database"
+msgstr "Databáze"
+
+msgid "Delete"
+msgstr "Smazat"
+
+#, python-format
+msgid "Delete %(name)s? Costs already written stay in TeslaMate."
+msgstr "Smazat %(name)s? Již zapsané ceny v TeslaMate zůstanou."
+
+msgid "Each charge is priced with the price list that was valid on its day."
+msgstr "Každé nabíjení se ocení ceníkem, který v daný den platil."
+
+msgid ""
+"Each price list applies from its date until the next one starts; the oldest one also applies to "
+"all earlier charges. Keep old price lists — they are needed to recalculate past charges."
+msgstr ""
+"Každý ceník platí od svého data, dokud nezačne platit další; nejstarší platí i pro všechna "
+"dřívější nabíjení. Staré ceníky nemažte — jsou potřeba pro přepočet minulých nabíjení."
+
+msgid "Edit"
+msgstr "Upravit"
+
+msgid "End"
+msgstr "Konec"
+
+msgid "Enter both dates as YYYY-MM-DD."
+msgstr "Zadejte obě data ve formátu RRRR-MM-DD."
+
+#, python-format
+msgid "Errors: %(n)s"
+msgstr "Chyby: %(n)s"
+
+msgid "From"
+msgstr "Od"
+
+msgid "Geo-Fences"
+msgstr "Geofence"
+
+msgid "Host"
+msgstr "Server"
+
+msgid "Interval must be a number ≥ 0."
+msgstr "Interval musí být číslo ≥ 0."
+
+#, python-format
+msgid "Invalid configuration: %(error)s"
+msgstr "Neplatné nastavení: %(error)s"
+
+msgid "Invalid or expired form token — reload the page and try again."
+msgstr "Neplatný nebo prošlý token formuláře — načtěte stránku znovu a zkuste to ještě jednou."
+
+msgid "Invalid price lists — open the location to fix them."
+msgstr "Neplatné ceníky — otevřete místo a opravte je."
+
+#, python-format
+msgid "Invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Neplatné datum začátku ceníku „%(date)s“ (očekává se RRRR-MM-DD)."
+
+msgid "Language"
+msgstr "Jazyk"
+
+msgid "Last 100 finished charges. kWh = energy taken from the grid."
+msgstr "Posledních 100 dokončených nabíjení. kWh = energie odebraná ze sítě."
+
+#, python-format
+msgid "Last run: %(time)s"
+msgstr "Poslední spuštění: %(time)s"
+
+msgid "Latitude"
+msgstr "Zeměpisná šířka"
+
+msgid "Loading…"
+msgstr "Načítání…"
+
+msgid "Location"
+msgstr "Místo"
+
+#, python-format
+msgid "Location '%(name)s' deleted."
+msgstr "Místo „%(name)s“ bylo smazáno."
+
+#, python-format
+msgid ""
+"Location '%(name)s' has no timezone. Set a default timezone (e.g. Europe/Prague) or one for the "
+"location."
+msgstr ""
+"Místo „%(name)s“ nemá časové pásmo. Nastavte výchozí pásmo (např. Europe/Prague) nebo pásmo pro "
+"toto místo."
+
+#, python-format
+msgid "Location '%(name)s' saved."
+msgstr "Místo „%(name)s“ bylo uloženo."
+
+#, python-format
+msgid ""
+"Location '%(name)s', %(days)s: block %(block)s must start before it ends. Split blocks crossing "
+"midnight into two (…–24:00 and 00:00–…)."
+msgstr ""
+"Místo „%(name)s“, %(days)s: úsek %(block)s musí začínat dřív, než končí. Úsek přes půlnoc "
+"rozdělte na dva (…–24:00 a 00:00–…)."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: invalid block %(block)s. Expected from and to as HH:MM and a price."
+msgstr "Místo „%(name)s“, %(days)s: neplatný úsek %(block)s. Očekává se začátek a konec jako HH:MM a cena."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: negative price in block %(block)s."
+msgstr "Místo „%(name)s“, %(days)s: záporná cena v úseku %(block)s."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff after %(time)s (the last block must end at 24:00)."
+msgstr "Místo „%(name)s“, %(days)s: po %(time)s chybí tarif (poslední úsek musí končit ve 24:00)."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff between %(start)s and %(end)s."
+msgstr "Místo „%(name)s“, %(days)s: mezi %(start)s a %(end)s chybí tarif."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariffs defined."
+msgstr "Místo „%(name)s“, %(days)s: nejsou zadané žádné tarify."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: overlapping blocks around %(time)s."
+msgstr "Místo „%(name)s“, %(days)s: úseky se kolem %(time)s překrývají."
+
+#, python-format
+msgid "Location '%(name)s': invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Místo „%(name)s“: neplatné datum začátku ceníku „%(date)s“ (očekává se RRRR-MM-DD)."
+
+#, python-format
+msgid "Location '%(name)s': missing '%(key)s'."
+msgstr "Místo „%(name)s“: chybí „%(key)s“."
+
+#, python-format
+msgid "Location '%(name)s': missing 'timezone'."
+msgstr "Místo „%(name)s“: chybí časové pásmo."
+
+#, python-format
+msgid "Location '%(name)s': no price lists defined."
+msgstr "Místo „%(name)s“: nemá žádný ceník."
+
+#, python-format
+msgid "Location '%(name)s': two price lists start on %(date)s."
+msgstr "Místo „%(name)s“: dva ceníky začínají %(date)s."
+
+#, python-format
+msgid "Location '%(name)s': unknown timezone '%(tz)s'."
+msgstr "Místo „%(name)s“: neznámé časové pásmo „%(tz)s“."
+
+msgid "Location names must be unique."
+msgstr "Názvy míst se nesmí opakovat."
+
+msgid "Locations"
+msgstr "Místa"
+
+msgid "Login required"
+msgstr "Je vyžadováno přihlášení"
+
+msgid "Longitude"
+msgstr "Zeměpisná délka"
+
+#, python-format
+msgid "Missing '%(key)s'."
+msgstr "Chybí „%(key)s“."
+
+msgid "Monday – Friday"
+msgstr "Pondělí – pátek"
+
+msgid "Name"
+msgstr "Název"
+
+msgid "Name is required."
+msgstr "Název je povinný."
+
+msgid "New location"
+msgstr "Nové místo"
+
+msgid "New price list from date"
+msgstr "Nový ceník od data"
+
+#, python-format
+msgid "Next run: %(time)s"
+msgstr "Další spuštění: %(time)s"
+
+msgid "No geo-fences in TeslaMate"
+msgstr "V TeslaMate nejsou žádné geofence"
+
+msgid "No locations yet. Add your home (or any private charger) and its electricity tariff."
+msgstr ""
+"Zatím tu nejsou žádná místa. Přidejte svůj domov (nebo jinou soukromou nabíječku) a jeho tarif "
+"elektřiny."
+
+#, python-format
+msgid "No password set — anyone who can reach this page can change your tariffs. Set %(var)s."
+msgstr ""
+"Není nastavené heslo — kdokoli, kdo se k této stránce dostane, může měnit vaše tarify. Nastavte "
+"%(var)s."
+
+msgid "No price"
+msgstr "Bez ceny"
+
+msgid "Overlap"
+msgstr "Překryv"
+
+#, python-format
+msgid "Overwrite all costs at %(name)s in this period?"
+msgstr "Přepsat všechny ceny na místě %(name)s v tomto období?"
+
+msgid "Per kWh"
+msgstr "Za kWh"
+
+msgid "Pick a TeslaMate geo-fence to fill in name, coordinates and radius."
+msgstr "Vyberte geofence z TeslaMate a vyplní se název, souřadnice i poloměr."
+
+msgid "Preview"
+msgstr "Náhled"
+
+msgid "Previous cost"
+msgstr "Původní cena"
+
+#, python-format
+msgid "Price list from %(date)s"
+msgstr "Ceník od %(date)s"
+
+msgid "Price lists"
+msgstr "Ceníky"
+
+#, python-format
+msgid "Price lists: %(n)s"
+msgstr "Ceníků: %(n)s"
+
+msgid "Private charging"
+msgstr "Soukromé nabíjení"
+
+msgid "Radius"
+msgstr "Poloměr"
+
+msgid "Radius must be positive."
+msgstr "Poloměr musí být kladný."
+
+msgid "Recalculate"
+msgstr "Přepočítat"
+
+msgid "Recalculate and overwrite"
+msgstr "Přepočítat a přepsat"
+
+msgid "Recalculate costs"
+msgstr "Přepočet cen"
+
+msgid "Recalculate costs…"
+msgstr "Přepočítat ceny…"
+
+msgid "Recalculation overwrites ALL costs of charges at this location in the selected period"
+msgstr "Přepočet přepíše VŠECHNY ceny nabíjení na tomto místě ve zvoleném období"
+
+msgid "Remove"
+msgstr "Odebrat"
+
+msgid "Remove price list"
+msgstr "Odebrat ceník"
+
+msgid "Run automatically every (hours)"
+msgstr "Spouštět automaticky každých (hodin)"
+
+#, python-format
+msgid "Runs automatically every %(hours)s h."
+msgstr "Spouští se automaticky každých %(hours)s h."
+
+msgid "Same as Monday – Friday"
+msgstr "Stejně jako pondělí – pátek"
+
+msgid "Saturday – Sunday"
+msgstr "Sobota – neděle"
+
+msgid "Save"
+msgstr "Uložit"
+
+msgid "Save these costs"
+msgstr "Uložit tyto ceny"
+
+#, python-format
+msgid "Set with environment variables (%(vars)s), the same as in TeslaMate."
+msgstr "Nastavuje se proměnnými prostředí (%(vars)s), stejně jako v TeslaMate."
+
+msgid "Settings"
+msgstr "Nastavení"
+
+msgid "Settings saved."
+msgstr "Nastavení uloženo."
+
+msgid "Start"
+msgstr "Začátek"
+
+msgid "Tariff times are local times in this time zone. Summer time is handled automatically."
+msgstr "Časy tarifů jsou místní časy v tomto pásmu. Letní čas se řeší automaticky."
+
+msgid "TeslaMate database"
+msgstr "Databáze TeslaMate"
+
+msgid "The start date must not be after the end date."
+msgstr "Počáteční datum nesmí být po koncovém."
+
+msgid "Time zone"
+msgstr "Časové pásmo"
+
+msgid ""
+"Times are 24-hour (HH:MM); the last block ends at 24:00. A block over midnight (e.g. 22:00–06:00)"
+" is entered as 22:00–24:00 and 00:00–06:00."
+msgstr ""
+"Časy jsou ve 24hodinovém formátu (HH:MM); poslední úsek končí ve 24:00. Úsek přes půlnoc (např. "
+"22:00–06:00) zadejte jako 22:00–24:00 a 00:00–06:00."
+
+msgid "To"
+msgstr "Do"
+
+msgid "Unavailable"
+msgstr "Nedostupné"
+
+#, python-format
+msgid "Unexpected error: %(error)s"
+msgstr "Neočekávaná chyba: %(error)s"
+
+#, python-format
+msgid "Unknown location '%(name)s'."
+msgstr "Neznámé místo „%(name)s“."
+
+#, python-format
+msgid "Unknown timezone '%(tz)s'."
+msgstr "Neznámé časové pásmo „%(tz)s“."
+
+#, python-format
+msgid "Updated: %(n)s"
+msgstr "Aktualizováno: %(n)s"
+
+msgid "User"
+msgstr "Uživatel"
+
+msgid "Valid from"
+msgstr "Platí od"
+
+msgid "Web App"
+msgstr "Webová aplikace"
+
+msgid "Write costs to TeslaMate now?"
+msgstr "Zapsat ceny do TeslaMate?"
+
+msgid "including costs entered in TeslaMate and costs calculated earlier. Check the preview first."
+msgstr "včetně cen zadaných v TeslaMate a dříve spočítaných cen. Nejdřív zkontrolujte náhled."
+
+msgid "pending"
+msgstr "čeká"
+
+msgid "— choose —"
+msgstr "— vyberte —"
+

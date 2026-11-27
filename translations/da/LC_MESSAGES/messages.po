@@ -1,0 +1,475 @@
+# Danish translations for teslamate-private-charging-costs.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the teslamate-private-charging-costs project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: teslamate-private-charging-costs VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-27 21:41+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: da\n"
+"Language-Team: da <https://github.com/kalich5/teslamate-private-charging-costs>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.19.0\n"
+
+#, python-format
+msgid "%(days)s from %(date)s"
+msgstr "%(days)s fra %(date)s"
+
+#, python-format
+msgid "%(days)s: '%(price)s' is not a valid price."
+msgstr "%(days)s: '%(price)s' er ikke en gyldig pris."
+
+#, python-format
+msgid "%(field)s: '%(value)s' is not a valid number."
+msgstr "%(field)s: '%(value)s' er ikke et gyldigt tal."
+
+msgid "0 = only when you click “Calculate and save”."
+msgstr "0 = kun når du klikker på »Beregn og gem«."
+
+msgid "A location needs at least one price list."
+msgstr "En placering skal have mindst én prisliste."
+
+msgid "Add location"
+msgstr "Tilføj placering"
+
+msgid "Add time block"
+msgstr "Tilføj tidsblok"
+
+msgid "Another run is in progress, try again in a moment."
+msgstr "En anden kørsel er i gang. Prøv igen om lidt."
+
+msgid "Automatic runs are off."
+msgstr "Automatiske kørsler er slået fra."
+
+msgid "Back"
+msgstr "Tilbage"
+
+msgid "By default the language of your browser is used, as in TeslaMate."
+msgstr "Som standard bruges din browsers sprog, ligesom i TeslaMate."
+
+msgid "Calculate and save"
+msgstr "Beregn og gem"
+
+msgid ""
+"Calculates the cost of every finished charge at your locations that has no cost yet. Existing "
+"costs are never changed."
+msgstr ""
+"Beregner prisen for hver afsluttet opladning på dine placeringer, der endnu ikke har en pris. "
+"Eksisterende priser ændres aldrig."
+
+msgid "Cancel"
+msgstr "Annuller"
+
+#, python-format
+msgid "Cannot connect to the TeslaMate database: %(error)s"
+msgstr "Kan ikke oprette forbindelse til TeslaMate-databasen: %(error)s"
+
+#, python-format
+msgid "Cannot read sessions from the TeslaMate database: %(error)s"
+msgstr "Kan ikke læse opladninger fra TeslaMate-databasen: %(error)s"
+
+msgid "Charges"
+msgstr "Opladninger"
+
+#, python-format
+msgid "Charges to be updated: %(n)s"
+msgstr "Opladninger, der opdateres: %(n)s"
+
+msgid "Charging Costs"
+msgstr "Udgifter til opladning"
+
+msgid "Config is empty or not a mapping."
+msgstr "Konfigurationen er tom eller ugyldig."
+
+#, python-format
+msgid "Configuration problem: %(problem)s"
+msgstr "Konfigurationsproblem: %(problem)s"
+
+msgid "Coordinates are out of range."
+msgstr "Koordinaterne er uden for intervallet."
+
+msgid "Cost"
+msgstr "Pris"
+
+msgid "Costs are converted to this currency using the ECB rate of the charging day."
+msgstr "Priser omregnes til denne valuta med ECB-kursen på opladningsdagen."
+
+msgid "Costs saved"
+msgstr "Priser gemt"
+
+msgid "Could not load geo-fences from TeslaMate."
+msgstr "Kunne ikke indlæse geografiske afgrænsninger fra TeslaMate."
+
+msgid "Currency in TeslaMate"
+msgstr "Valuta i TeslaMate"
+
+msgid "Currency must be a 3-letter code, e.g. CZK."
+msgstr "Valutaen skal være en kode på 3 bogstaver, f.eks. DKK."
+
+msgid "Currency of your bill"
+msgstr "Valuta på din regning"
+
+msgid "Database"
+msgstr "Database"
+
+msgid "Delete"
+msgstr "Slet"
+
+#, python-format
+msgid "Delete %(name)s? Costs already written stay in TeslaMate."
+msgstr "Slet %(name)s? Priser, der allerede er skrevet, forbliver i TeslaMate."
+
+msgid "Each charge is priced with the price list that was valid on its day."
+msgstr "Hver opladning prissættes med den prisliste, der gjaldt den dag."
+
+msgid ""
+"Each price list applies from its date until the next one starts; the oldest one also applies to "
+"all earlier charges. Keep old price lists — they are needed to recalculate past charges."
+msgstr ""
+"Hver prisliste gælder fra sin dato, indtil den næste starter; den ældste gælder også for alle "
+"tidligere opladninger. Behold gamle prislister — de skal bruges til at genberegne tidligere "
+"opladninger."
+
+msgid "Edit"
+msgstr "Rediger"
+
+msgid "End"
+msgstr "Slut"
+
+msgid "Enter both dates as YYYY-MM-DD."
+msgstr "Angiv begge datoer som ÅÅÅÅ-MM-DD."
+
+#, python-format
+msgid "Errors: %(n)s"
+msgstr "Fejl: %(n)s"
+
+msgid "From"
+msgstr "Fra"
+
+msgid "Geo-Fences"
+msgstr "Geografiske afgrænsninger"
+
+msgid "Host"
+msgstr "Vært"
+
+msgid "Interval must be a number ≥ 0."
+msgstr "Intervallet skal være et tal ≥ 0."
+
+#, python-format
+msgid "Invalid configuration: %(error)s"
+msgstr "Ugyldig konfiguration: %(error)s"
+
+msgid "Invalid or expired form token — reload the page and try again."
+msgstr "Ugyldig eller udløbet formular-token — genindlæs siden, og prøv igen."
+
+msgid "Invalid price lists — open the location to fix them."
+msgstr "Ugyldige prislister — åbn placeringen for at rette dem."
+
+#, python-format
+msgid "Invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Ugyldig startdato '%(date)s' for en prisliste (forventet ÅÅÅÅ-MM-DD)."
+
+msgid "Language"
+msgstr "Sprog"
+
+msgid "Last 100 finished charges. kWh = energy taken from the grid."
+msgstr "De seneste 100 afsluttede opladninger. kWh = energi trukket fra elnettet."
+
+#, python-format
+msgid "Last run: %(time)s"
+msgstr "Seneste kørsel: %(time)s"
+
+msgid "Latitude"
+msgstr "Breddegrad"
+
+msgid "Loading…"
+msgstr "Indlæser…"
+
+msgid "Location"
+msgstr "Placering"
+
+#, python-format
+msgid "Location '%(name)s' deleted."
+msgstr "Placeringen '%(name)s' er slettet."
+
+#, python-format
+msgid ""
+"Location '%(name)s' has no timezone. Set a default timezone (e.g. Europe/Prague) or one for the "
+"location."
+msgstr ""
+"Placeringen '%(name)s' har ingen tidszone. Angiv en standardtidszone (f.eks. Europe/Copenhagen) "
+"eller en for placeringen."
+
+#, python-format
+msgid "Location '%(name)s' saved."
+msgstr "Placeringen '%(name)s' er gemt."
+
+#, python-format
+msgid ""
+"Location '%(name)s', %(days)s: block %(block)s must start before it ends. Split blocks crossing "
+"midnight into two (…–24:00 and 00:00–…)."
+msgstr ""
+"Placering '%(name)s', %(days)s: blokken %(block)s skal starte, før den slutter. Del blokke over "
+"midnat i to (…–24:00 og 00:00–…)."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: invalid block %(block)s. Expected from and to as HH:MM and a price."
+msgstr ""
+"Placering '%(name)s', %(days)s: ugyldig blok %(block)s. Forventede start og slut som TT:MM og en "
+"pris."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: negative price in block %(block)s."
+msgstr "Placering '%(name)s', %(days)s: negativ pris i blokken %(block)s."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff after %(time)s (the last block must end at 24:00)."
+msgstr ""
+"Placering '%(name)s', %(days)s: ingen tarif efter %(time)s (den sidste blok skal slutte kl. "
+"24:00)."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff between %(start)s and %(end)s."
+msgstr "Placering '%(name)s', %(days)s: ingen tarif mellem %(start)s og %(end)s."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariffs defined."
+msgstr "Placering '%(name)s', %(days)s: ingen tariffer angivet."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: overlapping blocks around %(time)s."
+msgstr "Placering '%(name)s', %(days)s: overlappende blokke omkring %(time)s."
+
+#, python-format
+msgid "Location '%(name)s': invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Placering '%(name)s': ugyldig startdato '%(date)s' for en prisliste (forventet ÅÅÅÅ-MM-DD)."
+
+#, python-format
+msgid "Location '%(name)s': missing '%(key)s'."
+msgstr "Placering '%(name)s': mangler '%(key)s'."
+
+#, python-format
+msgid "Location '%(name)s': missing 'timezone'."
+msgstr "Placering '%(name)s': mangler tidszone."
+
+#, python-format
+msgid "Location '%(name)s': no price lists defined."
+msgstr "Placering '%(name)s': ingen prislister angivet."
+
+#, python-format
+msgid "Location '%(name)s': two price lists start on %(date)s."
+msgstr "Placering '%(name)s': to prislister starter %(date)s."
+
+#, python-format
+msgid "Location '%(name)s': unknown timezone '%(tz)s'."
+msgstr "Placering '%(name)s': ukendt tidszone '%(tz)s'."
+
+msgid "Location names must be unique."
+msgstr "Placeringernes navne skal være unikke."
+
+msgid "Locations"
+msgstr "Placeringer"
+
+msgid "Login required"
+msgstr "Login påkrævet"
+
+msgid "Longitude"
+msgstr "Længdegrad"
+
+#, python-format
+msgid "Missing '%(key)s'."
+msgstr "Mangler '%(key)s'."
+
+msgid "Monday – Friday"
+msgstr "Mandag – fredag"
+
+msgid "Name"
+msgstr "Navn"
+
+msgid "Name is required."
+msgstr "Navn er påkrævet."
+
+msgid "New location"
+msgstr "Ny placering"
+
+msgid "New price list from date"
+msgstr "Ny prisliste fra dato"
+
+#, python-format
+msgid "Next run: %(time)s"
+msgstr "Næste kørsel: %(time)s"
+
+msgid "No geo-fences in TeslaMate"
+msgstr "Ingen geografiske afgrænsninger i TeslaMate"
+
+msgid "No locations yet. Add your home (or any private charger) and its electricity tariff."
+msgstr "Ingen placeringer endnu. Tilføj dit hjem (eller en anden privat lader) og dets eltarif."
+
+#, python-format
+msgid "No password set — anyone who can reach this page can change your tariffs. Set %(var)s."
+msgstr "Ingen adgangskode angivet — alle, der kan nå denne side, kan ændre dine tariffer. Angiv %(var)s."
+
+msgid "No price"
+msgstr "Ingen pris"
+
+msgid "Overlap"
+msgstr "Overlap"
+
+#, python-format
+msgid "Overwrite all costs at %(name)s in this period?"
+msgstr "Overskriv alle priser på %(name)s i denne periode?"
+
+msgid "Per kWh"
+msgstr "Per kWh"
+
+msgid "Pick a TeslaMate geo-fence to fill in name, coordinates and radius."
+msgstr "Vælg en geografisk afgrænsning fra TeslaMate for at udfylde navn, koordinater og radius."
+
+msgid "Preview"
+msgstr "Forhåndsvisning"
+
+msgid "Previous cost"
+msgstr "Tidligere pris"
+
+#, python-format
+msgid "Price list from %(date)s"
+msgstr "Prisliste fra %(date)s"
+
+msgid "Price lists"
+msgstr "Prislister"
+
+#, python-format
+msgid "Price lists: %(n)s"
+msgstr "Prislister: %(n)s"
+
+msgid "Private charging"
+msgstr "Privat opladning"
+
+msgid "Radius"
+msgstr "Radius"
+
+msgid "Radius must be positive."
+msgstr "Radius skal være positiv."
+
+msgid "Recalculate"
+msgstr "Genberegn"
+
+msgid "Recalculate and overwrite"
+msgstr "Genberegn og overskriv"
+
+msgid "Recalculate costs"
+msgstr "Genberegn priser"
+
+msgid "Recalculate costs…"
+msgstr "Genberegn priser…"
+
+msgid "Recalculation overwrites ALL costs of charges at this location in the selected period"
+msgstr "Genberegning overskriver ALLE priser for opladninger på denne placering i den valgte periode"
+
+msgid "Remove"
+msgstr "Fjern"
+
+msgid "Remove price list"
+msgstr "Fjern prisliste"
+
+msgid "Run automatically every (hours)"
+msgstr "Kør automatisk hver (timer)"
+
+#, python-format
+msgid "Runs automatically every %(hours)s h."
+msgstr "Kører automatisk hver %(hours)s. time."
+
+msgid "Same as Monday – Friday"
+msgstr "Samme som mandag – fredag"
+
+msgid "Saturday – Sunday"
+msgstr "Lørdag – søndag"
+
+msgid "Save"
+msgstr "Gem"
+
+msgid "Save these costs"
+msgstr "Gem disse priser"
+
+#, python-format
+msgid "Set with environment variables (%(vars)s), the same as in TeslaMate."
+msgstr "Angives med miljøvariabler (%(vars)s), ligesom i TeslaMate."
+
+msgid "Settings"
+msgstr "Indstillinger"
+
+msgid "Settings saved."
+msgstr "Indstillinger gemt."
+
+msgid "Start"
+msgstr "Start"
+
+msgid "Tariff times are local times in this time zone. Summer time is handled automatically."
+msgstr "Tariftider er lokal tid i denne tidszone. Sommertid håndteres automatisk."
+
+msgid "TeslaMate database"
+msgstr "TeslaMate-database"
+
+msgid "The start date must not be after the end date."
+msgstr "Startdatoen må ikke ligge efter slutdatoen."
+
+msgid "Time zone"
+msgstr "Tidszone"
+
+msgid ""
+"Times are 24-hour (HH:MM); the last block ends at 24:00. A block over midnight (e.g. 22:00–06:00)"
+" is entered as 22:00–24:00 and 00:00–06:00."
+msgstr ""
+"Tider er i 24-timers format (TT:MM); den sidste blok slutter kl. 24:00. En blok over midnat "
+"(f.eks. 22:00–06:00) indtastes som 22:00–24:00 og 00:00–06:00."
+
+msgid "To"
+msgstr "Til"
+
+msgid "Unavailable"
+msgstr "Ikke tilgængelig"
+
+#, python-format
+msgid "Unexpected error: %(error)s"
+msgstr "Uventet fejl: %(error)s"
+
+#, python-format
+msgid "Unknown location '%(name)s'."
+msgstr "Ukendt placering '%(name)s'."
+
+#, python-format
+msgid "Unknown timezone '%(tz)s'."
+msgstr "Ukendt tidszone '%(tz)s'."
+
+#, python-format
+msgid "Updated: %(n)s"
+msgstr "Opdateret: %(n)s"
+
+msgid "User"
+msgstr "Bruger"
+
+msgid "Valid from"
+msgstr "Gælder fra"
+
+msgid "Web App"
+msgstr "Webapp"
+
+msgid "Write costs to TeslaMate now?"
+msgstr "Skriv priserne til TeslaMate nu?"
+
+msgid "including costs entered in TeslaMate and costs calculated earlier. Check the preview first."
+msgstr "herunder priser indtastet i TeslaMate og tidligere beregnede priser. Tjek forhåndsvisningen først."
+
+msgid "pending"
+msgstr "afventer"
+
+msgid "— choose —"
+msgstr "— vælg —"
+

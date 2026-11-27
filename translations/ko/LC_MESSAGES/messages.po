@@ -1,0 +1,464 @@
+# Korean translations for teslamate-private-charging-costs.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the teslamate-private-charging-costs project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: teslamate-private-charging-costs VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-27 21:41+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <https://github.com/kalich5/teslamate-private-charging-costs>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.19.0\n"
+
+#, python-format
+msgid "%(days)s from %(date)s"
+msgstr "%(days)s (%(date)s부터)"
+
+#, python-format
+msgid "%(days)s: '%(price)s' is not a valid price."
+msgstr "%(days)s: '%(price)s'은(는) 올바른 요금이 아닙니다."
+
+#, python-format
+msgid "%(field)s: '%(value)s' is not a valid number."
+msgstr "%(field)s: '%(value)s'은(는) 올바른 숫자가 아닙니다."
+
+msgid "0 = only when you click “Calculate and save”."
+msgstr "0 = \"계산 후 저장\"을 클릭할 때만."
+
+msgid "A location needs at least one price list."
+msgstr "위치에는 요금표가 하나 이상 있어야 합니다."
+
+msgid "Add location"
+msgstr "위치 추가"
+
+msgid "Add time block"
+msgstr "시간대 추가"
+
+msgid "Another run is in progress, try again in a moment."
+msgstr "다른 실행이 진행 중입니다. 잠시 후 다시 시도하세요."
+
+msgid "Automatic runs are off."
+msgstr "자동 실행이 꺼져 있습니다."
+
+msgid "Back"
+msgstr "뒤로"
+
+msgid "By default the language of your browser is used, as in TeslaMate."
+msgstr "TeslaMate와 마찬가지로 기본적으로 브라우저 언어가 사용됩니다."
+
+msgid "Calculate and save"
+msgstr "계산 후 저장"
+
+msgid ""
+"Calculates the cost of every finished charge at your locations that has no cost yet. Existing "
+"costs are never changed."
+msgstr "내 위치에서 완료된 충전 중 아직 비용이 없는 충전의 비용을 계산합니다. 기존 비용은 변경되지 않습니다."
+
+msgid "Cancel"
+msgstr "취소"
+
+#, python-format
+msgid "Cannot connect to the TeslaMate database: %(error)s"
+msgstr "TeslaMate 데이터베이스에 연결할 수 없습니다: %(error)s"
+
+#, python-format
+msgid "Cannot read sessions from the TeslaMate database: %(error)s"
+msgstr "TeslaMate 데이터베이스에서 충전 기록을 읽을 수 없습니다: %(error)s"
+
+msgid "Charges"
+msgstr "충전 기록"
+
+#, python-format
+msgid "Charges to be updated: %(n)s"
+msgstr "업데이트할 충전: %(n)s"
+
+msgid "Charging Costs"
+msgstr "충전요금"
+
+msgid "Config is empty or not a mapping."
+msgstr "설정이 비어 있거나 올바르지 않습니다."
+
+#, python-format
+msgid "Configuration problem: %(problem)s"
+msgstr "설정 문제: %(problem)s"
+
+msgid "Coordinates are out of range."
+msgstr "좌표가 범위를 벗어났습니다."
+
+msgid "Cost"
+msgstr "비용"
+
+msgid "Costs are converted to this currency using the ECB rate of the charging day."
+msgstr "비용은 충전 당일의 ECB 환율로 이 통화로 환산됩니다."
+
+msgid "Costs saved"
+msgstr "비용이 저장되었습니다"
+
+msgid "Could not load geo-fences from TeslaMate."
+msgstr "TeslaMate에서 지오펜스를 불러올 수 없습니다."
+
+msgid "Currency in TeslaMate"
+msgstr "TeslaMate 통화"
+
+msgid "Currency must be a 3-letter code, e.g. CZK."
+msgstr "통화는 3자리 코드여야 합니다(예: KRW)."
+
+msgid "Currency of your bill"
+msgstr "청구서 통화"
+
+msgid "Database"
+msgstr "데이터베이스"
+
+msgid "Delete"
+msgstr "삭제"
+
+#, python-format
+msgid "Delete %(name)s? Costs already written stay in TeslaMate."
+msgstr "%(name)s 을(를) 삭제할까요? 이미 기록된 비용은 TeslaMate에 남습니다."
+
+msgid "Each charge is priced with the price list that was valid on its day."
+msgstr "각 충전은 해당 날짜에 유효했던 요금표로 계산됩니다."
+
+msgid ""
+"Each price list applies from its date until the next one starts; the oldest one also applies to "
+"all earlier charges. Keep old price lists — they are needed to recalculate past charges."
+msgstr ""
+"각 요금표는 해당 날짜부터 다음 요금표가 시작될 때까지 적용되며, 가장 오래된 요금표는 그 이전의 모든 충전에도 적용됩니다. 과거 충전을 다시 계산하려면 이전 요금표를 남겨 "
+"두세요."
+
+msgid "Edit"
+msgstr "편집"
+
+msgid "End"
+msgstr "종료"
+
+msgid "Enter both dates as YYYY-MM-DD."
+msgstr "두 날짜를 모두 YYYY-MM-DD 형식으로 입력하세요."
+
+#, python-format
+msgid "Errors: %(n)s"
+msgstr "오류: %(n)s"
+
+msgid "From"
+msgstr "시작"
+
+msgid "Geo-Fences"
+msgstr "지오펜스"
+
+msgid "Host"
+msgstr "호스트"
+
+msgid "Interval must be a number ≥ 0."
+msgstr "간격은 0 이상의 숫자여야 합니다."
+
+#, python-format
+msgid "Invalid configuration: %(error)s"
+msgstr "잘못된 설정: %(error)s"
+
+msgid "Invalid or expired form token — reload the page and try again."
+msgstr "양식 토큰이 잘못되었거나 만료되었습니다. 페이지를 새로 고친 후 다시 시도하세요."
+
+msgid "Invalid price lists — open the location to fix them."
+msgstr "요금표가 올바르지 않습니다. 위치를 열어 수정하세요."
+
+#, python-format
+msgid "Invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "요금표의 시작일 '%(date)s'이(가) 올바르지 않습니다(YYYY-MM-DD 형식)."
+
+msgid "Language"
+msgstr "언어"
+
+msgid "Last 100 finished charges. kWh = energy taken from the grid."
+msgstr "최근 완료된 충전 100건. kWh = 전력망에서 받은 에너지."
+
+#, python-format
+msgid "Last run: %(time)s"
+msgstr "마지막 실행: %(time)s"
+
+msgid "Latitude"
+msgstr "위도"
+
+msgid "Loading…"
+msgstr "불러오는 중…"
+
+msgid "Location"
+msgstr "위치"
+
+#, python-format
+msgid "Location '%(name)s' deleted."
+msgstr "위치 '%(name)s'이(가) 삭제되었습니다."
+
+#, python-format
+msgid ""
+"Location '%(name)s' has no timezone. Set a default timezone (e.g. Europe/Prague) or one for the "
+"location."
+msgstr "위치 '%(name)s'에 시간대가 없습니다. 기본 시간대(예: Asia/Seoul) 또는 위치별 시간대를 설정하세요."
+
+#, python-format
+msgid "Location '%(name)s' saved."
+msgstr "위치 '%(name)s'이(가) 저장되었습니다."
+
+#, python-format
+msgid ""
+"Location '%(name)s', %(days)s: block %(block)s must start before it ends. Split blocks crossing "
+"midnight into two (…–24:00 and 00:00–…)."
+msgstr "위치 '%(name)s', %(days)s: 구간 %(block)s은(는) 끝나기 전에 시작해야 합니다. 자정을 넘는 구간은 두 개(…–24:00과 00:00–…)로 나누세요."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: invalid block %(block)s. Expected from and to as HH:MM and a price."
+msgstr "위치 '%(name)s', %(days)s: 잘못된 구간 %(block)s. 시작·종료(HH:MM)와 요금이 필요합니다."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: negative price in block %(block)s."
+msgstr "위치 '%(name)s', %(days)s: 구간 %(block)s의 요금이 음수입니다."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff after %(time)s (the last block must end at 24:00)."
+msgstr "위치 '%(name)s', %(days)s: %(time)s 이후 요금이 없습니다(마지막 구간은 24:00에 끝나야 합니다)."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff between %(start)s and %(end)s."
+msgstr "위치 '%(name)s', %(days)s: %(start)s와 %(end)s 사이에 요금이 없습니다."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariffs defined."
+msgstr "위치 '%(name)s', %(days)s: 요금이 정의되지 않았습니다."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: overlapping blocks around %(time)s."
+msgstr "위치 '%(name)s', %(days)s: %(time)s 부근에서 구간이 겹칩니다."
+
+#, python-format
+msgid "Location '%(name)s': invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "위치 '%(name)s': 요금표의 시작일 '%(date)s'이(가) 올바르지 않습니다(YYYY-MM-DD 형식)."
+
+#, python-format
+msgid "Location '%(name)s': missing '%(key)s'."
+msgstr "위치 '%(name)s': '%(key)s'이(가) 없습니다."
+
+#, python-format
+msgid "Location '%(name)s': missing 'timezone'."
+msgstr "위치 '%(name)s': 시간대가 없습니다."
+
+#, python-format
+msgid "Location '%(name)s': no price lists defined."
+msgstr "위치 '%(name)s': 요금표가 없습니다."
+
+#, python-format
+msgid "Location '%(name)s': two price lists start on %(date)s."
+msgstr "위치 '%(name)s': 두 요금표가 %(date)s에 시작합니다."
+
+#, python-format
+msgid "Location '%(name)s': unknown timezone '%(tz)s'."
+msgstr "위치 '%(name)s': 알 수 없는 시간대 '%(tz)s'."
+
+msgid "Location names must be unique."
+msgstr "위치 이름은 고유해야 합니다."
+
+msgid "Locations"
+msgstr "위치"
+
+msgid "Login required"
+msgstr "로그인이 필요합니다"
+
+msgid "Longitude"
+msgstr "경도"
+
+#, python-format
+msgid "Missing '%(key)s'."
+msgstr "'%(key)s'이(가) 없습니다."
+
+msgid "Monday – Friday"
+msgstr "월요일 – 금요일"
+
+msgid "Name"
+msgstr "이름"
+
+msgid "Name is required."
+msgstr "이름은 필수입니다."
+
+msgid "New location"
+msgstr "새 위치"
+
+msgid "New price list from date"
+msgstr "날짜부터 새 요금표"
+
+#, python-format
+msgid "Next run: %(time)s"
+msgstr "다음 실행: %(time)s"
+
+msgid "No geo-fences in TeslaMate"
+msgstr "TeslaMate에 지오펜스가 없습니다"
+
+msgid "No locations yet. Add your home (or any private charger) and its electricity tariff."
+msgstr "아직 위치가 없습니다. 집(또는 다른 개인 충전기)과 전기 요금을 추가하세요."
+
+#, python-format
+msgid "No password set — anyone who can reach this page can change your tariffs. Set %(var)s."
+msgstr "비밀번호가 설정되지 않았습니다. 이 페이지에 접근할 수 있는 누구나 요금을 변경할 수 있습니다. %(var)s 을(를) 설정하세요."
+
+msgid "No price"
+msgstr "요금 없음"
+
+msgid "Overlap"
+msgstr "중복"
+
+#, python-format
+msgid "Overwrite all costs at %(name)s in this period?"
+msgstr "이 기간의 %(name)s 비용을 모두 덮어쓸까요?"
+
+msgid "Per kWh"
+msgstr "kWh 당"
+
+msgid "Pick a TeslaMate geo-fence to fill in name, coordinates and radius."
+msgstr "TeslaMate 지오펜스를 선택하면 이름, 좌표, 반경이 채워집니다."
+
+msgid "Preview"
+msgstr "미리보기"
+
+msgid "Previous cost"
+msgstr "이전 비용"
+
+#, python-format
+msgid "Price list from %(date)s"
+msgstr "%(date)s부터의 요금표"
+
+msgid "Price lists"
+msgstr "요금표"
+
+#, python-format
+msgid "Price lists: %(n)s"
+msgstr "요금표: %(n)s"
+
+msgid "Private charging"
+msgstr "개인 충전"
+
+msgid "Radius"
+msgstr "반경"
+
+msgid "Radius must be positive."
+msgstr "반경은 양수여야 합니다."
+
+msgid "Recalculate"
+msgstr "재계산"
+
+msgid "Recalculate and overwrite"
+msgstr "재계산 후 덮어쓰기"
+
+msgid "Recalculate costs"
+msgstr "비용 재계산"
+
+msgid "Recalculate costs…"
+msgstr "비용 재계산…"
+
+msgid "Recalculation overwrites ALL costs of charges at this location in the selected period"
+msgstr "재계산하면 선택한 기간 동안 이 위치의 모든 충전 비용이 덮어쓰기됩니다"
+
+msgid "Remove"
+msgstr "제거"
+
+msgid "Remove price list"
+msgstr "요금표 제거"
+
+msgid "Run automatically every (hours)"
+msgstr "자동 실행 간격(시간)"
+
+#, python-format
+msgid "Runs automatically every %(hours)s h."
+msgstr "%(hours)s시간마다 자동으로 실행됩니다."
+
+msgid "Same as Monday – Friday"
+msgstr "월요일 – 금요일과 동일"
+
+msgid "Saturday – Sunday"
+msgstr "토요일 – 일요일"
+
+msgid "Save"
+msgstr "저장"
+
+msgid "Save these costs"
+msgstr "이 비용 저장"
+
+#, python-format
+msgid "Set with environment variables (%(vars)s), the same as in TeslaMate."
+msgstr "TeslaMate와 같은 환경 변수(%(vars)s)로 설정합니다."
+
+msgid "Settings"
+msgstr "설정"
+
+msgid "Settings saved."
+msgstr "설정이 저장되었습니다."
+
+msgid "Start"
+msgstr "시작"
+
+msgid "Tariff times are local times in this time zone. Summer time is handled automatically."
+msgstr "요금 시간은 이 시간대의 현지 시간입니다. 서머타임은 자동으로 처리됩니다."
+
+msgid "TeslaMate database"
+msgstr "TeslaMate 데이터베이스"
+
+msgid "The start date must not be after the end date."
+msgstr "시작일은 종료일보다 늦을 수 없습니다."
+
+msgid "Time zone"
+msgstr "시간대"
+
+msgid ""
+"Times are 24-hour (HH:MM); the last block ends at 24:00. A block over midnight (e.g. 22:00–06:00)"
+" is entered as 22:00–24:00 and 00:00–06:00."
+msgstr ""
+"시간은 24시간 형식(HH:MM)입니다. 마지막 구간은 24:00에 끝납니다. 자정을 넘는 구간(예: 22:00–06:00)은 22:00–24:00과 00:00–06:00으로"
+" 나누어 입력합니다."
+
+msgid "To"
+msgstr "종료"
+
+msgid "Unavailable"
+msgstr "사용불가"
+
+#, python-format
+msgid "Unexpected error: %(error)s"
+msgstr "예기치 않은 오류: %(error)s"
+
+#, python-format
+msgid "Unknown location '%(name)s'."
+msgstr "알 수 없는 위치 '%(name)s'."
+
+#, python-format
+msgid "Unknown timezone '%(tz)s'."
+msgstr "알 수 없는 시간대 '%(tz)s'."
+
+#, python-format
+msgid "Updated: %(n)s"
+msgstr "업데이트됨: %(n)s"
+
+msgid "User"
+msgstr "사용자"
+
+msgid "Valid from"
+msgstr "적용 시작일"
+
+msgid "Web App"
+msgstr "웹 애플리케이션"
+
+msgid "Write costs to TeslaMate now?"
+msgstr "지금 비용을 TeslaMate에 기록할까요?"
+
+msgid "including costs entered in TeslaMate and costs calculated earlier. Check the preview first."
+msgstr "TeslaMate에서 입력한 비용과 이전에 계산된 비용도 포함됩니다. 먼저 미리보기를 확인하세요."
+
+msgid "pending"
+msgstr "대기 중"
+
+msgid "— choose —"
+msgstr "— 선택 —"
+

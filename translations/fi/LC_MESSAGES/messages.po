@@ -1,0 +1,477 @@
+# Finnish translations for teslamate-private-charging-costs.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the teslamate-private-charging-costs project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: teslamate-private-charging-costs VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-27 21:41+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fi\n"
+"Language-Team: fi <https://github.com/kalich5/teslamate-private-charging-costs>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.19.0\n"
+
+#, python-format
+msgid "%(days)s from %(date)s"
+msgstr "%(days)s alkaen %(date)s"
+
+#, python-format
+msgid "%(days)s: '%(price)s' is not a valid price."
+msgstr "%(days)s: ”%(price)s” ei ole kelvollinen hinta."
+
+#, python-format
+msgid "%(field)s: '%(value)s' is not a valid number."
+msgstr "%(field)s: ”%(value)s” ei ole kelvollinen luku."
+
+msgid "0 = only when you click “Calculate and save”."
+msgstr "0 = vain kun napsautat ”Laske ja tallenna”."
+
+msgid "A location needs at least one price list."
+msgstr "Sijainnilla on oltava vähintään yksi hinnasto."
+
+msgid "Add location"
+msgstr "Lisää sijainti"
+
+msgid "Add time block"
+msgstr "Lisää aikajakso"
+
+msgid "Another run is in progress, try again in a moment."
+msgstr "Toinen suoritus on käynnissä, yritä hetken kuluttua uudelleen."
+
+msgid "Automatic runs are off."
+msgstr "Automaattiset suoritukset ovat pois päältä."
+
+msgid "Back"
+msgstr "Takaisin"
+
+msgid "By default the language of your browser is used, as in TeslaMate."
+msgstr "Oletuksena käytetään selaimesi kieltä, kuten TeslaMatessa."
+
+msgid "Calculate and save"
+msgstr "Laske ja tallenna"
+
+msgid ""
+"Calculates the cost of every finished charge at your locations that has no cost yet. Existing "
+"costs are never changed."
+msgstr ""
+"Laskee hinnan jokaiselle sijainneissasi päättyneelle lataukselle, jolla ei vielä ole hintaa. "
+"Olemassa olevia hintoja ei koskaan muuteta."
+
+msgid "Cancel"
+msgstr "Peruuta"
+
+#, python-format
+msgid "Cannot connect to the TeslaMate database: %(error)s"
+msgstr "TeslaMate-tietokantaan ei saada yhteyttä: %(error)s"
+
+#, python-format
+msgid "Cannot read sessions from the TeslaMate database: %(error)s"
+msgstr "Latauksia ei voida lukea TeslaMate-tietokannasta: %(error)s"
+
+msgid "Charges"
+msgstr "Lataukset"
+
+#, python-format
+msgid "Charges to be updated: %(n)s"
+msgstr "Päivitettävät lataukset: %(n)s"
+
+msgid "Charging Costs"
+msgstr "Latauskustannukset"
+
+msgid "Config is empty or not a mapping."
+msgstr "Määritys on tyhjä tai virheellinen."
+
+#, python-format
+msgid "Configuration problem: %(problem)s"
+msgstr "Määritysongelma: %(problem)s"
+
+msgid "Coordinates are out of range."
+msgstr "Koordinaatit ovat sallitun alueen ulkopuolella."
+
+msgid "Cost"
+msgstr "Hinta"
+
+msgid "Costs are converted to this currency using the ECB rate of the charging day."
+msgstr "Hinnat muunnetaan tähän valuuttaan latauspäivän EKP:n kurssilla."
+
+msgid "Costs saved"
+msgstr "Hinnat tallennettu"
+
+msgid "Could not load geo-fences from TeslaMate."
+msgstr "Georajauksia ei voitu ladata TeslaMatesta."
+
+msgid "Currency in TeslaMate"
+msgstr "Valuutta TeslaMatessa"
+
+msgid "Currency must be a 3-letter code, e.g. CZK."
+msgstr "Valuutan on oltava kolmikirjaiminen koodi, esim. EUR."
+
+msgid "Currency of your bill"
+msgstr "Laskusi valuutta"
+
+msgid "Database"
+msgstr "Tietokanta"
+
+msgid "Delete"
+msgstr "Poista"
+
+#, python-format
+msgid "Delete %(name)s? Costs already written stay in TeslaMate."
+msgstr "Poistetaanko %(name)s? Jo kirjoitetut hinnat säilyvät TeslaMatessa."
+
+msgid "Each charge is priced with the price list that was valid on its day."
+msgstr "Jokainen lataus hinnoitellaan sinä päivänä voimassa olleella hinnastolla."
+
+msgid ""
+"Each price list applies from its date until the next one starts; the oldest one also applies to "
+"all earlier charges. Keep old price lists — they are needed to recalculate past charges."
+msgstr ""
+"Kukin hinnasto on voimassa päivämäärästään, kunnes seuraava alkaa; vanhin koskee myös kaikkia "
+"aiempia latauksia. Säilytä vanhat hinnastot — niitä tarvitaan aiempien latausten "
+"uudelleenlaskentaan."
+
+msgid "Edit"
+msgstr "Muokkaa"
+
+msgid "End"
+msgstr "Loppu"
+
+msgid "Enter both dates as YYYY-MM-DD."
+msgstr "Anna molemmat päivämäärät muodossa VVVV-KK-PP."
+
+#, python-format
+msgid "Errors: %(n)s"
+msgstr "Virheet: %(n)s"
+
+msgid "From"
+msgstr "Alkaen"
+
+msgid "Geo-Fences"
+msgstr "Georajaukset"
+
+msgid "Host"
+msgstr "Palvelin"
+
+msgid "Interval must be a number ≥ 0."
+msgstr "Välin on oltava luku ≥ 0."
+
+#, python-format
+msgid "Invalid configuration: %(error)s"
+msgstr "Virheellinen määritys: %(error)s"
+
+msgid "Invalid or expired form token — reload the page and try again."
+msgstr "Lomakkeen tunniste on virheellinen tai vanhentunut – lataa sivu uudelleen ja yritä uudelleen."
+
+msgid "Invalid price lists — open the location to fix them."
+msgstr "Virheelliset hinnastot – avaa sijainti korjataksesi ne."
+
+#, python-format
+msgid "Invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Hinnaston virheellinen alkupäivä ”%(date)s” (odotettiin VVVV-KK-PP)."
+
+msgid "Language"
+msgstr "Kieli"
+
+msgid "Last 100 finished charges. kWh = energy taken from the grid."
+msgstr "Viimeiset 100 päättynyttä latausta. kWh = sähköverkosta otettu energia."
+
+#, python-format
+msgid "Last run: %(time)s"
+msgstr "Edellinen suoritus: %(time)s"
+
+msgid "Latitude"
+msgstr "Leveysaste"
+
+msgid "Loading…"
+msgstr "Ladataan…"
+
+msgid "Location"
+msgstr "Sijainti"
+
+#, python-format
+msgid "Location '%(name)s' deleted."
+msgstr "Sijainti ”%(name)s” poistettu."
+
+#, python-format
+msgid ""
+"Location '%(name)s' has no timezone. Set a default timezone (e.g. Europe/Prague) or one for the "
+"location."
+msgstr ""
+"Sijainnilla ”%(name)s” ei ole aikavyöhykettä. Aseta oletusaikavyöhyke (esim. Europe/Helsinki) tai"
+" sijainnin oma."
+
+#, python-format
+msgid "Location '%(name)s' saved."
+msgstr "Sijainti ”%(name)s” tallennettu."
+
+#, python-format
+msgid ""
+"Location '%(name)s', %(days)s: block %(block)s must start before it ends. Split blocks crossing "
+"midnight into two (…–24:00 and 00:00–…)."
+msgstr ""
+"Sijainti ”%(name)s”, %(days)s: jakson %(block)s on alettava ennen kuin se päättyy. Jaa keskiyön "
+"ylittävät jaksot kahteen (…–24:00 ja 00:00–…)."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: invalid block %(block)s. Expected from and to as HH:MM and a price."
+msgstr ""
+"Sijainti ”%(name)s”, %(days)s: virheellinen jakso %(block)s. Odotettiin alku- ja loppuaikaa "
+"muodossa HH:MM sekä hintaa."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: negative price in block %(block)s."
+msgstr "Sijainti ”%(name)s”, %(days)s: negatiivinen hinta jaksossa %(block)s."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff after %(time)s (the last block must end at 24:00)."
+msgstr ""
+"Sijainti ”%(name)s”, %(days)s: ei tariffia klo %(time)s jälkeen (viimeisen jakson on päätyttävä "
+"klo 24:00)."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff between %(start)s and %(end)s."
+msgstr "Sijainti ”%(name)s”, %(days)s: ei tariffia välillä %(start)s–%(end)s."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariffs defined."
+msgstr "Sijainti ”%(name)s”, %(days)s: tariffeja ei ole määritetty."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: overlapping blocks around %(time)s."
+msgstr "Sijainti ”%(name)s”, %(days)s: päällekkäisiä jaksoja noin klo %(time)s."
+
+#, python-format
+msgid "Location '%(name)s': invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Sijainti ”%(name)s”: hinnaston virheellinen alkupäivä ”%(date)s” (odotettiin VVVV-KK-PP)."
+
+#, python-format
+msgid "Location '%(name)s': missing '%(key)s'."
+msgstr "Sijainti ”%(name)s”: ”%(key)s” puuttuu."
+
+#, python-format
+msgid "Location '%(name)s': missing 'timezone'."
+msgstr "Sijainti ”%(name)s”: aikavyöhyke puuttuu."
+
+#, python-format
+msgid "Location '%(name)s': no price lists defined."
+msgstr "Sijainti ”%(name)s”: hinnastoja ei ole määritetty."
+
+#, python-format
+msgid "Location '%(name)s': two price lists start on %(date)s."
+msgstr "Sijainti ”%(name)s”: kaksi hinnastoa alkaa %(date)s."
+
+#, python-format
+msgid "Location '%(name)s': unknown timezone '%(tz)s'."
+msgstr "Sijainti ”%(name)s”: tuntematon aikavyöhyke ”%(tz)s”."
+
+msgid "Location names must be unique."
+msgstr "Sijaintien nimien on oltava yksilöllisiä."
+
+msgid "Locations"
+msgstr "Sijainnit"
+
+msgid "Login required"
+msgstr "Kirjautuminen vaaditaan"
+
+msgid "Longitude"
+msgstr "Pituusaste"
+
+#, python-format
+msgid "Missing '%(key)s'."
+msgstr "”%(key)s” puuttuu."
+
+msgid "Monday – Friday"
+msgstr "Maanantai – perjantai"
+
+msgid "Name"
+msgstr "Nimi"
+
+msgid "Name is required."
+msgstr "Nimi vaaditaan."
+
+msgid "New location"
+msgstr "Uusi sijainti"
+
+msgid "New price list from date"
+msgstr "Uusi hinnasto päivämäärästä"
+
+#, python-format
+msgid "Next run: %(time)s"
+msgstr "Seuraava suoritus: %(time)s"
+
+msgid "No geo-fences in TeslaMate"
+msgstr "TeslaMatessa ei ole georajauksia"
+
+msgid "No locations yet. Add your home (or any private charger) and its electricity tariff."
+msgstr "Sijainteja ei vielä ole. Lisää kotisi (tai muu yksityinen laturi) ja sen sähkötariffi."
+
+#, python-format
+msgid "No password set — anyone who can reach this page can change your tariffs. Set %(var)s."
+msgstr ""
+"Salasanaa ei ole asetettu – kuka tahansa, joka pääsee tälle sivulle, voi muuttaa tariffejasi. "
+"Aseta %(var)s."
+
+msgid "No price"
+msgstr "Ei hintaa"
+
+msgid "Overlap"
+msgstr "Päällekkäisyys"
+
+#, python-format
+msgid "Overwrite all costs at %(name)s in this period?"
+msgstr "Korvataanko kaikki sijainnin %(name)s hinnat tällä jaksolla?"
+
+msgid "Per kWh"
+msgstr "Per kWh"
+
+msgid "Pick a TeslaMate geo-fence to fill in name, coordinates and radius."
+msgstr "Valitse TeslaMaten georajaus, niin nimi, koordinaatit ja säde täytetään."
+
+msgid "Preview"
+msgstr "Esikatselu"
+
+msgid "Previous cost"
+msgstr "Aiempi hinta"
+
+#, python-format
+msgid "Price list from %(date)s"
+msgstr "Hinnasto alkaen %(date)s"
+
+msgid "Price lists"
+msgstr "Hinnastot"
+
+#, python-format
+msgid "Price lists: %(n)s"
+msgstr "Hinnastoja: %(n)s"
+
+msgid "Private charging"
+msgstr "Yksityinen lataus"
+
+msgid "Radius"
+msgstr "Säde"
+
+msgid "Radius must be positive."
+msgstr "Säteen on oltava positiivinen."
+
+msgid "Recalculate"
+msgstr "Laske uudelleen"
+
+msgid "Recalculate and overwrite"
+msgstr "Laske uudelleen ja korvaa"
+
+msgid "Recalculate costs"
+msgstr "Hintojen uudelleenlaskenta"
+
+msgid "Recalculate costs…"
+msgstr "Laske hinnat uudelleen…"
+
+msgid "Recalculation overwrites ALL costs of charges at this location in the selected period"
+msgstr "Uudelleenlaskenta korvaa KAIKKI tämän sijainnin latausten hinnat valitulla jaksolla"
+
+msgid "Remove"
+msgstr "Poista"
+
+msgid "Remove price list"
+msgstr "Poista hinnasto"
+
+msgid "Run automatically every (hours)"
+msgstr "Suorita automaattisesti (tunnin välein)"
+
+#, python-format
+msgid "Runs automatically every %(hours)s h."
+msgstr "Suoritetaan automaattisesti %(hours)s tunnin välein."
+
+msgid "Same as Monday – Friday"
+msgstr "Sama kuin maanantai – perjantai"
+
+msgid "Saturday – Sunday"
+msgstr "Lauantai – sunnuntai"
+
+msgid "Save"
+msgstr "Tallenna"
+
+msgid "Save these costs"
+msgstr "Tallenna nämä hinnat"
+
+#, python-format
+msgid "Set with environment variables (%(vars)s), the same as in TeslaMate."
+msgstr "Asetetaan ympäristömuuttujilla (%(vars)s), kuten TeslaMatessa."
+
+msgid "Settings"
+msgstr "Asetukset"
+
+msgid "Settings saved."
+msgstr "Asetukset tallennettu."
+
+msgid "Start"
+msgstr "Alku"
+
+msgid "Tariff times are local times in this time zone. Summer time is handled automatically."
+msgstr "Tariffien ajat ovat tämän aikavyöhykkeen paikallisaikoja. Kesäaika huomioidaan automaattisesti."
+
+msgid "TeslaMate database"
+msgstr "TeslaMate-tietokanta"
+
+msgid "The start date must not be after the end date."
+msgstr "Alkupäivä ei voi olla loppupäivän jälkeen."
+
+msgid "Time zone"
+msgstr "Aikavyöhyke"
+
+msgid ""
+"Times are 24-hour (HH:MM); the last block ends at 24:00. A block over midnight (e.g. 22:00–06:00)"
+" is entered as 22:00–24:00 and 00:00–06:00."
+msgstr ""
+"Ajat ovat 24 tunnin muodossa (HH:MM); viimeinen jakso päättyy klo 24:00. Keskiyön ylittävä jakso "
+"(esim. 22:00–06:00) syötetään muodossa 22:00–24:00 ja 00:00–06:00."
+
+msgid "To"
+msgstr "Asti"
+
+msgid "Unavailable"
+msgstr "Ei saatavilla"
+
+#, python-format
+msgid "Unexpected error: %(error)s"
+msgstr "Odottamaton virhe: %(error)s"
+
+#, python-format
+msgid "Unknown location '%(name)s'."
+msgstr "Tuntematon sijainti ”%(name)s”."
+
+#, python-format
+msgid "Unknown timezone '%(tz)s'."
+msgstr "Tuntematon aikavyöhyke ”%(tz)s”."
+
+#, python-format
+msgid "Updated: %(n)s"
+msgstr "Päivitetty: %(n)s"
+
+msgid "User"
+msgstr "Käyttäjä"
+
+msgid "Valid from"
+msgstr "Voimassa alkaen"
+
+msgid "Web App"
+msgstr "Verkkosivu"
+
+msgid "Write costs to TeslaMate now?"
+msgstr "Kirjoitetaanko hinnat TeslaMateen nyt?"
+
+msgid "including costs entered in TeslaMate and costs calculated earlier. Check the preview first."
+msgstr "myös TeslaMateen syötetyt ja aiemmin lasketut hinnat. Tarkista ensin esikatselu."
+
+msgid "pending"
+msgstr "odottaa"
+
+msgid "— choose —"
+msgstr "— valitse —"
+

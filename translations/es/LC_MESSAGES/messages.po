@@ -1,0 +1,483 @@
+# Spanish translations for teslamate-private-charging-costs.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the teslamate-private-charging-costs project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: teslamate-private-charging-costs VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-27 21:41+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <https://github.com/kalich5/teslamate-private-charging-costs>\n"
+"Plural-Forms: nplurals=3; plural=(n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.19.0\n"
+
+#, python-format
+msgid "%(days)s from %(date)s"
+msgstr "%(days)s desde el %(date)s"
+
+#, python-format
+msgid "%(days)s: '%(price)s' is not a valid price."
+msgstr "%(days)s: «%(price)s» no es un precio válido."
+
+#, python-format
+msgid "%(field)s: '%(value)s' is not a valid number."
+msgstr "%(field)s: «%(value)s» no es un número válido."
+
+msgid "0 = only when you click “Calculate and save”."
+msgstr "0 = solo al hacer clic en «Calcular y guardar»."
+
+msgid "A location needs at least one price list."
+msgstr "Una ubicación necesita al menos una tarifa."
+
+msgid "Add location"
+msgstr "Añadir ubicación"
+
+msgid "Add time block"
+msgstr "Añadir tramo horario"
+
+msgid "Another run is in progress, try again in a moment."
+msgstr "Hay otra ejecución en curso; inténtelo de nuevo en un momento."
+
+msgid "Automatic runs are off."
+msgstr "Las ejecuciones automáticas están desactivadas."
+
+msgid "Back"
+msgstr "Atrás"
+
+msgid "By default the language of your browser is used, as in TeslaMate."
+msgstr "Por defecto se usa el idioma de su navegador, como en TeslaMate."
+
+msgid "Calculate and save"
+msgstr "Calcular y guardar"
+
+msgid ""
+"Calculates the cost of every finished charge at your locations that has no cost yet. Existing "
+"costs are never changed."
+msgstr ""
+"Calcula el coste de cada carga finalizada en sus ubicaciones que aún no tenga coste. Los costes "
+"existentes nunca se modifican."
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+#, python-format
+msgid "Cannot connect to the TeslaMate database: %(error)s"
+msgstr "No se puede conectar con la base de datos de TeslaMate: %(error)s"
+
+#, python-format
+msgid "Cannot read sessions from the TeslaMate database: %(error)s"
+msgstr "No se pueden leer las cargas de la base de datos de TeslaMate: %(error)s"
+
+msgid "Charges"
+msgstr "Cargas"
+
+#, python-format
+msgid "Charges to be updated: %(n)s"
+msgstr "Cargas por actualizar: %(n)s"
+
+msgid "Charging Costs"
+msgstr "Costes de Carga"
+
+msgid "Config is empty or not a mapping."
+msgstr "La configuración está vacía o no es válida."
+
+#, python-format
+msgid "Configuration problem: %(problem)s"
+msgstr "Problema de configuración: %(problem)s"
+
+msgid "Coordinates are out of range."
+msgstr "Las coordenadas están fuera de rango."
+
+msgid "Cost"
+msgstr "Coste"
+
+msgid "Costs are converted to this currency using the ECB rate of the charging day."
+msgstr "Los costes se convierten a esta moneda con el tipo de cambio del BCE del día de la carga."
+
+msgid "Costs saved"
+msgstr "Costes guardados"
+
+msgid "Could not load geo-fences from TeslaMate."
+msgstr "No se pudieron cargar las geovallas de TeslaMate."
+
+msgid "Currency in TeslaMate"
+msgstr "Moneda en TeslaMate"
+
+msgid "Currency must be a 3-letter code, e.g. CZK."
+msgstr "La moneda debe ser un código de 3 letras, p. ej. EUR."
+
+msgid "Currency of your bill"
+msgstr "Moneda de su factura"
+
+msgid "Database"
+msgstr "Base de datos"
+
+msgid "Delete"
+msgstr "Eliminar"
+
+#, python-format
+msgid "Delete %(name)s? Costs already written stay in TeslaMate."
+msgstr "¿Eliminar %(name)s? Los costes ya escritos permanecen en TeslaMate."
+
+msgid "Each charge is priced with the price list that was valid on its day."
+msgstr "Cada carga se calcula con la tarifa vigente ese día."
+
+msgid ""
+"Each price list applies from its date until the next one starts; the oldest one also applies to "
+"all earlier charges. Keep old price lists — they are needed to recalculate past charges."
+msgstr ""
+"Cada tarifa se aplica desde su fecha hasta que empieza la siguiente; la más antigua se aplica "
+"también a todas las cargas anteriores. Conserve las tarifas antiguas: son necesarias para "
+"recalcular cargas pasadas."
+
+msgid "Edit"
+msgstr "Editar"
+
+msgid "End"
+msgstr "Fin"
+
+msgid "Enter both dates as YYYY-MM-DD."
+msgstr "Introduzca ambas fechas como AAAA-MM-DD."
+
+#, python-format
+msgid "Errors: %(n)s"
+msgstr "Errores: %(n)s"
+
+msgid "From"
+msgstr "Desde"
+
+msgid "Geo-Fences"
+msgstr "Geovallas"
+
+msgid "Host"
+msgstr "Servidor"
+
+msgid "Interval must be a number ≥ 0."
+msgstr "El intervalo debe ser un número ≥ 0."
+
+#, python-format
+msgid "Invalid configuration: %(error)s"
+msgstr "Configuración no válida: %(error)s"
+
+msgid "Invalid or expired form token — reload the page and try again."
+msgstr "Token de formulario no válido o caducado: recargue la página e inténtelo de nuevo."
+
+msgid "Invalid price lists — open the location to fix them."
+msgstr "Tarifas no válidas: abra la ubicación para corregirlas."
+
+#, python-format
+msgid "Invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Fecha de inicio no válida «%(date)s» de una tarifa (se espera AAAA-MM-DD)."
+
+msgid "Language"
+msgstr "Idioma"
+
+msgid "Last 100 finished charges. kWh = energy taken from the grid."
+msgstr "Las últimas 100 cargas finalizadas. kWh = energía tomada de la red."
+
+#, python-format
+msgid "Last run: %(time)s"
+msgstr "Última ejecución: %(time)s"
+
+msgid "Latitude"
+msgstr "Latitud"
+
+msgid "Loading…"
+msgstr "Cargando…"
+
+msgid "Location"
+msgstr "Ubicación"
+
+#, python-format
+msgid "Location '%(name)s' deleted."
+msgstr "Ubicación «%(name)s» eliminada."
+
+#, python-format
+msgid ""
+"Location '%(name)s' has no timezone. Set a default timezone (e.g. Europe/Prague) or one for the "
+"location."
+msgstr ""
+"La ubicación «%(name)s» no tiene zona horaria. Defina una zona horaria predeterminada (p. ej. "
+"Europe/Madrid) o una para la ubicación."
+
+#, python-format
+msgid "Location '%(name)s' saved."
+msgstr "Ubicación «%(name)s» guardada."
+
+#, python-format
+msgid ""
+"Location '%(name)s', %(days)s: block %(block)s must start before it ends. Split blocks crossing "
+"midnight into two (…–24:00 and 00:00–…)."
+msgstr ""
+"Ubicación «%(name)s», %(days)s: el tramo %(block)s debe empezar antes de terminar. Divida los "
+"tramos que cruzan la medianoche en dos (…–24:00 y 00:00–…)."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: invalid block %(block)s. Expected from and to as HH:MM and a price."
+msgstr ""
+"Ubicación «%(name)s», %(days)s: tramo no válido %(block)s. Se esperan inicio y fin como HH:MM y "
+"un precio."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: negative price in block %(block)s."
+msgstr "Ubicación «%(name)s», %(days)s: precio negativo en el tramo %(block)s."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff after %(time)s (the last block must end at 24:00)."
+msgstr ""
+"Ubicación «%(name)s», %(days)s: no hay tarifa después de las %(time)s (el último tramo debe "
+"terminar a las 24:00)."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff between %(start)s and %(end)s."
+msgstr "Ubicación «%(name)s», %(days)s: no hay tarifa entre las %(start)s y las %(end)s."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariffs defined."
+msgstr "Ubicación «%(name)s», %(days)s: no hay tarifas definidas."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: overlapping blocks around %(time)s."
+msgstr "Ubicación «%(name)s», %(days)s: tramos solapados alrededor de las %(time)s."
+
+#, python-format
+msgid "Location '%(name)s': invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Ubicación «%(name)s»: fecha de inicio no válida «%(date)s» de una tarifa (se espera AAAA-MM-DD)."
+
+#, python-format
+msgid "Location '%(name)s': missing '%(key)s'."
+msgstr "Ubicación «%(name)s»: falta «%(key)s»."
+
+#, python-format
+msgid "Location '%(name)s': missing 'timezone'."
+msgstr "Ubicación «%(name)s»: falta la zona horaria."
+
+#, python-format
+msgid "Location '%(name)s': no price lists defined."
+msgstr "Ubicación «%(name)s»: no hay tarifas definidas."
+
+#, python-format
+msgid "Location '%(name)s': two price lists start on %(date)s."
+msgstr "Ubicación «%(name)s»: dos tarifas empiezan el %(date)s."
+
+#, python-format
+msgid "Location '%(name)s': unknown timezone '%(tz)s'."
+msgstr "Ubicación «%(name)s»: zona horaria desconocida «%(tz)s»."
+
+msgid "Location names must be unique."
+msgstr "Los nombres de las ubicaciones deben ser únicos."
+
+msgid "Locations"
+msgstr "Ubicaciones"
+
+msgid "Login required"
+msgstr "Es necesario iniciar sesión"
+
+msgid "Longitude"
+msgstr "Longitud"
+
+#, python-format
+msgid "Missing '%(key)s'."
+msgstr "Falta «%(key)s»."
+
+msgid "Monday – Friday"
+msgstr "Lunes – viernes"
+
+msgid "Name"
+msgstr "Nombre"
+
+msgid "Name is required."
+msgstr "El nombre es obligatorio."
+
+msgid "New location"
+msgstr "Nueva ubicación"
+
+msgid "New price list from date"
+msgstr "Nueva tarifa a partir de una fecha"
+
+#, python-format
+msgid "Next run: %(time)s"
+msgstr "Próxima ejecución: %(time)s"
+
+msgid "No geo-fences in TeslaMate"
+msgstr "No hay geovallas en TeslaMate"
+
+msgid "No locations yet. Add your home (or any private charger) and its electricity tariff."
+msgstr "Aún no hay ubicaciones. Añada su casa (o cualquier cargador privado) y su tarifa eléctrica."
+
+#, python-format
+msgid "No password set — anyone who can reach this page can change your tariffs. Set %(var)s."
+msgstr ""
+"No hay contraseña: cualquiera que acceda a esta página puede cambiar sus tarifas. Configure "
+"%(var)s."
+
+msgid "No price"
+msgstr "Sin precio"
+
+msgid "Overlap"
+msgstr "Solapamiento"
+
+#, python-format
+msgid "Overwrite all costs at %(name)s in this period?"
+msgstr "¿Sobrescribir todos los costes de %(name)s en este periodo?"
+
+msgid "Per kWh"
+msgstr "Por kWh"
+
+msgid "Pick a TeslaMate geo-fence to fill in name, coordinates and radius."
+msgstr "Elija una geovalla de TeslaMate para rellenar el nombre, las coordenadas y el radio."
+
+msgid "Preview"
+msgstr "Vista previa"
+
+msgid "Previous cost"
+msgstr "Coste anterior"
+
+#, python-format
+msgid "Price list from %(date)s"
+msgstr "Tarifa desde el %(date)s"
+
+msgid "Price lists"
+msgstr "Tarifas"
+
+#, python-format
+msgid "Price lists: %(n)s"
+msgstr "Tarifas: %(n)s"
+
+msgid "Private charging"
+msgstr "Carga privada"
+
+msgid "Radius"
+msgstr "Radio"
+
+msgid "Radius must be positive."
+msgstr "El radio debe ser positivo."
+
+msgid "Recalculate"
+msgstr "Recalcular"
+
+msgid "Recalculate and overwrite"
+msgstr "Recalcular y sobrescribir"
+
+msgid "Recalculate costs"
+msgstr "Recalcular costes"
+
+msgid "Recalculate costs…"
+msgstr "Recalcular costes…"
+
+msgid "Recalculation overwrites ALL costs of charges at this location in the selected period"
+msgstr ""
+"El recálculo sobrescribe TODOS los costes de las cargas en esta ubicación durante el periodo "
+"seleccionado"
+
+msgid "Remove"
+msgstr "Quitar"
+
+msgid "Remove price list"
+msgstr "Quitar tarifa"
+
+msgid "Run automatically every (hours)"
+msgstr "Ejecutar automáticamente cada (horas)"
+
+#, python-format
+msgid "Runs automatically every %(hours)s h."
+msgstr "Se ejecuta automáticamente cada %(hours)s h."
+
+msgid "Same as Monday – Friday"
+msgstr "Igual que de lunes a viernes"
+
+msgid "Saturday – Sunday"
+msgstr "Sábado – domingo"
+
+msgid "Save"
+msgstr "Guardar"
+
+msgid "Save these costs"
+msgstr "Guardar estos costes"
+
+#, python-format
+msgid "Set with environment variables (%(vars)s), the same as in TeslaMate."
+msgstr "Se define con variables de entorno (%(vars)s), igual que en TeslaMate."
+
+msgid "Settings"
+msgstr "Ajustes"
+
+msgid "Settings saved."
+msgstr "Ajustes guardados."
+
+msgid "Start"
+msgstr "Inicio"
+
+msgid "Tariff times are local times in this time zone. Summer time is handled automatically."
+msgstr ""
+"Las horas de las tarifas son horas locales de esta zona horaria. El horario de verano se gestiona"
+" automáticamente."
+
+msgid "TeslaMate database"
+msgstr "Base de datos de TeslaMate"
+
+msgid "The start date must not be after the end date."
+msgstr "La fecha de inicio no puede ser posterior a la de fin."
+
+msgid "Time zone"
+msgstr "Zona horaria"
+
+msgid ""
+"Times are 24-hour (HH:MM); the last block ends at 24:00. A block over midnight (e.g. 22:00–06:00)"
+" is entered as 22:00–24:00 and 00:00–06:00."
+msgstr ""
+"Las horas están en formato de 24 horas (HH:MM); el último tramo termina a las 24:00. Un tramo que"
+" cruza la medianoche (p. ej. 22:00–06:00) se introduce como 22:00–24:00 y 00:00–06:00."
+
+msgid "To"
+msgstr "Hasta"
+
+msgid "Unavailable"
+msgstr "No disponible"
+
+#, python-format
+msgid "Unexpected error: %(error)s"
+msgstr "Error inesperado: %(error)s"
+
+#, python-format
+msgid "Unknown location '%(name)s'."
+msgstr "Ubicación desconocida «%(name)s»."
+
+#, python-format
+msgid "Unknown timezone '%(tz)s'."
+msgstr "Zona horaria desconocida «%(tz)s»."
+
+#, python-format
+msgid "Updated: %(n)s"
+msgstr "Actualizadas: %(n)s"
+
+msgid "User"
+msgstr "Usuario"
+
+msgid "Valid from"
+msgstr "Válida desde"
+
+msgid "Web App"
+msgstr "Aplicación web"
+
+msgid "Write costs to TeslaMate now?"
+msgstr "¿Escribir ahora los costes en TeslaMate?"
+
+msgid "including costs entered in TeslaMate and costs calculated earlier. Check the preview first."
+msgstr ""
+"incluidos los costes introducidos en TeslaMate y los calculados antes. Revise primero la vista "
+"previa."
+
+msgid "pending"
+msgstr "pendiente"
+
+msgid "— choose —"
+msgstr "— elija —"
+

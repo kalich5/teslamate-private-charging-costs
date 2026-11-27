@@ -1,7 +1,9 @@
 import logging
-from datetime import datetime, timedelta, time
+from datetime import date, datetime, timedelta, time
 from functools import lru_cache
 from zoneinfo import ZoneInfo
+
+from i18n import _
 
 log = logging.getLogger(__name__)
 
@@ -34,11 +36,45 @@ def location_zone(location: dict) -> ZoneInfo:
     return _zone(name)
 
 
-def get_tariff_blocks(location: dict, dt: datetime) -> list:
-    """Return the correct tariff block list for the given (local) datetime."""
-    is_weekday = dt.weekday() < 5
-    key = "weekday" if is_weekday else "weekend"
-    blocks = location["tariffs"].get(key, [])
+def parse_date(value) -> date:
+    """Parse a price list's ``valid_from`` (``date`` from YAML or ``YYYY-MM-DD``)."""
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    return date.fromisoformat(str(value).strip())
+
+
+def tariff_periods(location: dict) -> list:
+    """
+    Return the location's price lists as ``[(valid_from, period), ...]``, oldest first.
+
+    ``tariffs`` is a list of price lists, each with ``valid_from`` (local date)
+    and ``weekday`` / ``weekend`` blocks.  A price list applies from 00:00
+    local time on its ``valid_from`` until the next one starts; the oldest
+    one also applies to everything before its date.
+    """
+    return sorted(((parse_date(p["valid_from"]), p) for p in location["tariffs"]),
+                  key=lambda item: item[0])
+
+
+def period_for(periods: list, day: date) -> dict:
+    """The price list valid on *day* (see :func:`tariff_periods`)."""
+    chosen = periods[0][1]
+    for valid_from, period in periods:
+        if valid_from <= day:
+            chosen = period
+        else:
+            break
+    return chosen
+
+
+def get_tariff_blocks(location: dict, dt: datetime, periods: list = None) -> list:
+    """Return the tariff blocks for the given local datetime (price list + day type)."""
+    periods = periods or tariff_periods(location)
+    period = period_for(periods, dt.date())
+    key = "weekday" if dt.weekday() < 5 else "weekend"
+    blocks = period.get(key) or []
     if not blocks:
         raise ValueError(
             f"Location '{location['name']}' has no tariffs defined for '{key}'."
@@ -68,57 +104,87 @@ def validate_location(location: dict) -> None:
     """
     Check a location config and raise ``ValueError`` with a clear message.
 
-    Each of ``weekday`` / ``weekend`` must be a list of blocks that together
-    cover 00:00–24:00 exactly once (no gaps, no overlaps) with ``from < to``.
+    ``tariffs`` must be a non-empty list of price lists with distinct
+    ``valid_from`` dates.  In each, ``weekday`` / ``weekend`` must be a list
+    of blocks that together cover 00:00–24:00 exactly once (no gaps, no
+    overlaps) with ``from < to``.
     A block crossing midnight (e.g. 22:00–06:00) must be split into
     22:00–24:00 and 00:00–06:00.
     """
     name = location.get("name", "<unnamed>")
     for key in ("name", "lat", "lon", "radius_m", "currency", "tariffs"):
         if key not in location:
-            raise ValueError(f"Location '{name}': missing '{key}'.")
+            raise ValueError(_("Location '%(name)s': missing '%(key)s'.", name=name, key=key))
 
     if not location.get("timezone"):
-        raise ValueError(f"Location '{name}': missing 'timezone'.")
+        raise ValueError(_("Location '%(name)s': missing 'timezone'.", name=name))
     try:
         ZoneInfo(location["timezone"])
     except Exception as e:  # ZoneInfoNotFoundError, malformed keys
-        raise ValueError(f"Location '{name}': unknown timezone '{location.get('timezone')}'.") from e
+        raise ValueError(_("Location '%(name)s': unknown timezone '%(tz)s'.",
+                           name=name, tz=location.get("timezone"))) from e
 
+    periods = location["tariffs"]
+    if not isinstance(periods, list) or not periods:
+        raise ValueError(_("Location '%(name)s': no price lists defined.", name=name))
+    seen = set()
+    for period in periods:
+        raw = period.get("valid_from") if isinstance(period, dict) else None
+        try:
+            valid_from = parse_date(raw)
+        except (TypeError, ValueError) as e:
+            raise ValueError(_("Location '%(name)s': invalid start date '%(date)s' of a price "
+                               "list (expected YYYY-MM-DD).", name=name, date=raw)) from e
+        if valid_from in seen:
+            raise ValueError(_("Location '%(name)s': two price lists start on %(date)s.",
+                               name=name, date=valid_from.isoformat()))
+        seen.add(valid_from)
+        _validate_period(name, period, valid_from)
+
+
+def _validate_period(name: str, period: dict, valid_from: date) -> None:
+    hhmm = lambda m: f"{m // 60:02d}:{m % 60:02d}"  # noqa: E731
     for day_type in ("weekday", "weekend"):
-        blocks = location["tariffs"].get(day_type)
+        days = _("%(days)s from %(date)s",
+                 days=_("Monday – Friday") if day_type == "weekday" else _("Saturday – Sunday"),
+                 date=valid_from.isoformat())
+        blocks = period.get(day_type)
         if not blocks:
-            raise ValueError(f"Location '{name}': no tariffs defined for '{day_type}'.")
+            raise ValueError(_("Location '%(name)s', %(days)s: no tariffs defined.",
+                               name=name, days=days))
 
         parsed = []
         for block in blocks:
-            where = f"Location '{name}', {day_type} block {block}"
+            where = dict(name=name, days=days, block=block)
             try:
                 start, end = parse_time(str(block["from"])), parse_time(str(block["to"]))
                 price = float(block["price"])
             except (KeyError, TypeError, ValueError) as e:
-                raise ValueError(f"{where}: invalid block ({e}). "
-                                 f"Expected {{from: 'HH:MM', to: 'HH:MM', price: number}}.") from e
+                raise ValueError(_("Location '%(name)s', %(days)s: invalid block %(block)s. "
+                                   "Expected from and to as HH:MM and a price.", **where)) from e
             if start >= end:
-                raise ValueError(f"{where}: 'from' must be before 'to'. "
-                                 "Split blocks crossing midnight into two (…–24:00 and 00:00–…).")
+                raise ValueError(_("Location '%(name)s', %(days)s: block %(block)s must start "
+                                   "before it ends. Split blocks crossing midnight into two "
+                                   "(…–24:00 and 00:00–…).", **where))
             if price < 0:
-                raise ValueError(f"{where}: negative price.")
+                raise ValueError(_("Location '%(name)s', %(days)s: negative price in block "
+                                   "%(block)s.", **where))
             parsed.append((start, end))
 
         expected = 0
         for start, end in sorted(parsed):
             if start > expected:
-                raise ValueError(f"Location '{name}', {day_type}: no tariff between "
-                                 f"{expected // 60:02d}:{expected % 60:02d} and "
-                                 f"{start // 60:02d}:{start % 60:02d}.")
+                raise ValueError(_("Location '%(name)s', %(days)s: no tariff between %(start)s "
+                                   "and %(end)s.", name=name, days=days,
+                                   start=hhmm(expected), end=hhmm(start)))
             if start < expected:
-                raise ValueError(f"Location '{name}', {day_type}: overlapping blocks around "
-                                 f"{start // 60:02d}:{start % 60:02d}.")
+                raise ValueError(_("Location '%(name)s', %(days)s: overlapping blocks around "
+                                   "%(time)s.", name=name, days=days, time=hhmm(start)))
             expected = end
         if expected != MINUTES_PER_DAY:
-            raise ValueError(f"Location '{name}', {day_type}: no tariff after "
-                             f"{expected // 60:02d}:{expected % 60:02d} (last block must end at 24:00).")
+            raise ValueError(_("Location '%(name)s', %(days)s: no tariff after %(time)s "
+                               "(the last block must end at 24:00).",
+                               name=name, days=days, time=hhmm(expected)))
 
 
 def energy_profile(samples: list, start: datetime, end: datetime, total_kwh: float) -> list:
@@ -200,6 +266,7 @@ def calculate_cost_profile(segments: list, location: dict) -> float:
         TariffGapError: if any part of the profile has no matching tariff.
     """
     tz = location_zone(location)
+    periods = tariff_periods(location)
     cost = 0.0
     gap_minutes = 0.0
 
@@ -219,7 +286,7 @@ def calculate_cost_profile(segments: list, location: dict) -> float:
             step_s = (step_end - current).total_seconds()
 
             local = current.astimezone(tz)
-            blocks = get_tariff_blocks(location, local)
+            blocks = get_tariff_blocks(location, local, periods)
             tariff = find_tariff(blocks, local.time())
 
             if tariff is None:
@@ -230,8 +297,7 @@ def calculate_cost_profile(segments: list, location: dict) -> float:
             current = step_end
 
     if gap_minutes:
-        # Never return a partial cost: once written, a session is not
-        # recalculated (cost IS NULL filter), so a wrong value would stick.
+        # Never return a partial cost — a wrong value would be written to TeslaMate.
         raise TariffGapError(
             f"Location '{location['name']}': {gap_minutes:.1f} minute(s) had no matching "
             "tariff. Check your tariff config for gaps."

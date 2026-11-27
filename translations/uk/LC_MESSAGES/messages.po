@@ -1,0 +1,479 @@
+# Ukrainian translations for teslamate-private-charging-costs.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the teslamate-private-charging-costs project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: teslamate-private-charging-costs VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-27 21:41+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uk\n"
+"Language-Team: uk <https://github.com/kalich5/teslamate-private-charging-costs>\n"
+"Plural-Forms: nplurals=3; plural=n % 10 == 1 && n % 100 != 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 &&"
+" (n % 100 < 12 || n % 100 > 14) ? 1 : 2;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.19.0\n"
+
+#, python-format
+msgid "%(days)s from %(date)s"
+msgstr "%(days)s з %(date)s"
+
+#, python-format
+msgid "%(days)s: '%(price)s' is not a valid price."
+msgstr "%(days)s: «%(price)s» — недійсна ціна."
+
+#, python-format
+msgid "%(field)s: '%(value)s' is not a valid number."
+msgstr "%(field)s: «%(value)s» — недійсне число."
+
+msgid "0 = only when you click “Calculate and save”."
+msgstr "0 = лише коли ви натискаєте «Обчислити та зберегти»."
+
+msgid "A location needs at least one price list."
+msgstr "Місце повинно мати принаймні один цінник."
+
+msgid "Add location"
+msgstr "Додати місце"
+
+msgid "Add time block"
+msgstr "Додати часовий проміжок"
+
+msgid "Another run is in progress, try again in a moment."
+msgstr "Уже виконується інший запуск, спробуйте ще раз за мить."
+
+msgid "Automatic runs are off."
+msgstr "Автоматичні запуски вимкнено."
+
+msgid "Back"
+msgstr "Назад"
+
+msgid "By default the language of your browser is used, as in TeslaMate."
+msgstr "За замовчуванням використовується мова вашого браузера, як у TeslaMate."
+
+msgid "Calculate and save"
+msgstr "Обчислити та зберегти"
+
+msgid ""
+"Calculates the cost of every finished charge at your locations that has no cost yet. Existing "
+"costs are never changed."
+msgstr ""
+"Обчислює вартість кожної завершеної зарядки у ваших місцях, яка ще не має вартості. Наявні "
+"значення ніколи не змінюються."
+
+msgid "Cancel"
+msgstr "Скасувати"
+
+#, python-format
+msgid "Cannot connect to the TeslaMate database: %(error)s"
+msgstr "Не вдається підключитися до бази даних TeslaMate: %(error)s"
+
+#, python-format
+msgid "Cannot read sessions from the TeslaMate database: %(error)s"
+msgstr "Не вдається прочитати зарядки з бази даних TeslaMate: %(error)s"
+
+msgid "Charges"
+msgstr "Зарядки"
+
+#, python-format
+msgid "Charges to be updated: %(n)s"
+msgstr "Зарядок до оновлення: %(n)s"
+
+msgid "Charging Costs"
+msgstr "Вартість зарядки"
+
+msgid "Config is empty or not a mapping."
+msgstr "Налаштування порожні або недійсні."
+
+#, python-format
+msgid "Configuration problem: %(problem)s"
+msgstr "Проблема налаштувань: %(problem)s"
+
+msgid "Coordinates are out of range."
+msgstr "Координати поза допустимим діапазоном."
+
+msgid "Cost"
+msgstr "Вартість"
+
+msgid "Costs are converted to this currency using the ECB rate of the charging day."
+msgstr "Вартість перераховується в цю валюту за курсом ЄЦБ на день зарядки."
+
+msgid "Costs saved"
+msgstr "Вартість збережено"
+
+msgid "Could not load geo-fences from TeslaMate."
+msgstr "Не вдалося завантажити гео-позиції з TeslaMate."
+
+msgid "Currency in TeslaMate"
+msgstr "Валюта в TeslaMate"
+
+msgid "Currency must be a 3-letter code, e.g. CZK."
+msgstr "Валюта має бути трилітерним кодом, напр. UAH."
+
+msgid "Currency of your bill"
+msgstr "Валюта вашого рахунку"
+
+msgid "Database"
+msgstr "База даних"
+
+msgid "Delete"
+msgstr "Видалити"
+
+#, python-format
+msgid "Delete %(name)s? Costs already written stay in TeslaMate."
+msgstr "Видалити %(name)s? Уже записана вартість залишиться в TeslaMate."
+
+msgid "Each charge is priced with the price list that was valid on its day."
+msgstr "Кожна зарядка рахується за цінником, що діяв того дня."
+
+msgid ""
+"Each price list applies from its date until the next one starts; the oldest one also applies to "
+"all earlier charges. Keep old price lists — they are needed to recalculate past charges."
+msgstr ""
+"Кожен цінник діє від своєї дати до початку наступного; найстаріший діє також для всіх попередніх "
+"зарядок. Зберігайте старі цінники — вони потрібні для перерахунку минулих зарядок."
+
+msgid "Edit"
+msgstr "Редагувати"
+
+msgid "End"
+msgstr "Кінець"
+
+msgid "Enter both dates as YYYY-MM-DD."
+msgstr "Введіть обидві дати у форматі РРРР-ММ-ДД."
+
+#, python-format
+msgid "Errors: %(n)s"
+msgstr "Помилки: %(n)s"
+
+msgid "From"
+msgstr "З"
+
+msgid "Geo-Fences"
+msgstr "Гео-позиції"
+
+msgid "Host"
+msgstr "Сервер"
+
+msgid "Interval must be a number ≥ 0."
+msgstr "Інтервал має бути числом ≥ 0."
+
+#, python-format
+msgid "Invalid configuration: %(error)s"
+msgstr "Недійсні налаштування: %(error)s"
+
+msgid "Invalid or expired form token — reload the page and try again."
+msgstr "Недійсний або прострочений токен форми — перезавантажте сторінку та спробуйте ще раз."
+
+msgid "Invalid price lists — open the location to fix them."
+msgstr "Недійсні цінники — відкрийте місце, щоб їх виправити."
+
+#, python-format
+msgid "Invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Недійсна дата початку цінника «%(date)s» (очікується РРРР-ММ-ДД)."
+
+msgid "Language"
+msgstr "Мова"
+
+msgid "Last 100 finished charges. kWh = energy taken from the grid."
+msgstr "Останні 100 завершених зарядок. кВт·год = енергія, взята з мережі."
+
+#, python-format
+msgid "Last run: %(time)s"
+msgstr "Останній запуск: %(time)s"
+
+msgid "Latitude"
+msgstr "Широта"
+
+msgid "Loading…"
+msgstr "Завантаження…"
+
+msgid "Location"
+msgstr "Місце"
+
+#, python-format
+msgid "Location '%(name)s' deleted."
+msgstr "Місце «%(name)s» видалено."
+
+#, python-format
+msgid ""
+"Location '%(name)s' has no timezone. Set a default timezone (e.g. Europe/Prague) or one for the "
+"location."
+msgstr ""
+"Місце «%(name)s» не має часового поясу. Встановіть типовий пояс (напр. Europe/Kyiv) або пояс для "
+"цього місця."
+
+#, python-format
+msgid "Location '%(name)s' saved."
+msgstr "Місце «%(name)s» збережено."
+
+#, python-format
+msgid ""
+"Location '%(name)s', %(days)s: block %(block)s must start before it ends. Split blocks crossing "
+"midnight into two (…–24:00 and 00:00–…)."
+msgstr ""
+"Місце «%(name)s», %(days)s: проміжок %(block)s має починатися раніше, ніж закінчується. Розділіть"
+" проміжки через північ на два (…–24:00 і 00:00–…)."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: invalid block %(block)s. Expected from and to as HH:MM and a price."
+msgstr ""
+"Місце «%(name)s», %(days)s: недійсний проміжок %(block)s. Потрібні початок і кінець у форматі "
+"ГГ:ХХ та ціна."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: negative price in block %(block)s."
+msgstr "Місце «%(name)s», %(days)s: відʼємна ціна в проміжку %(block)s."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff after %(time)s (the last block must end at 24:00)."
+msgstr ""
+"Місце «%(name)s», %(days)s: немає тарифу після %(time)s (останній проміжок має закінчуватися о "
+"24:00)."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff between %(start)s and %(end)s."
+msgstr "Місце «%(name)s», %(days)s: немає тарифу між %(start)s і %(end)s."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariffs defined."
+msgstr "Місце «%(name)s», %(days)s: тарифи не задано."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: overlapping blocks around %(time)s."
+msgstr "Місце «%(name)s», %(days)s: проміжки перекриваються близько %(time)s."
+
+#, python-format
+msgid "Location '%(name)s': invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Місце «%(name)s»: недійсна дата початку цінника «%(date)s» (очікується РРРР-ММ-ДД)."
+
+#, python-format
+msgid "Location '%(name)s': missing '%(key)s'."
+msgstr "Місце «%(name)s»: бракує «%(key)s»."
+
+#, python-format
+msgid "Location '%(name)s': missing 'timezone'."
+msgstr "Місце «%(name)s»: бракує часового поясу."
+
+#, python-format
+msgid "Location '%(name)s': no price lists defined."
+msgstr "Місце «%(name)s»: цінники не задано."
+
+#, python-format
+msgid "Location '%(name)s': two price lists start on %(date)s."
+msgstr "Місце «%(name)s»: два цінники починаються %(date)s."
+
+#, python-format
+msgid "Location '%(name)s': unknown timezone '%(tz)s'."
+msgstr "Місце «%(name)s»: невідомий часовий пояс «%(tz)s»."
+
+msgid "Location names must be unique."
+msgstr "Назви місць мають бути унікальними."
+
+msgid "Locations"
+msgstr "Місця"
+
+msgid "Login required"
+msgstr "Потрібен вхід"
+
+msgid "Longitude"
+msgstr "Довгота"
+
+#, python-format
+msgid "Missing '%(key)s'."
+msgstr "Бракує «%(key)s»."
+
+msgid "Monday – Friday"
+msgstr "Понеділок – пʼятниця"
+
+msgid "Name"
+msgstr "Ім'я"
+
+msgid "Name is required."
+msgstr "Потрібно вказати назву."
+
+msgid "New location"
+msgstr "Нове місце"
+
+msgid "New price list from date"
+msgstr "Новий цінник з дати"
+
+#, python-format
+msgid "Next run: %(time)s"
+msgstr "Наступний запуск: %(time)s"
+
+msgid "No geo-fences in TeslaMate"
+msgstr "У TeslaMate немає гео-позицій"
+
+msgid "No locations yet. Add your home (or any private charger) and its electricity tariff."
+msgstr "Ще немає місць. Додайте свій дім (або іншу приватну зарядку) і його тариф на електроенергію."
+
+#, python-format
+msgid "No password set — anyone who can reach this page can change your tariffs. Set %(var)s."
+msgstr ""
+"Пароль не встановлено — будь-хто, хто має доступ до цієї сторінки, може змінити ваші тарифи. "
+"Встановіть %(var)s."
+
+msgid "No price"
+msgstr "Без ціни"
+
+msgid "Overlap"
+msgstr "Перекриття"
+
+#, python-format
+msgid "Overwrite all costs at %(name)s in this period?"
+msgstr "Перезаписати всю вартість для %(name)s за цей період?"
+
+msgid "Per kWh"
+msgstr "за кВт·год"
+
+msgid "Pick a TeslaMate geo-fence to fill in name, coordinates and radius."
+msgstr "Виберіть гео-позицію з TeslaMate, щоб заповнити назву, координати та радіус."
+
+msgid "Preview"
+msgstr "Попередній перегляд"
+
+msgid "Previous cost"
+msgstr "Попередня вартість"
+
+#, python-format
+msgid "Price list from %(date)s"
+msgstr "Цінник з %(date)s"
+
+msgid "Price lists"
+msgstr "Цінники"
+
+#, python-format
+msgid "Price lists: %(n)s"
+msgstr "Цінників: %(n)s"
+
+msgid "Private charging"
+msgstr "Приватна зарядка"
+
+msgid "Radius"
+msgstr "Радіус"
+
+msgid "Radius must be positive."
+msgstr "Радіус має бути додатним."
+
+msgid "Recalculate"
+msgstr "Перерахувати"
+
+msgid "Recalculate and overwrite"
+msgstr "Перерахувати та перезаписати"
+
+msgid "Recalculate costs"
+msgstr "Перерахунок вартості"
+
+msgid "Recalculate costs…"
+msgstr "Перерахувати вартість…"
+
+msgid "Recalculation overwrites ALL costs of charges at this location in the selected period"
+msgstr "Перерахунок перезапише ВСЮ вартість зарядок у цьому місці за вибраний період"
+
+msgid "Remove"
+msgstr "Прибрати"
+
+msgid "Remove price list"
+msgstr "Прибрати цінник"
+
+msgid "Run automatically every (hours)"
+msgstr "Запускати автоматично кожні (годин)"
+
+#, python-format
+msgid "Runs automatically every %(hours)s h."
+msgstr "Запускається автоматично кожні %(hours)s год."
+
+msgid "Same as Monday – Friday"
+msgstr "Як у понеділок – пʼятницю"
+
+msgid "Saturday – Sunday"
+msgstr "Субота – неділя"
+
+msgid "Save"
+msgstr "Зберегти"
+
+msgid "Save these costs"
+msgstr "Зберегти цю вартість"
+
+#, python-format
+msgid "Set with environment variables (%(vars)s), the same as in TeslaMate."
+msgstr "Задається змінними середовища (%(vars)s), як і в TeslaMate."
+
+msgid "Settings"
+msgstr "Налаштування"
+
+msgid "Settings saved."
+msgstr "Налаштування збережено."
+
+msgid "Start"
+msgstr "Початок"
+
+msgid "Tariff times are local times in this time zone. Summer time is handled automatically."
+msgstr "Час тарифів — місцевий час у цьому часовому поясі. Літній час враховується автоматично."
+
+msgid "TeslaMate database"
+msgstr "База даних TeslaMate"
+
+msgid "The start date must not be after the end date."
+msgstr "Дата початку не може бути пізніше за дату завершення."
+
+msgid "Time zone"
+msgstr "Часовий пояс"
+
+msgid ""
+"Times are 24-hour (HH:MM); the last block ends at 24:00. A block over midnight (e.g. 22:00–06:00)"
+" is entered as 22:00–24:00 and 00:00–06:00."
+msgstr ""
+"Час у 24-годинному форматі (ГГ:ХХ); останній проміжок закінчується о 24:00. Проміжок через північ"
+" (напр. 22:00–06:00) вводиться як 22:00–24:00 і 00:00–06:00."
+
+msgid "To"
+msgstr "До"
+
+msgid "Unavailable"
+msgstr "Недоступно"
+
+#, python-format
+msgid "Unexpected error: %(error)s"
+msgstr "Неочікувана помилка: %(error)s"
+
+#, python-format
+msgid "Unknown location '%(name)s'."
+msgstr "Невідоме місце «%(name)s»."
+
+#, python-format
+msgid "Unknown timezone '%(tz)s'."
+msgstr "Невідомий часовий пояс «%(tz)s»."
+
+#, python-format
+msgid "Updated: %(n)s"
+msgstr "Оновлено: %(n)s"
+
+msgid "User"
+msgstr "Користувач"
+
+msgid "Valid from"
+msgstr "Діє з"
+
+msgid "Web App"
+msgstr "Веб Додаток"
+
+msgid "Write costs to TeslaMate now?"
+msgstr "Записати вартість у TeslaMate зараз?"
+
+msgid "including costs entered in TeslaMate and costs calculated earlier. Check the preview first."
+msgstr ""
+"включно з вартістю, введеною в TeslaMate, і раніше обчисленою. Спершу перегляньте попередній "
+"перегляд."
+
+msgid "pending"
+msgstr "очікує"
+
+msgid "— choose —"
+msgstr "— виберіть —"
+

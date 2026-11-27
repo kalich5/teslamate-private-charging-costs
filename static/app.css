@@ -1,0 +1,23 @@
+/* Small additions to Bulma — keep this minimal. */
+.tariffs { max-width: 520px; }
+.tariffs td { border: 0; vertical-align: middle; }
+.tariffs td:nth-child(-n+2) { width: 30%; }
+.tariffs td:last-child { width: 32px; }
+.tariffs tr.is-invalid .input { border-color: #f14668; }
+.settings { max-width: 420px; }
+
+/* 24 h tariff bar: green = cheapest … red = most expensive (Bulma colours) */
+.tariff-bar { position: relative; height: 20px; border-radius: 4px; overflow: hidden; background: #f5f5f5; }
+.tariff-bar .seg { position: absolute; top: 0; bottom: 0; color: #fff; font-size: 11px; line-height: 20px;
+  text-align: center; overflow: hidden; white-space: nowrap; border-right: 1px solid #fff; }
+.tariff-bar .lvl0 { background: #48c78e; }
+.tariff-bar .lvl1 { background: #8fd16a; }
+.tariff-bar .lvl2 { background: #ffd257; color: #363636; }
+.tariff-bar .lvl3 { background: #ff9f5a; }
+.tariff-bar .lvl4 { background: #f14668; }
+.tariff-bar .gap { background: repeating-linear-gradient(45deg, #f14668 0 3px, #fff 3px 6px); }
+.tariff-scale { display: flex; justify-content: space-between; font-size: 10px; color: #7a7a7a; margin: 1px 0 6px; }
+.tariff-cell { min-width: 200px; }
+.tariff-preview { max-width: 520px; margin-top: 4px; }
+.valid-from-label { white-space: nowrap; align-self: center; }
+.price-list .valid-from { width: auto; }

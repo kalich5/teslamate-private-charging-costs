@@ -5,9 +5,10 @@ import sys
 
 import psycopg2
 import yaml
-from datetime import datetime, timezone
+from datetime import date, datetime, time, timedelta, timezone
 
 from geo import find_location
+from i18n import _
 from pricing import calculate_cost_profile, energy_profile, location_zone, validate_location
 from fx import convert
 
@@ -60,7 +61,7 @@ def db_connect(settings):
 # TeslaMate links every charging process to the position recorded when it
 # started (charging_processes.position_id), so a direct join is enough — no
 # need to scan the (very large) positions table per session.
-FETCH_QUERY = """
+_FETCH = """
 SELECT
     cp.id,
     cp.start_date,
@@ -68,14 +69,22 @@ SELECT
     p.latitude,
     p.longitude,
     cp.charge_energy_added,
-    cp.charge_energy_used
+    cp.charge_energy_used,
+    cp.cost
 FROM charging_processes cp
 LEFT JOIN positions p ON p.id = cp.position_id
-WHERE cp.cost IS NULL
+WHERE {condition}
   AND cp.end_date IS NOT NULL
   AND (cp.charge_energy_added > 0 OR cp.charge_energy_used > 0)
-ORDER BY cp.id
+ORDER BY cp.start_date
 """
+
+# Normal run: only sessions without a cost.
+FETCH_QUERY = _FETCH.format(condition="cp.cost IS NULL")
+
+# Recalculation: every session that started in [from, to) (UTC), whatever
+# its current cost.
+FETCH_RANGE_QUERY = _FETCH.format(condition="cp.start_date >= %s AND cp.start_date < %s")
 
 # Per-sample charging data, used to find *when* the energy was actually
 # delivered (e.g. plugged in at 18:00 but scheduled charging starts at 00:00).
@@ -169,6 +178,195 @@ def process_session(session, locations, base_currency, load_samples=None):
     return final_cost, location["name"]
 
 
+class ConfigError(ValueError):
+    """Raised when config.yaml is incomplete or invalid."""
+
+
+def prepare_config(config: dict) -> dict:
+    """
+    Validate *config* and fill in derived values (per-location timezone).
+
+    Returns a new dict; the input is not modified.  Raises ``ConfigError``.
+    """
+    if not isinstance(config, dict):
+        raise ConfigError(_("Config is empty or not a mapping."))
+    for key in ("BASE_CURRENCY", "LOCATIONS"):
+        if not config.get(key):
+            raise ConfigError(_("Missing '%(key)s'.", key=key))
+
+    # Tariff times are local wall-clock times.  Each location may override the
+    # global TIMEZONE (e.g. a cottage abroad).
+    default_tz = config.get("TIMEZONE")
+    locations = []
+    for loc in config["LOCATIONS"]:
+        loc = {**loc}
+        loc["timezone"] = loc.get("timezone") or default_tz
+        if not loc["timezone"]:
+            raise ConfigError(_("Location '%(name)s' has no timezone. Set a default timezone "
+                                "(e.g. Europe/Prague) or one for the location.",
+                                name=loc.get("name")))
+        # Fail fast on config errors (gaps, overlaps, midnight-crossing blocks…)
+        # instead of writing wrong costs that would never be recalculated.
+        try:
+            validate_location(loc)
+        except ValueError as e:
+            raise ConfigError(str(e)) from e
+        locations.append(loc)
+
+    names = [loc["name"] for loc in locations]
+    if len(set(names)) != len(names):
+        raise ConfigError(_("Location names must be unique."))
+
+    return {**config, "LOCATIONS": locations}
+
+
+def recalculation_range(location: dict, date_from: date, date_to: date) -> tuple:
+    """
+    UTC bounds ``[start, end)`` (naive, like TeslaMate's columns) for the local
+    dates *date_from* … *date_to* (inclusive) of *location*.
+    """
+    tz = location_zone(location)
+    start = datetime.combine(date_from, time.min, tz)
+    end = datetime.combine(date_to + timedelta(days=1), time.min, tz)
+    as_naive_utc = lambda dt: dt.astimezone(timezone.utc).replace(tzinfo=None)  # noqa: E731
+    return as_naive_utc(start), as_naive_utc(end)
+
+
+def run_import(config: dict, dry_run: bool = False, conn=None, recalculate: dict = None) -> dict:
+    """
+    Price all sessions with missing cost and (unless *dry_run*) write them.
+
+    With *recalculate* ``{"location": name, "date_from": date, "date_to": date}``
+    every session at that location that started within the (local, inclusive)
+    dates is priced again and its cost **overwritten**, whatever it was.
+
+    *config* must already be prepared with :func:`prepare_config`.  If *conn*
+    is not given, a connection is opened from the config / environment.
+
+    Returns ``{"updated", "skipped", "errors", "found", "dry_run", "sessions"}``
+    where ``sessions`` lists ``{"id", "start", "location", "kwh", "cost",
+    "old_cost", "status", "error"}`` for every session matched to a location.
+
+    Raises ``psycopg2.OperationalError`` if the database is unreachable.
+    """
+    locations = config["LOCATIONS"]
+    base_currency = config["BASE_CURRENCY"]
+    db_cfg = db_settings(config.get("DATABASE"))
+
+    query, params = FETCH_QUERY, ()
+    if recalculate:
+        locations = [loc for loc in locations if loc["name"] == recalculate["location"]]
+        if not locations:
+            raise ConfigError(_("Unknown location '%(name)s'.", name=recalculate["location"]))
+        query = FETCH_RANGE_QUERY
+        params = recalculation_range(locations[0], recalculate["date_from"],
+                                     recalculate["date_to"])
+
+    log.info("=" * 50)
+    log.info("  TeslaMate Private Charging Cost Importer")
+    log.info("  DB:        %s@%s:%s/%s",
+             db_cfg["user"], db_cfg["host"], db_cfg["port"], db_cfg["dbname"])
+    log.info("  Currency:  %s", base_currency)
+    log.info("  Locations: %s", ", ".join(f'{loc["name"]} ({loc["timezone"]})' for loc in locations))
+    if recalculate:
+        log.info("  Recalculate: %s, %s – %s (overwrites existing costs)", recalculate["location"],
+                 recalculate["date_from"], recalculate["date_to"])
+    if dry_run:
+        log.info("  Mode:      DRY-RUN (no writes)")
+    log.info("=" * 50)
+
+    own_conn = conn is None
+    if own_conn:
+        conn = db_connect(db_cfg)
+
+    summary = {"updated": 0, "skipped": 0, "errors": 0, "found": 0,
+               "dry_run": dry_run, "recalculate": recalculate, "sessions": []}
+    cur = conn.cursor()
+    try:
+        def load_samples(session_id):
+            cur.execute(CHARGES_QUERY, (session_id,))
+            return cur.fetchall()
+
+        cur.execute(query, params)
+        rows = cur.fetchall()
+        summary["found"] = len(rows)
+        if recalculate:
+            log.info("Found %d charging session(s) in the period.", len(rows))
+        else:
+            log.info("Found %d charging session(s) with missing cost.", len(rows))
+
+        for row in rows:
+            tm_id, start, end, lat, lon, added, used, old_cost = row
+
+            session = {
+                "id":         tm_id,
+                "start_date": start,
+                "end_date":   end,
+                "latitude":   to_float(lat),
+                "longitude":  to_float(lon),
+                "kwh":        billed_energy(added, used),
+            }
+            entry = {"id": tm_id, "start": start, "location": None, "kwh": session["kwh"],
+                     "cost": None, "old_cost": to_float(old_cost), "status": None, "error": None}
+
+            try:
+                result = process_session(session, locations, base_currency, load_samples)
+            except Exception as e:
+                log.error("Session %s: unexpected error — %s", tm_id, e)
+                summary["errors"] += 1
+                matched = find_location(session["latitude"], session["longitude"], locations)
+                entry.update(status="error", error=str(e),
+                             location=matched["name"] if matched else None)
+                summary["sessions"].append(entry)
+                continue
+
+            if result is None:
+                summary["skipped"] += 1
+                continue
+
+            cost, location_name = result
+            entry.update(location=location_name, cost=cost)
+
+            if dry_run:
+                log.info("  DRY-RUN  Session %s @ %s -> %.4f %s", tm_id, location_name, cost, base_currency)
+                summary["updated"] += 1
+                entry["status"] = "preview"
+                summary["sessions"].append(entry)
+                continue
+
+            try:
+                cur.execute(UPDATE_QUERY, (cost, tm_id))
+                # Commit immediately after each successful update so that a DB error
+                # on a later row cannot roll back costs that have already been written.
+                conn.commit()
+                log.info("  UPDATED  Session %s @ %s -> %.4f %s", tm_id, location_name, cost, base_currency)
+                summary["updated"] += 1
+                entry["status"] = "updated"
+            except Exception as e:
+                log.error("DB error updating session %s: %s", tm_id, e)
+                conn.rollback()
+                summary["errors"] += 1
+                entry.update(status="error", error=str(e))
+            summary["sessions"].append(entry)
+    finally:
+        cur.close()
+        if own_conn:
+            conn.close()
+
+    log.info("-" * 50)
+    if dry_run:
+        log.info("  DRY-RUN SUMMARY")
+        log.info("  Would be updated: %d", summary["updated"])
+    else:
+        log.info("  SUMMARY")
+        log.info("  Updated:  %d", summary["updated"])
+    log.info("  Skipped:  %d", summary["skipped"])
+    if summary["errors"]:
+        log.warning("  Errors:   %d", summary["errors"])
+    log.info("-" * 50)
+    return summary
+
+
 def main():
     arg_parser = argparse.ArgumentParser(
         description="Calculate and write home charging costs into TeslaMate",
@@ -183,6 +381,9 @@ Examples:
 
   # Verbose output (show skipped sessions)
   python importer.py --verbose
+
+  # Recalculate (and OVERWRITE) all costs at "home" in 2025
+  python importer.py --recalculate home --from 2025-01-01 --to 2025-12-31 --dry-run
         """,
     )
     arg_parser.add_argument(
@@ -192,128 +393,51 @@ Examples:
     )
     arg_parser.add_argument(
         "--config", "-c",
-        default="config.yaml",
+        default=os.environ.get("CONFIG_PATH", "config.yaml"),
         metavar="FILE",
-        help="Path to config.yaml (default: config.yaml)",
+        help="Path to config.yaml (default: $CONFIG_PATH or config.yaml)",
     )
     arg_parser.add_argument(
         "--verbose", "-v",
         action="store_true",
         help="Show debug messages including skipped sessions",
     )
+    arg_parser.add_argument(
+        "--recalculate",
+        metavar="LOCATION",
+        help="Recalculate all charges at LOCATION between --from and --to, "
+             "overwriting existing costs",
+    )
+    arg_parser.add_argument("--from", dest="date_from", type=date.fromisoformat,
+                            metavar="YYYY-MM-DD", help="First day to recalculate (local date)")
+    arg_parser.add_argument("--to", dest="date_to", type=date.fromisoformat,
+                            metavar="YYYY-MM-DD", help="Last day to recalculate (default: today)")
     args = arg_parser.parse_args()
+    if args.recalculate and not args.date_from:
+        arg_parser.error("--recalculate needs --from")
 
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
 
-    config = load_config(args.config)
-    locations = config["LOCATIONS"]
-    base_currency = config["BASE_CURRENCY"]
+    try:
+        config = prepare_config(load_config(args.config))
+    except ConfigError as e:
+        log.error("Invalid config: %s", e)
+        sys.exit(1)
 
-    # Tariff times are local wall-clock times.  Each location may override the
-    # global TIMEZONE (e.g. a cottage abroad).
-    default_tz = config.get("TIMEZONE")
-    for loc in locations:
-        loc.setdefault("timezone", default_tz)
-        if not loc["timezone"]:
-            log.error("Location '%s' has no timezone. Set TIMEZONE (e.g. Europe/Prague) "
-                      "in config.yaml or 'timezone' on the location.", loc.get("name"))
-            sys.exit(1)
-        # Fail fast on config errors (gaps, overlaps, midnight-crossing blocks…)
-        # instead of writing wrong costs that would never be recalculated.
-        try:
-            validate_location(loc)
-        except ValueError as e:
-            log.error("Invalid config: %s", e)
-            sys.exit(1)
-    db_cfg = db_settings(config.get("DATABASE"))
-
-    log.info("=" * 50)
-    log.info("  TeslaMate Private Charging Cost Importer")
-    log.info("  DB:        %s@%s:%s/%s",
-             db_cfg["user"], db_cfg["host"], db_cfg["port"], db_cfg["dbname"])
-    log.info("  Currency:  %s", base_currency)
-    log.info("  Locations: %s", ", ".join(f'{loc["name"]} ({loc["timezone"]})' for loc in locations))
-    if args.dry_run:
-        log.info("  Mode:      DRY-RUN (no writes)")
-    log.info("=" * 50)
+    recalculate = None
+    if args.recalculate:
+        recalculate = {"location": args.recalculate, "date_from": args.date_from,
+                       "date_to": args.date_to or date.today()}
 
     try:
-        conn = db_connect(db_cfg)
+        run_import(config, dry_run=args.dry_run, recalculate=recalculate)
+    except ConfigError as e:
+        log.error("%s", e)
+        sys.exit(1)
     except psycopg2.OperationalError as e:
         log.error("Cannot connect to database: %s", e)
         sys.exit(1)
-
-    cur = conn.cursor()
-
-    def load_samples(session_id):
-        cur.execute(CHARGES_QUERY, (session_id,))
-        return cur.fetchall()
-
-    cur.execute(FETCH_QUERY)
-    rows = cur.fetchall()
-    log.info("Found %d charging session(s) with missing cost.", len(rows))
-
-    updated = 0
-    skipped = 0
-    errors  = 0
-
-    for row in rows:
-        tm_id, start, end, lat, lon, added, used = row
-
-        session = {
-            "id":         tm_id,
-            "start_date": start,
-            "end_date":   end,
-            "latitude":   to_float(lat),
-            "longitude":  to_float(lon),
-            "kwh":        billed_energy(added, used),
-        }
-
-        try:
-            result = process_session(session, locations, base_currency, load_samples)
-        except Exception as e:
-            log.error("Session %s: unexpected error — %s", tm_id, e)
-            errors += 1
-            continue
-
-        if result is None:
-            skipped += 1
-            continue
-
-        cost, location_name = result
-
-        if args.dry_run:
-            log.info("  DRY-RUN  Session %s @ %s -> %.4f %s", tm_id, location_name, cost, base_currency)
-            updated += 1
-            continue
-
-        try:
-            cur.execute(UPDATE_QUERY, (cost, tm_id))
-            # Commit immediately after each successful update so that a DB error
-            # on a later row cannot roll back costs that have already been written.
-            conn.commit()
-            log.info("  UPDATED  Session %s @ %s -> %.4f %s", tm_id, location_name, cost, base_currency)
-            updated += 1
-        except Exception as e:
-            log.error("DB error updating session %s: %s", tm_id, e)
-            conn.rollback()
-            errors += 1
-
-    cur.close()
-    conn.close()
-
-    log.info("-" * 50)
-    if args.dry_run:
-        log.info("  DRY-RUN SUMMARY")
-        log.info("  Would be updated: %d", updated)
-    else:
-        log.info("  SUMMARY")
-        log.info("  Updated:  %d", updated)
-    log.info("  Skipped:  %d", skipped)
-    if errors:
-        log.warning("  Errors:   %d", errors)
-    log.info("-" * 50)
 
 
 if __name__ == "__main__":
