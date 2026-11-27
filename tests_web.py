@@ -219,6 +219,15 @@ class TestConfigStore:
         assert text.index("name: a") < text.index("tariffs")
 
 
+def test_tariff_bar():
+    from web import tariff_bar
+    segs = tariff_bar([{"from": "00:00", "to": "06:00", "price": 4.0},
+                       {"from": "06:00", "to": "24:00", "price": 7.5},
+                       {"from": "bad", "to": "24:00", "price": 1}])
+    assert [(s["left"], s["width"], s["level"]) for s in segs] == [(0, 25, 0), (25, 75, 4)]
+    assert tariff_bar([{"from": "00:00", "to": "24:00", "price": 4}])[0]["level"] == 0
+
+
 class TestRunner:
     def test_invalid_config_reports_error(self, tmp_path):
         from web import Runner

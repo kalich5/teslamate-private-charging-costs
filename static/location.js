@@ -69,25 +69,52 @@
     render(day);
   }
 
-  // Show a short warning when the blocks leave a gap or overlap.
+  const addSeg = (bar, cls, start, end, text, title) => {
+    const seg = document.createElement("div");
+    seg.className = `seg ${cls}`;
+    seg.style.left = `${start / 14.4}%`;
+    seg.style.width = `${(end - start) / 14.4}%`;
+    seg.textContent = text;
+    seg.title = title;
+    bar.appendChild(seg);
+  };
+
+  // Redraw the 24 h bar and point out gaps or overlaps.
   function render(day) {
     const out = form.querySelector(`.coverage[data-day="${day}"]`);
-    if (!out) return;
+    const bar = form.querySelector(`.tariff-bar[data-day="${day}"]`);
+    if (!out || !bar) return;
+    const valid = [];
     const covered = new Array(1440).fill(0);
     for (const r of rows(day)) {
       const start = toMinutes(r.from.value);
       const end = toMinutes(r.to.value);
       const bad = start === null || end === null || end <= start;
       r.tr.classList.toggle("is-invalid", bad);
-      if (!bad) for (let m = start; m < end; m++) covered[m]++;
+      if (bad) continue;
+      for (let m = start; m < end; m++) covered[m]++;
+      valid.push({ start, end, price: parseFloat(r.price.value.replace(",", ".")), r });
     }
+
+    // Colour by price rank: cheapest green (0) … most expensive red (4).
+    const prices = [...new Set(valid.map((v) => v.price).filter((p) => !isNaN(p)))].sort((a, b) => a - b);
+    bar.innerHTML = "";
+    for (const v of valid) {
+      const level = isNaN(v.price) || prices.length < 2 ? 0
+        : Math.round((prices.indexOf(v.price) / (prices.length - 1)) * 4);
+      addSeg(bar, `lvl${level}`, v.start, v.end, isNaN(v.price) ? "" : String(v.price),
+        `${v.r.from.value}–${v.r.to.value}: ${v.r.price.value}`);
+    }
+
     const problems = [];
     for (let m = 0; m < 1440; ) {
       if (covered[m] === 1) { m++; continue; }
       const gap = covered[m] === 0;
       let n = m;
       while (n < 1440 && (gap ? covered[n] === 0 : covered[n] > 1)) n++;
-      problems.push(`${gap ? "No price" : "Overlap"} ${fmt(m)}–${fmt(n)}`);
+      const text = `${gap ? "No price" : "Overlap"} ${fmt(m)}–${fmt(n)}`;
+      if (gap) addSeg(bar, "gap", m, n, "", text);
+      problems.push(text);
       m = n;
     }
     out.textContent = problems.join(", ");

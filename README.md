@@ -130,7 +130,7 @@ With Docker, copy `.env.example` to `.env` and set at least `DATABASE_PASS`. `.e
 The container serves a simple page in the same style as TeslaMate (Bulma, bundled — no external requests) at **`http://<server>:4001/private-charging`** where you manage everything without editing YAML:
 
 - **Locations** — add a place with **Add location**, or pick one of your existing **TeslaMate geofences** to fill in name, coordinates and radius.
-- **Tariffs** — enter time blocks (24-hour `HH:MM`) and prices per kWh for weekdays and weekends. **Add block** splits a block in two; changing a block's end moves the next block's start, so the day stays covered. Gaps or overlaps are pointed out before you save. “Same as Monday – Friday” copies the weekday tariff.
+- **Tariffs** — enter time blocks (24-hour `HH:MM`) and prices per kWh for weekdays and weekends. **Add block** splits a block in two; changing a block's end moves the next block's start, so the day stays covered. A 24-hour bar (green = cheapest, red = most expensive) shows the tariff at a glance on the overview and updates live while editing; gaps or overlaps are pointed out before you save. “Same as Monday – Friday” copies the weekday tariff.
 - **Calculate costs** — **Preview** shows what would be written; **Calculate & save** writes it. Costs are also calculated automatically every *N* hours (Settings, default 6 h), so no cron job is needed.
 - **Sessions** — the last 100 TeslaMate charging sessions with their location, grid energy, cost and price per kWh.
 - **Settings** — TeslaMate currency, default timezone and the automatic run interval.

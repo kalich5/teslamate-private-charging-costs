@@ -31,6 +31,7 @@ from flask import (Blueprint, Flask, Response, abort, flash, jsonify, redirect,
 
 import config_store
 from geo import find_location
+from pricing import parse_time
 from importer import (ConfigError, db_connect, db_settings, prepare_config, run_import,
                       to_float, billed_energy)
 
@@ -173,6 +174,32 @@ def location_from_form(form) -> dict:
     if location["radius_m"] <= 0:
         raise ConfigError("Radius must be positive.")
     return location
+
+
+def tariff_bar(blocks: list) -> list:
+    """
+    Segments for a 24 h tariff bar: ``[{left, width, label, level}]``.
+
+    ``left``/``width`` are percentages of the day; ``level`` 0–4 ranks the
+    price from cheapest (0) to most expensive (4) for colouring.
+    """
+    parsed = []
+    for b in blocks or []:
+        try:
+            start, end = parse_time(str(b["from"])), parse_time(str(b["to"]))
+            price = float(b["price"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if end > start:
+            parsed.append((start, end, price, b))
+    prices = sorted({p for _, _, p, _ in parsed})
+    out = []
+    for start, end, price, b in parsed:
+        level = round(prices.index(price) / (len(prices) - 1) * 4) if len(prices) > 1 else 0
+        out.append({"left": round(start / 14.4, 3), "width": round((end - start) / 14.4, 3),
+                    "label": f'{b["from"]}–{b["to"]}: {b["price"]}', "price": b["price"],
+                    "level": level})
+    return out
 
 
 # ─── App ──────────────────────────────────────────────────────────────────────
@@ -400,6 +427,7 @@ def create_app(config_path=None, root_path=None, password=None, user=None,
             for gid, name, lat, lon, radius in rows]})
 
     app.register_blueprint(bp)
+    app.add_template_global(tariff_bar)
 
     if root_path:
         @app.route("/")

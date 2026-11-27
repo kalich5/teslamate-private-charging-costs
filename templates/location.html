@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_tariff_bar.html" import tariff_bar_html %}
 {% block title %}{{ location.name or 'New location' }}{% endblock %}
 {% macro tariff_table(day, blocks) %}
   <table class="table is-narrow tariffs" data-day="{{ day }}">
@@ -14,6 +15,7 @@
     {% endfor %}
     </tbody>
   </table>
+  <div class="tariff-preview">{{ tariff_bar_html(blocks, day) }}</div>
   <p class="help is-danger coverage" data-day="{{ day }}"></p>
   <button type="button" class="button is-small add" data-day="{{ day }}">Add block</button>
 {% endmacro %}
