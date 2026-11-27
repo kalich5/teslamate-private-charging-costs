@@ -11,7 +11,7 @@ import pytest
 import yaml
 
 import config_store
-from web import create_app, timeline
+from web import create_app
 
 AUTH = {"Authorization": "Basic YWRtaW46c2VjcmV0"}  # admin:secret
 
@@ -217,13 +217,6 @@ class TestConfigStore:
         text = path.read_text()
         assert text.index("BASE_CURRENCY") < text.index("LOCATIONS")   # stable key order
         assert text.index("name: a") < text.index("tariffs")
-
-
-def test_timeline_levels():
-    segs = timeline([{"from": "00:00", "to": "06:00", "price": 4.0},
-                     {"from": "06:00", "to": "24:00", "price": 7.5}])
-    assert segs[0]["left"] == 0 and segs[0]["width"] == pytest.approx(25)
-    assert segs[0]["level"] == 0 and segs[1]["level"] == 4
 
 
 class TestRunner:

@@ -127,10 +127,10 @@ With Docker, copy `.env.example` to `.env` and set at least `DATABASE_PASS`. `.e
 
 ## 🖥 Web Interface
 
-The container serves a web page at **`http://<server>:4001/private-charging`** where you manage everything without editing YAML:
+The container serves a simple page in the same style as TeslaMate (Bulma, bundled — no external requests) at **`http://<server>:4001/private-charging`** where you manage everything without editing YAML:
 
-- **Locations** — add a place with **＋ Add location**, or pick one of your existing **TeslaMate geofences** to fill in name, coordinates and radius.
-- **Tariffs** — enter time blocks and prices per kWh for weekdays and weekends. **＋ Add block** splits a block in two; changing a block's end moves the next block's start, so the day stays covered. A coloured 24-hour bar previews the tariff and marks gaps or overlaps before you save. “Same as weekdays” copies the weekday tariff.
+- **Locations** — add a place with **Add location**, or pick one of your existing **TeslaMate geofences** to fill in name, coordinates and radius.
+- **Tariffs** — enter time blocks (24-hour `HH:MM`) and prices per kWh for weekdays and weekends. **Add block** splits a block in two; changing a block's end moves the next block's start, so the day stays covered. Gaps or overlaps are pointed out before you save. “Same as Monday – Friday” copies the weekday tariff.
 - **Calculate costs** — **Preview** shows what would be written; **Calculate & save** writes it. Costs are also calculated automatically every *N* hours (Settings, default 6 h), so no cron job is needed.
 - **Sessions** — the last 100 TeslaMate charging sessions with their location, grid energy, cost and price per kWh.
 - **Settings** — TeslaMate currency, default timezone and the automatic run interval.
@@ -250,7 +250,7 @@ WHERE cost IS NOT NULL
 ```
 web.py             Web interface + scheduler (default container command)
 config_store.py    Reading/writing config.yaml for the web interface
-templates/, static/  Web interface pages, CSS and JS
+templates/, static/  Web interface pages, JS and bundled Bulma CSS
 importer.py        Importer — DB read/write loop, also usable as CLI
 pricing.py         Tariff engine — minute-by-minute cost calculation
 geo.py             Geofencing — Haversine distance matching

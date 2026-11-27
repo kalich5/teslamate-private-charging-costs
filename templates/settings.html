@@ -1,37 +1,36 @@
 {% extends "base.html" %}
 {% block title %}Settings{% endblock %}
 {% block content %}
-<section class="head"><h1>Settings</h1></section>
-{% if error %}<div class="notice error">{{ error }}</div>{% endif %}
+<h1 class="title">Settings</h1>
+{% if error %}<div class="notification is-danger is-light">{{ error }}</div>{% endif %}
 
-<form method="post" class="card form">
+<form method="post" class="settings">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <div class="fields">
-    <label>Currency in TeslaMate
-      <input name="base_currency" value="{{ config.BASE_CURRENCY }}" list="currencies" maxlength="3" required>
-      <span class="muted small">Costs are converted to this currency (ECB rates of the charging day).</span>
-    </label>
-    <label>Default timezone
-      <input name="timezone" value="{{ config.TIMEZONE }}" list="timezones" required>
-      <span class="muted small">Tariff times are local times in this zone; summer time is handled.</span>
-    </label>
-    <label>Run automatically every (hours)
-      <input name="schedule_hours" type="number" min="0" step="0.5" value="{{ config.SCHEDULE_HOURS or 0 }}">
-      <span class="muted small">0 = only when you click “Calculate &amp; save”.</span>
-    </label>
+  <div class="field">
+    <label class="label">Currency in TeslaMate</label>
+    <input class="input" name="base_currency" value="{{ config.BASE_CURRENCY }}" list="currencies" maxlength="3" required>
+    <p class="help">Costs are converted to this currency using the ECB rate of the charging day.</p>
   </div>
-  <div class="row actions"><button class="btn primary">Save</button></div>
+  <div class="field">
+    <label class="label">Default timezone</label>
+    <input class="input" name="timezone" value="{{ config.TIMEZONE }}" list="timezones" required>
+    <p class="help">Tariff times are local times in this timezone. Summer time is handled automatically.</p>
+  </div>
+  <div class="field">
+    <label class="label">Run automatically every (hours)</label>
+    <input class="input" name="schedule_hours" type="number" min="0" step="0.5" value="{{ config.SCHEDULE_HOURS or 0 }}">
+    <p class="help">0 = only when you click “Calculate &amp; save”.</p>
+  </div>
+  <div class="buttons mt-5"><button class="button is-info">Save</button></div>
 </form>
 
-<section class="card">
-  <h2>TeslaMate database</h2>
-  <p class="muted small">Set via environment variables (<code>DATABASE_HOST</code>, <code>DATABASE_PASS</code>, …) — the same as in TeslaMate.</p>
-  <table class="kv">
-    <tr><th>Host</th><td>{{ db.host }}:{{ db.port }}</td></tr>
-    <tr><th>Database</th><td>{{ db.dbname }}</td></tr>
-    <tr><th>User</th><td>{{ db.user }}</td></tr>
-  </table>
-</section>
+<h2 class="title is-5 mt-6">TeslaMate database</h2>
+<table class="table">
+  <tr><th>Host</th><td>{{ db.host }}:{{ db.port }}</td></tr>
+  <tr><th>Database</th><td>{{ db.dbname }}</td></tr>
+  <tr><th>User</th><td>{{ db.user }}</td></tr>
+</table>
+<p class="help">Set with environment variables (<code>DATABASE_HOST</code>, <code>DATABASE_PASS</code>, …), the same as in TeslaMate.</p>
 
 <datalist id="currencies">{% for c in currencies %}<option value="{{ c }}">{% endfor %}</datalist>
 <datalist id="timezones">{% for tz in timezones %}<option value="{{ tz }}">{% endfor %}</datalist>

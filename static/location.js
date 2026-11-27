@@ -1,4 +1,4 @@
-// Location editor: tariff rows (+ / ✕), live 24 h preview, geofence picker.
+// Location editor: tariff rows (add / remove), gap check, geofence picker.
 (function () {
   "use strict";
 
@@ -69,48 +69,28 @@
     render(day);
   }
 
+  // Show a short warning when the blocks leave a gap or overlap.
   function render(day) {
-    const bar = form.querySelector(`.timeline.preview[data-day="${day}"]`);
-    if (!bar) return;
-    const list = rows(day);
-    const prices = [...new Set(list.map((r) => parseFloat(r.price.value.replace(",", "."))).filter((p) => !isNaN(p)))]
-      .sort((a, b) => a - b);
+    const out = form.querySelector(`.coverage[data-day="${day}"]`);
+    if (!out) return;
     const covered = new Array(1440).fill(0);
-    bar.innerHTML = "";
-    let problem = false;
-    for (const r of list) {
+    for (const r of rows(day)) {
       const start = toMinutes(r.from.value);
       const end = toMinutes(r.to.value);
-      const price = parseFloat(r.price.value.replace(",", "."));
       const bad = start === null || end === null || end <= start;
-      r.tr.classList.toggle("invalid", bad);
-      if (bad) { problem = true; continue; }
-      for (let m = start; m < end; m++) covered[m]++;
-      const seg = document.createElement("div");
-      const level = isNaN(price) || prices.length < 2 ? 0 : Math.round((prices.indexOf(price) / (prices.length - 1)) * 4);
-      seg.className = `seg lvl${level}`;
-      seg.style.left = `${start / 14.4}%`;
-      seg.style.width = `${(end - start) / 14.4}%`;
-      seg.title = `${r.from.value}–${r.to.value}`;
-      seg.innerHTML = `<span>${isNaN(price) ? "?" : price}</span>`;
-      bar.appendChild(seg);
+      r.tr.classList.toggle("is-invalid", bad);
+      if (!bad) for (let m = start; m < end; m++) covered[m]++;
     }
-    // Mark gaps and overlaps.
+    const problems = [];
     for (let m = 0; m < 1440; ) {
       if (covered[m] === 1) { m++; continue; }
-      const kind = covered[m] === 0 ? "gap" : "overlap";
+      const gap = covered[m] === 0;
       let n = m;
-      while (n < 1440 && (kind === "gap" ? covered[n] === 0 : covered[n] > 1)) n++;
-      const seg = document.createElement("div");
-      seg.className = `seg ${kind}`;
-      seg.style.left = `${m / 14.4}%`;
-      seg.style.width = `${(n - m) / 14.4}%`;
-      seg.title = `${kind === "gap" ? "No tariff" : "Overlap"} ${fmt(m)}–${fmt(n)}`;
-      bar.appendChild(seg);
-      problem = true;
+      while (n < 1440 && (gap ? covered[n] === 0 : covered[n] > 1)) n++;
+      problems.push(`${gap ? "No price" : "Overlap"} ${fmt(m)}–${fmt(n)}`);
       m = n;
     }
-    bar.classList.toggle("has-problem", problem);
+    out.textContent = problems.join(", ");
   }
 
   form.addEventListener("click", (event) => {

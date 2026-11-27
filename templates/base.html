@@ -4,27 +4,40 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Private charging{% endblock %} · TeslaMate</title>
-  <link rel="stylesheet" href="{{ url_for('ui.static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('ui.static', filename='bulma.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('ui.static', filename='app.css') }}">
 </head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="{{ url_for('ui.index') }}">⚡ Private charging</a>
-    <nav>
-      <a href="{{ url_for('ui.index') }}" class="{{ 'active' if request.endpoint == 'ui.index' }}">Locations</a>
-      <a href="{{ url_for('ui.sessions') }}" class="{{ 'active' if request.endpoint == 'ui.sessions' }}">Sessions</a>
-      <a href="{{ url_for('ui.settings') }}" class="{{ 'active' if request.endpoint == 'ui.settings' }}">Settings</a>
-    </nav>
-  </header>
-  <main>
-    {% if not auth_enabled %}
-      <div class="notice warn">No password set — anyone who can reach this page can change your tariffs.
-        Set <code>WEB_PASSWORD</code> (see README).</div>
-    {% endif %}
-    {% for message in get_flashed_messages() %}
-      <div class="notice ok">{{ message }}</div>
-    {% endfor %}
-    {% block content %}{% endblock %}
-  </main>
+  <nav class="navbar has-shadow" role="navigation">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item has-text-weight-semibold" href="{{ url_for('ui.index') }}">Private charging</a>
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
+           onclick="this.classList.toggle('is-active');document.getElementById('menu').classList.toggle('is-active')">
+          <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+        </a>
+      </div>
+      <div class="navbar-menu" id="menu">
+        <div class="navbar-start">
+          <a class="navbar-item {{ 'is-active' if request.endpoint in ('ui.index', 'ui.location_new', 'ui.location_edit', 'ui.run') }}" href="{{ url_for('ui.index') }}">Locations</a>
+          <a class="navbar-item {{ 'is-active' if request.endpoint == 'ui.sessions' }}" href="{{ url_for('ui.sessions') }}">Sessions</a>
+          <a class="navbar-item {{ 'is-active' if request.endpoint == 'ui.settings' }}" href="{{ url_for('ui.settings') }}">Settings</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="section">
+    <div class="container">
+      {% if not auth_enabled %}
+        <div class="notification is-warning is-light">No password set — anyone who can reach this page can change your tariffs. Set <code>WEB_PASSWORD</code>.</div>
+      {% endif %}
+      {% for message in get_flashed_messages() %}
+        <div class="notification is-success is-light">{{ message }}</div>
+      {% endfor %}
+      {% block content %}{% endblock %}
+    </div>
+  </section>
   {% block scripts %}{% endblock %}
 </body>
 </html>

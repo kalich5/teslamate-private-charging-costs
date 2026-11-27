@@ -33,7 +33,6 @@ import config_store
 from geo import find_location
 from importer import (ConfigError, db_connect, db_settings, prepare_config, run_import,
                       to_float, billed_energy)
-from pricing import parse_time
 
 log = logging.getLogger(__name__)
 
@@ -176,21 +175,6 @@ def location_from_form(form) -> dict:
     return location
 
 
-def timeline(blocks: list) -> list:
-    """Return ``[{left, width, price, label}]`` percentages for a 24 h bar."""
-    out = []
-    prices = sorted({b["price"] for b in blocks})
-    for b in blocks:
-        try:
-            start, end = parse_time(str(b["from"])), parse_time(str(b["to"]))
-        except ValueError:
-            continue
-        rank = prices.index(b["price"]) / max(len(prices) - 1, 1)
-        out.append({"left": start / 14.4, "width": (end - start) / 14.4, "price": b["price"],
-                    "label": f'{b["from"]}–{b["to"]}', "level": round(rank * 4)})
-    return out
-
-
 # ─── App ──────────────────────────────────────────────────────────────────────
 
 def create_app(config_path=None, root_path=None, password=None, user=None,
@@ -275,10 +259,8 @@ def create_app(config_path=None, root_path=None, password=None, user=None,
                 prepare_config(cfg)
         except ConfigError as e:
             problem = str(e)
-        locations = [{**loc, "timelines": {d: timeline(loc.get("tariffs", {}).get(d, []))
-                                           for d in DAY_TYPES}}
-                     for loc in cfg.get("LOCATIONS", [])]
-        return render_template("index.html", config=cfg, locations=locations, problem=problem,
+        return render_template("index.html", config=cfg, locations=cfg.get("LOCATIONS", []),
+                               problem=problem,
                                last_run=runner.last_run,
                                next_run=datetime.fromtimestamp(runner.next_run, timezone.utc)
                                if runner.next_run else None)

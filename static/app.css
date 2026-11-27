@@ -1,0 +1,7 @@
+/* Small additions to Bulma — keep this minimal. */
+.tariffs { max-width: 520px; }
+.tariffs td { border: 0; vertical-align: middle; }
+.tariffs td:nth-child(-n+2) { width: 30%; }
+.tariffs td:last-child { width: 32px; }
+.tariffs tr.is-invalid .input { border-color: #f14668; }
+.settings { max-width: 420px; }
