@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Sessions{% endblock %}
+{% block content %}
+<section class="head">
+  <div>
+    <h1>Recent sessions</h1>
+    <p class="muted">Last 100 finished charging sessions from TeslaMate.</p>
+  </div>
+</section>
+{% if error %}<div class="notice error">{{ error }}</div>{% endif %}
+{% if rows %}
+<div class="card">
+  <table class="list">
+    <thead><tr><th>#</th><th>Start</th><th>End</th><th>Location</th><th class="num">kWh (grid)</th><th class="num">Cost ({{ config.BASE_CURRENCY }})</th><th class="num">per kWh</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+      <tr class="{{ 'dim' if not r.location }}">
+        <td>{{ r.id }}</td>
+        <td>{{ r.start|dt(config.TIMEZONE) }}</td>
+        <td>{{ r.end|dt(config.TIMEZONE) }}</td>
+        <td>{{ r.location or '—' }}</td>
+        <td class="num">{{ '%.2f'|format(r.kwh) if r.kwh is not none }}</td>
+        <td class="num">{% if r.cost is not none %}{{ '%.2f'|format(r.cost) }}{% elif r.location %}<span class="muted">pending</span>{% endif %}</td>
+        <td class="num">{{ '%.2f'|format(r.cost / r.kwh) if r.cost is not none and r.kwh }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

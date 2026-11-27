@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Preview' if result.dry_run else 'Result' }}{% endblock %}
+{% block content %}
+<section class="head">
+  <h1>{{ 'Preview' if result.dry_run else 'Costs saved' }}</h1>
+  <a class="btn" href="{{ url_for('ui.index') }}">Back</a>
+</section>
+
+{% if result.error %}
+  <div class="notice error">{{ result.error }}</div>
+{% else %}
+  <div class="card">
+    <p>
+      {% if result.dry_run %}{{ result.updated }} session(s) would get a cost{% else %}{{ result.updated }} session(s) updated{% endif %},
+      {{ result.skipped }} outside your locations,
+      {% if result.errors %}<span class="bad">{{ result.errors }} with errors</span>{% else %}no errors{% endif %}.
+    </p>
+    {% if result.sessions %}
+    <table class="list">
+      <thead><tr><th>#</th><th>Start</th><th>Location</th><th class="num">kWh</th><th class="num">Cost ({{ config.BASE_CURRENCY }})</th><th></th></tr></thead>
+      <tbody>
+      {% for s in result.sessions %}
+        <tr class="{{ 'bad' if s.status == 'error' }}">
+          <td>{{ s.id }}</td>
+          <td>{{ s.start|dt(config.TIMEZONE) }}</td>
+          <td>{{ s.location or '—' }}</td>
+          <td class="num">{{ '%.2f'|format(s.kwh) if s.kwh is not none }}</td>
+          <td class="num">{{ '%.2f'|format(s.cost) if s.cost is not none }}</td>
+          <td class="small">{{ s.error or ('preview' if s.status == 'preview' else 'saved') }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+    {% if result.dry_run and result.updated %}
+      <form method="post" action="{{ url_for('ui.run') }}" class="row">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="btn primary" name="mode" value="write">Save these costs</button>
+      </form>
+    {% endif %}
+  </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Locations{% endblock %}
+{% block content %}
+<section class="head">
+  <div>
+    <h1>Locations</h1>
+    <p class="muted">Charging sessions within a location's radius are priced with its tariffs and written to TeslaMate as the session cost (in {{ config.BASE_CURRENCY }}).</p>
+  </div>
+  <a class="btn primary" href="{{ url_for('ui.location_new') }}">＋ Add location</a>
+</section>
+
+{% if problem %}<div class="notice error">Configuration problem: {{ problem }}</div>{% endif %}
+
+{% if not locations %}
+  <div class="card empty">
+    <p>No locations yet. Add your home (or any private charger) and its electricity tariff.</p>
+    <a class="btn primary" href="{{ url_for('ui.location_new') }}">＋ Add location</a>
+  </div>
+{% endif %}
+
+<div class="grid">
+{% for loc in locations %}
+  <article class="card">
+    <div class="card-head">
+      <h2>{{ loc.name }}</h2>
+      <a class="btn small" href="{{ url_for('ui.location_edit', index=loop.index0) }}">Edit</a>
+    </div>
+    <p class="muted small">
+      {{ '%.5f'|format(loc.lat) }}, {{ '%.5f'|format(loc.lon) }} · {{ loc.radius_m }} m ·
+      {{ loc.currency }} · {{ loc.timezone or config.TIMEZONE }}
+      · <a href="https://www.openstreetmap.org/?mlat={{ loc.lat }}&mlon={{ loc.lon }}#map=17/{{ loc.lat }}/{{ loc.lon }}" target="_blank" rel="noopener">map</a>
+    </p>
+    {% for day in ['weekday', 'weekend'] %}
+      <div class="tl-label">{{ 'Mon–Fri' if day == 'weekday' else 'Sat–Sun' }}</div>
+      <div class="timeline">
+        {% for seg in loc.timelines[day] %}
+          <div class="seg lvl{{ seg.level }}" style="left: {{ seg.left }}%; width: {{ seg.width }}%"
+               title="{{ seg.label }}: {{ seg.price }} {{ loc.currency }}/kWh">
+            <span>{{ seg.price }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    <div class="tl-scale"><span>0</span><span>6</span><span>12</span><span>18</span><span>24</span></div>
+  </article>
+{% endfor %}
+</div>
+
+<section class="card run">
+  <h2>Calculate costs</h2>
+  <p class="muted">
+    Prices every finished session that has no cost yet. Sessions that already have a cost are never changed.
+    {% if config.SCHEDULE_HOURS %}
+      Runs automatically every {{ config.SCHEDULE_HOURS }} h{% if next_run %} — next run {{ next_run|dt(config.TIMEZONE) }}{% endif %}.
+    {% else %}
+      Automatic runs are off (see Settings).
+    {% endif %}
+  </p>
+  {% if last_run %}
+    <p class="small">Last run {{ last_run.started|dt(config.TIMEZONE) }}:
+      {% if last_run.error %}<span class="bad">{{ last_run.error }}</span>
+      {% else %}{{ last_run.updated }} updated, {{ last_run.skipped }} outside locations, {{ last_run.errors }} errors{% endif %}
+    </p>
+  {% endif %}
+  <form method="post" action="{{ url_for('ui.run') }}" class="row">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button class="btn" name="mode" value="preview" {{ 'disabled' if not locations }}>Preview</button>
+    <button class="btn primary" name="mode" value="write" {{ 'disabled' if not locations }}
+            onclick="return confirm('Write costs to TeslaMate now?')">Calculate &amp; save</button>
+  </form>
+</section>
+{% endblock %}

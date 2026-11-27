@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}{{ location.name or 'New location' }}{% endblock %}
+{% macro tariff_table(day, blocks) %}
+  <div class="tariff-block">
+  <table class="tariffs" data-day="{{ day }}">
+    <colgroup><col class="c-time"><col class="c-time"><col><col class="c-btn"></colgroup>
+    <thead><tr><th>From</th><th>To</th><th>Price / kWh</th><th></th></tr></thead>
+    <tbody>
+    {% for b in blocks %}
+      <tr>
+        <td><input type="text" name="{{ day }}_from" value="{{ b['from'] }}" pattern="([01]\d|2[0-3]):[0-5]\d" placeholder="HH:MM" required class="time-from" inputmode="numeric"></td>
+        <td><input type="text" name="{{ day }}_to" value="{{ b['to'] }}" pattern="([01]\d|2[0-3]):[0-5]\d|24:00" placeholder="HH:MM" required class="time-to" inputmode="numeric"></td>
+        <td><input type="text" inputmode="decimal" name="{{ day }}_price" value="{{ b['price'] }}" required class="price"></td>
+        <td><button type="button" class="btn small ghost remove" title="Remove block">✕</button></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <div class="timeline preview" data-day="{{ day }}"></div>
+  <div class="tl-scale"><span>0</span><span>6</span><span>12</span><span>18</span><span>24</span></div>
+  <div class="row">
+    <button type="button" class="btn small add" data-day="{{ day }}">＋ Add block</button>
+    <span class="muted small">Blocks must cover 00:00–24:00. A block over midnight (e.g. 22:00–06:00) is entered as 22:00–24:00 and 00:00–06:00.</span>
+  </div>
+  </div>
+{% endmacro %}
+
+{% block content %}
+<section class="head">
+  <h1>{{ location.name or 'New location' }}</h1>
+  <a class="btn" href="{{ url_for('ui.index') }}">Back</a>
+</section>
+
+{% if error %}<div class="notice error">{{ error }}</div>{% endif %}
+
+<form method="post" class="card form" id="location-form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+  <h2>Place</h2>
+  <div class="geofence row">
+    <label>Use a TeslaMate geofence
+      <select id="geofence"><option value="">Loading…</option></select>
+    </label>
+    <span class="muted small" id="geofence-hint">Fills in name, coordinates and radius.</span>
+  </div>
+  <div class="fields">
+    <label>Name <input name="name" value="{{ location.name }}" required maxlength="60"></label>
+    <label>Latitude <input name="lat" value="{{ location.lat }}" inputmode="decimal" required></label>
+    <label>Longitude <input name="lon" value="{{ location.lon }}" inputmode="decimal" required></label>
+    <label>Radius (m) <input name="radius_m" type="number" min="10" max="5000" value="{{ location.radius_m }}" required></label>
+  </div>
+
+  <h2>Electricity</h2>
+  <div class="fields">
+    <label>Currency of your bill
+      <input name="currency" value="{{ location.currency }}" list="currencies" maxlength="3" required>
+    </label>
+    <label>Timezone of the tariff times
+      <input name="timezone" value="{{ location.timezone or '' }}" list="timezones" placeholder="{{ default_tz }} (default)">
+    </label>
+  </div>
+
+  <h2>Weekdays <span class="muted small">Mon–Fri</span></h2>
+  {{ tariff_table('weekday', location.tariffs.get('weekday') or []) }}
+
+  <h2>Weekend <span class="muted small">Sat–Sun</span></h2>
+  <label class="check"><input type="checkbox" name="weekend_same" id="weekend-same"
+    {{ 'checked' if location.get('weekend_same') or (location.tariffs.get('weekday') and location.tariffs.get('weekday') == location.tariffs.get('weekend')) }}> Same as weekdays</label>
+  <div id="weekend-wrap">
+    {{ tariff_table('weekend', location.tariffs.get('weekend') or []) }}
+  </div>
+
+  <div class="row actions">
+    <button class="btn primary">Save</button>
+    <a class="btn" href="{{ url_for('ui.index') }}">Cancel</a>
+  </div>
+</form>
+
+{% if index is not none %}
+<form method="post" action="{{ url_for('ui.location_delete', index=index) }}" class="danger-zone"
+      onsubmit="return confirm('Delete location {{ location.name }}? Costs already written stay in TeslaMate.')">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <button class="btn danger">Delete location</button>
+</form>
+{% endif %}
+
+<datalist id="currencies">{% for c in currencies %}<option value="{{ c }}">{% endfor %}</datalist>
+<datalist id="timezones">{% for tz in timezones %}<option value="{{ tz }}">{% endfor %}</datalist>
+<template id="row-template">
+  <tr>
+    <td><input type="text" pattern="([01]\d|2[0-3]):[0-5]\d" placeholder="HH:MM" required class="time-from" inputmode="numeric"></td>
+    <td><input type="text" pattern="([01]\d|2[0-3]):[0-5]\d|24:00" placeholder="HH:MM" required class="time-to" inputmode="numeric"></td>
+    <td><input type="text" inputmode="decimal" required class="price"></td>
+    <td><button type="button" class="btn small ghost remove" title="Remove block">✕</button></td>
+  </tr>
+</template>
+{% endblock %}
+{% block scripts %}
+<script>window.GEOFENCES_URL = "{{ url_for('ui.geofences') }}";</script>
+<script src="{{ url_for('ui.static', filename='location.js') }}"></script>
+{% endblock %}

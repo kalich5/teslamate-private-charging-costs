@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Private charging{% endblock %} · TeslaMate</title>
+  <link rel="stylesheet" href="{{ url_for('ui.static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('ui.index') }}">⚡ Private charging</a>
+    <nav>
+      <a href="{{ url_for('ui.index') }}" class="{{ 'active' if request.endpoint == 'ui.index' }}">Locations</a>
+      <a href="{{ url_for('ui.sessions') }}" class="{{ 'active' if request.endpoint == 'ui.sessions' }}">Sessions</a>
+      <a href="{{ url_for('ui.settings') }}" class="{{ 'active' if request.endpoint == 'ui.settings' }}">Settings</a>
+    </nav>
+  </header>
+  <main>
+    {% if not auth_enabled %}
+      <div class="notice warn">No password set — anyone who can reach this page can change your tariffs.
+        Set <code>WEB_PASSWORD</code> (see README).</div>
+    {% endif %}
+    {% for message in get_flashed_messages() %}
+      <div class="notice ok">{{ message }}</div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
