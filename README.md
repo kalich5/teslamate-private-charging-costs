@@ -24,6 +24,7 @@ This project fills that gap by reading charging sessions from the TeslaMate Post
 | 💱 Currency conversion | Per-location currency → base currency via Frankfurter API |
 | 🔒 Safe by default | Only processes sessions where `cost IS NULL` |
 | 📊 Grafana-ready | Writes directly to `charging_processes.cost` |
+| 🖥 Web interface | Manage locations and tariffs in the browser, pick TeslaMate geofences, preview & run |
 
 ---
 
@@ -67,7 +68,7 @@ TeslaMate DB
 
 ## ⚙️ Configuration
 
-Copy `config.yaml` and edit it:
+The easiest way is the [web interface](#-web-interface). Under the hood everything is stored in `config.yaml`, which you can also edit by hand:
 
 ```yaml
 BASE_CURRENCY: CHF
@@ -124,6 +125,26 @@ With Docker, copy `.env.example` to `.env` and set at least `DATABASE_PASS`. `.e
 
 ---
 
+## 🖥 Web Interface
+
+The container serves a web page at **`http://<server>:4001/private-charging`** where you manage everything without editing YAML:
+
+- **Locations** — add a place with **＋ Add location**, or pick one of your existing **TeslaMate geofences** to fill in name, coordinates and radius.
+- **Tariffs** — enter time blocks and prices per kWh for weekdays and weekends. **＋ Add block** splits a block in two; changing a block's end moves the next block's start, so the day stays covered. A coloured 24-hour bar previews the tariff and marks gaps or overlaps before you save. “Same as weekdays” copies the weekday tariff.
+- **Calculate costs** — **Preview** shows what would be written; **Calculate & save** writes it. Costs are also calculated automatically every *N* hours (Settings, default 6 h), so no cron job is needed.
+- **Sessions** — the last 100 TeslaMate charging sessions with their location, grid energy, cost and price per kWh.
+- **Settings** — TeslaMate currency, default timezone and the automatic run interval.
+
+No Tesla account is needed: TeslaMate already talks to Tesla, this tool only reads TeslaMate's database.
+
+Changes are saved to `data/config.yaml` (a `.bak` copy of the previous version is kept). The importer CLI reads the same file.
+
+### Login
+
+Set `WEB_PASSWORD` in `.env` (user `admin`, or `WEB_USER`). Without it, anyone who can reach the port can change your tariffs, and the page shows a warning.
+
+---
+
 ## 🐳 Docker Usage
 
 ### Prerequisites
@@ -134,37 +155,68 @@ Your TeslaMate stack must be running. The container joins TeslaMate's Docker net
 docker network ls | grep teslamate
 ```
 
-If it differs, set `TESLAMATE_NETWORK` in `.env`:
+### Setup
 
 ```bash
 cp .env.example .env
 ```
 
 ```bash
-nano .env   # set DATABASE_PASS and, if needed, TESLAMATE_NETWORK
+nano .env   # set WEB_PASSWORD, DATABASE_PASS and, if needed, TESLAMATE_NETWORK
 ```
 
-### Build
+Create the data directory, so it is owned by you (uid 1000) and writable by the container:
 
 ```bash
-docker compose build
+mkdir -p data
 ```
 
-### Run once
+Upgrading from the CLI-only version? Move your existing config into it:
 
 ```bash
-docker compose run --rm private-costs
+cp config.yaml data/config.yaml
 ```
 
----
-
-## ⏱ Automation (Cron)
-
-Run daily at 06:00:
+### Start
 
 ```bash
-0 6 * * * cd /path/to/teslamate-private-charging-costs && docker compose run --rm private-costs >> /var/log/teslamate-costs.log 2>&1
+docker compose up -d --build
 ```
+
+Then open `http://<server>:4001/private-charging`.
+
+### One-off CLI run
+
+```bash
+docker compose run --rm private-costs python importer.py --dry-run
+```
+
+### Behind a reverse proxy (same host as Grafana)
+
+To serve it next to Grafana, e.g. `https://teslamate.example.com/private-charging`, route that path to the container and keep the prefix (the app is served under `/private-charging` itself; change it with `ROOT_PATH`).
+
+nginx:
+
+```nginx
+location /private-charging/ {
+    proxy_pass http://127.0.0.1:4001;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+```
+
+Traefik (labels on the `private-costs` service, like TeslaMate's own Traefik setup):
+
+```yaml
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.private-costs.rule=Host(`teslamate.example.com`) && PathPrefix(`/private-charging`)"
+      - "traefik.http.routers.private-costs.entrypoints=websecure"
+      - "traefik.http.routers.private-costs.tls.certresolver=tmhttpchallenge"
+      - "traefik.http.services.private-costs.loadbalancer.server.port=4001"
+```
+
+If the proxy already asks for a password (e.g. TeslaMate's basic-auth middleware), you can reuse it and leave `WEB_PASSWORD` empty; then remove the `ports:` mapping so the UI is reachable only through the proxy.
 
 ---
 
@@ -196,16 +248,20 @@ WHERE cost IS NOT NULL
 ## 🧩 Project Structure
 
 ```
-importer.py        Main entry point — DB read/write loop
+web.py             Web interface + scheduler (default container command)
+config_store.py    Reading/writing config.yaml for the web interface
+templates/, static/  Web interface pages, CSS and JS
+importer.py        Importer — DB read/write loop, also usable as CLI
 pricing.py         Tariff engine — minute-by-minute cost calculation
 geo.py             Geofencing — Haversine distance matching
 fx.py              Currency conversion — Frankfurter API with in-process cache
 tests.py           Unit tests (pytest)
+tests_web.py       Web interface tests
 config.yaml        User configuration
 requirements.txt   Python dependencies
 Dockerfile
 docker-compose.yml
-.env.example       Template for DB password / Docker network name
+.env.example       Template for web password, DB password, Docker network name
 ```
 
 ---
@@ -213,7 +269,8 @@ docker-compose.yml
 ## 🔒 Safety
 
 - **Never overwrites existing costs** — only processes rows where `cost IS NULL`.
-- **Read-only config** — `config.yaml` is mounted as `:ro` in Docker.
+- **Validated before saving** — the web interface refuses tariffs with gaps or overlaps, so no partial cost is ever written.
+- **Login & CSRF protection** — `WEB_PASSWORD` protects the web interface; forms carry a CSRF token.
 - **Non-root container** — runs as `appuser` inside Docker.
 
 ---

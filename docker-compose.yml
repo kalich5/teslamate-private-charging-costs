@@ -2,12 +2,20 @@ services:
   private-costs:
     build: .
     container_name: teslamate-private-costs
-    restart: "no"   # run-and-exit; use cron for scheduling
+    restart: unless-stopped
+    ports:
+      # Web UI at http://<server>:4001/private-charging
+      # Behind a reverse proxy you can drop this and route /private-charging
+      # to the container instead (see README).
+      - "${PRIVATE_COSTS_PORT:-4001}:4001"
     volumes:
-      - ./config.yaml:/app/config.yaml:ro
-    # Database settings override config.yaml.  Put them in a .env file next to
-    # this one (e.g. DATABASE_PASS=...) — same names as in TeslaMate.
+      # config.yaml (edited from the web UI) is stored here.
+      - ./data:/data
+    # Settings come from a .env file next to this one — see .env.example.
     environment:
+      - WEB_PASSWORD
+      - WEB_USER
+      - SECRET_KEY
       - DATABASE_HOST
       - DATABASE_PORT
       - DATABASE_NAME

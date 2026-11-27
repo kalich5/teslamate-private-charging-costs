@@ -28,3 +28,6 @@ config.local.yaml
 
 # Local environment (DB password, network name)
 .env
+
+# Runtime data (config edited from the web UI)
+data/
