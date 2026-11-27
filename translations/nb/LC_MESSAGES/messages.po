@@ -1,0 +1,379 @@
+# Norwegian Bokmål translations for teslamate-private-charging-costs.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the teslamate-private-charging-costs project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: teslamate-private-charging-costs VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-27 21:08+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: nb\n"
+"Language-Team: nb <https://github.com/kalich5/teslamate-private-charging-costs>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.19.0\n"
+
+#, python-format
+msgid "%(days)s: '%(price)s' is not a valid price."
+msgstr "%(days)s: «%(price)s» er ikke en gyldig pris."
+
+#, python-format
+msgid "%(field)s: '%(value)s' is not a valid number."
+msgstr "%(field)s: «%(value)s» er ikke et gyldig tall."
+
+msgid "0 = only when you click “Calculate and save”."
+msgstr "0 = bare når du klikker «Beregn og lagre»."
+
+msgid "Add location"
+msgstr "Legg til sted"
+
+msgid "Add time block"
+msgstr "Legg til tidsblokk"
+
+msgid "Another run is in progress, try again in a moment."
+msgstr "En annen kjøring pågår. Prøv igjen om litt."
+
+msgid "Automatic runs are off."
+msgstr "Automatiske kjøringer er slått av."
+
+msgid "Back"
+msgstr "Tilbake"
+
+msgid "By default the language of your browser is used, as in TeslaMate."
+msgstr "Som standard brukes nettleserens språk, som i TeslaMate."
+
+msgid "Calculate and save"
+msgstr "Beregn og lagre"
+
+msgid ""
+"Calculates the cost of every finished charge at your locations that has no cost yet. Existing "
+"costs are never changed."
+msgstr ""
+"Beregner prisen for hver fullførte lading på stedene dine som ennå ikke har en pris. Eksisterende"
+" priser endres aldri."
+
+msgid "Cancel"
+msgstr "Avbryt"
+
+#, python-format
+msgid "Cannot connect to the TeslaMate database: %(error)s"
+msgstr "Kan ikke koble til TeslaMate-databasen: %(error)s"
+
+#, python-format
+msgid "Cannot read sessions from the TeslaMate database: %(error)s"
+msgstr "Kan ikke lese ladinger fra TeslaMate-databasen: %(error)s"
+
+msgid "Charges"
+msgstr "Ladinger"
+
+#, python-format
+msgid "Charges to be updated: %(n)s"
+msgstr "Ladinger som oppdateres: %(n)s"
+
+msgid "Charging Costs"
+msgstr "Pris på lading"
+
+msgid "Config is empty or not a mapping."
+msgstr "Konfigurasjonen er tom eller ugyldig."
+
+#, python-format
+msgid "Configuration problem: %(problem)s"
+msgstr "Konfigurasjonsproblem: %(problem)s"
+
+msgid "Coordinates are out of range."
+msgstr "Koordinatene er utenfor gyldig område."
+
+msgid "Cost"
+msgstr "Pris"
+
+msgid "Costs are converted to this currency using the ECB rate of the charging day."
+msgstr "Prisene omregnes til denne valutaen med ECB-kursen på ladedagen."
+
+msgid "Costs saved"
+msgstr "Priser lagret"
+
+msgid "Could not load geo-fences from TeslaMate."
+msgstr "Kunne ikke laste geo-lokasjoner fra TeslaMate."
+
+msgid "Currency in TeslaMate"
+msgstr "Valuta i TeslaMate"
+
+msgid "Currency must be a 3-letter code, e.g. CZK."
+msgstr "Valutaen må være en kode på 3 bokstaver, f.eks. NOK."
+
+msgid "Currency of your bill"
+msgstr "Valuta på regningen"
+
+msgid "Database"
+msgstr "Database"
+
+msgid "Delete"
+msgstr "Slett"
+
+#, python-format
+msgid "Delete %(name)s? Costs already written stay in TeslaMate."
+msgstr "Slette %(name)s? Priser som allerede er skrevet, blir værende i TeslaMate."
+
+msgid "Edit"
+msgstr "Rediger"
+
+msgid "End"
+msgstr "Slutt"
+
+#, python-format
+msgid "Errors: %(n)s"
+msgstr "Feil: %(n)s"
+
+msgid "From"
+msgstr "Fra"
+
+msgid "Geo-Fences"
+msgstr "Geo-lokasjoner"
+
+msgid "Host"
+msgstr "Vert"
+
+msgid "Interval must be a number ≥ 0."
+msgstr "Intervallet må være et tall ≥ 0."
+
+#, python-format
+msgid "Invalid configuration: %(error)s"
+msgstr "Ugyldig konfigurasjon: %(error)s"
+
+msgid "Invalid or expired form token — reload the page and try again."
+msgstr "Ugyldig eller utløpt skjematoken – last inn siden på nytt og prøv igjen."
+
+msgid "Language"
+msgstr "Språk"
+
+msgid "Last 100 finished charges. kWh = energy taken from the grid."
+msgstr "De siste 100 fullførte ladingene. kWh = energi hentet fra strømnettet."
+
+#, python-format
+msgid "Last run: %(time)s"
+msgstr "Siste kjøring: %(time)s"
+
+msgid "Latitude"
+msgstr "Breddegrad"
+
+msgid "Loading…"
+msgstr "Laster…"
+
+msgid "Location"
+msgstr "Sted"
+
+#, python-format
+msgid "Location '%(name)s' deleted."
+msgstr "Stedet «%(name)s» er slettet."
+
+#, python-format
+msgid ""
+"Location '%(name)s' has no timezone. Set a default timezone (e.g. Europe/Prague) or one for the "
+"location."
+msgstr ""
+"Stedet «%(name)s» har ingen tidssone. Angi en standard tidssone (f.eks. Europe/Oslo) eller en for"
+" stedet."
+
+#, python-format
+msgid "Location '%(name)s' saved."
+msgstr "Stedet «%(name)s» er lagret."
+
+#, python-format
+msgid ""
+"Location '%(name)s', %(days)s: block %(block)s must start before it ends. Split blocks crossing "
+"midnight into two (…–24:00 and 00:00–…)."
+msgstr ""
+"Sted «%(name)s», %(days)s: blokken %(block)s må starte før den slutter. Del blokker over midnatt "
+"i to (…–24:00 og 00:00–…)."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: invalid block %(block)s. Expected from and to as HH:MM and a price."
+msgstr "Sted «%(name)s», %(days)s: ugyldig blokk %(block)s. Forventet start og slutt som TT:MM og en pris."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: negative price in block %(block)s."
+msgstr "Sted «%(name)s», %(days)s: negativ pris i blokken %(block)s."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff after %(time)s (the last block must end at 24:00)."
+msgstr "Sted «%(name)s», %(days)s: ingen tariff etter %(time)s (siste blokk må slutte kl. 24:00)."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff between %(start)s and %(end)s."
+msgstr "Sted «%(name)s», %(days)s: ingen tariff mellom %(start)s og %(end)s."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariffs defined."
+msgstr "Sted «%(name)s», %(days)s: ingen tariffer angitt."
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: overlapping blocks around %(time)s."
+msgstr "Sted «%(name)s», %(days)s: overlappende blokker rundt %(time)s."
+
+#, python-format
+msgid "Location '%(name)s': missing '%(key)s'."
+msgstr "Sted «%(name)s»: mangler «%(key)s»."
+
+#, python-format
+msgid "Location '%(name)s': missing 'timezone'."
+msgstr "Sted «%(name)s»: mangler tidssone."
+
+#, python-format
+msgid "Location '%(name)s': unknown timezone '%(tz)s'."
+msgstr "Sted «%(name)s»: ukjent tidssone «%(tz)s»."
+
+msgid "Location names must be unique."
+msgstr "Stedsnavn må være unike."
+
+msgid "Locations"
+msgstr "Steder"
+
+msgid "Login required"
+msgstr "Innlogging kreves"
+
+msgid "Longitude"
+msgstr "Lengdegrad"
+
+#, python-format
+msgid "Missing '%(key)s'."
+msgstr "Mangler «%(key)s»."
+
+msgid "Monday – Friday"
+msgstr "Mandag – fredag"
+
+msgid "Name"
+msgstr "Navn"
+
+msgid "Name is required."
+msgstr "Navn er påkrevd."
+
+msgid "New location"
+msgstr "Nytt sted"
+
+#, python-format
+msgid "Next run: %(time)s"
+msgstr "Neste kjøring: %(time)s"
+
+msgid "No geo-fences in TeslaMate"
+msgstr "Ingen geo-lokasjoner i TeslaMate"
+
+msgid "No locations yet. Add your home (or any private charger) and its electricity tariff."
+msgstr "Ingen steder ennå. Legg til hjemmet ditt (eller en annen privat lader) og strømtariffen."
+
+#, python-format
+msgid "No password set — anyone who can reach this page can change your tariffs. Set %(var)s."
+msgstr "Ingen passord satt – alle som når denne siden kan endre tariffene dine. Sett %(var)s."
+
+msgid "No price"
+msgstr "Ingen pris"
+
+msgid "Overlap"
+msgstr "Overlapp"
+
+msgid "Per kWh"
+msgstr "Pr kWh"
+
+msgid "Pick a TeslaMate geo-fence to fill in name, coordinates and radius."
+msgstr "Velg en geo-lokasjon fra TeslaMate for å fylle inn navn, koordinater og radius."
+
+msgid "Preview"
+msgstr "Forhåndsvisning"
+
+msgid "Private charging"
+msgstr "Privat lading"
+
+msgid "Radius"
+msgstr "Radius"
+
+msgid "Radius must be positive."
+msgstr "Radius må være positiv."
+
+msgid "Remove"
+msgstr "Fjern"
+
+msgid "Run automatically every (hours)"
+msgstr "Kjør automatisk hver (timer)"
+
+#, python-format
+msgid "Runs automatically every %(hours)s h."
+msgstr "Kjører automatisk hver %(hours)s. time."
+
+msgid "Same as Monday – Friday"
+msgstr "Samme som mandag – fredag"
+
+msgid "Saturday – Sunday"
+msgstr "Lørdag – søndag"
+
+msgid "Save"
+msgstr "Lagre"
+
+msgid "Save these costs"
+msgstr "Lagre disse prisene"
+
+#, python-format
+msgid "Set with environment variables (%(vars)s), the same as in TeslaMate."
+msgstr "Settes med miljøvariabler (%(vars)s), som i TeslaMate."
+
+msgid "Settings"
+msgstr "Innstillinger"
+
+msgid "Settings saved."
+msgstr "Innstillinger lagret."
+
+msgid "Start"
+msgstr "Start"
+
+msgid "Tariff times are local times in this time zone. Summer time is handled automatically."
+msgstr "Tariffenes tider er lokal tid i denne tidssonen. Sommertid håndteres automatisk."
+
+msgid "TeslaMate database"
+msgstr "TeslaMate-database"
+
+msgid "Time zone"
+msgstr "Tidssone"
+
+msgid ""
+"Times are 24-hour (HH:MM); the last block ends at 24:00. A block over midnight (e.g. 22:00–06:00)"
+" is entered as 22:00–24:00 and 00:00–06:00."
+msgstr ""
+"Tider er i 24-timersformat (TT:MM); siste blokk slutter kl. 24:00. En blokk over midnatt (f.eks. "
+"22:00–06:00) legges inn som 22:00–24:00 og 00:00–06:00."
+
+msgid "To"
+msgstr "Til"
+
+msgid "Unavailable"
+msgstr "Ikke tilgjengelig"
+
+#, python-format
+msgid "Unexpected error: %(error)s"
+msgstr "Uventet feil: %(error)s"
+
+#, python-format
+msgid "Unknown timezone '%(tz)s'."
+msgstr "Ukjent tidssone «%(tz)s»."
+
+#, python-format
+msgid "Updated: %(n)s"
+msgstr "Oppdatert: %(n)s"
+
+msgid "User"
+msgstr "Bruker"
+
+msgid "Web App"
+msgstr "Dashboard"
+
+msgid "Write costs to TeslaMate now?"
+msgstr "Skrive prisene til TeslaMate nå?"
+
+msgid "pending"
+msgstr "venter"
+
+msgid "— choose —"
+msgstr "— velg —"
+

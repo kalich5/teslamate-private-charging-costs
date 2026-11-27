@@ -1,0 +1,379 @@
+# Thai translations for teslamate-private-charging-costs.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the teslamate-private-charging-costs project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: teslamate-private-charging-costs VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-27 21:08+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: th\n"
+"Language-Team: th <https://github.com/kalich5/teslamate-private-charging-costs>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.19.0\n"
+
+#, python-format
+msgid "%(days)s: '%(price)s' is not a valid price."
+msgstr "%(days)s: '%(price)s' ไม่ใช่ราคาที่ถูกต้อง"
+
+#, python-format
+msgid "%(field)s: '%(value)s' is not a valid number."
+msgstr "%(field)s: '%(value)s' ไม่ใช่ตัวเลขที่ถูกต้อง"
+
+msgid "0 = only when you click “Calculate and save”."
+msgstr "0 = เฉพาะเมื่อคุณคลิก “คำนวณและบันทึก”"
+
+msgid "Add location"
+msgstr "เพิ่มสถานที่"
+
+msgid "Add time block"
+msgstr "เพิ่มช่วงเวลา"
+
+msgid "Another run is in progress, try again in a moment."
+msgstr "มีการทำงานอื่นอยู่ โปรดลองอีกครั้งในอีกสักครู่"
+
+msgid "Automatic runs are off."
+msgstr "ปิดการทำงานอัตโนมัติอยู่"
+
+msgid "Back"
+msgstr "ย้อนกลับ"
+
+msgid "By default the language of your browser is used, as in TeslaMate."
+msgstr "โดยค่าเริ่มต้นจะใช้ภาษาของเบราว์เซอร์ เช่นเดียวกับ TeslaMate"
+
+msgid "Calculate and save"
+msgstr "คำนวณและบันทึก"
+
+msgid ""
+"Calculates the cost of every finished charge at your locations that has no cost yet. Existing "
+"costs are never changed."
+msgstr ""
+"คำนวณค่าใช้จ่ายของการชาร์จที่เสร็จแล้วทุกครั้งในสถานที่ของคุณที่ยังไม่มีค่าใช้จ่าย "
+"ค่าใช้จ่ายที่มีอยู่จะไม่ถูกเปลี่ยนแปลง"
+
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#, python-format
+msgid "Cannot connect to the TeslaMate database: %(error)s"
+msgstr "ไม่สามารถเชื่อมต่อฐานข้อมูล TeslaMate ได้: %(error)s"
+
+#, python-format
+msgid "Cannot read sessions from the TeslaMate database: %(error)s"
+msgstr "ไม่สามารถอ่านการชาร์จจากฐานข้อมูล TeslaMate ได้: %(error)s"
+
+msgid "Charges"
+msgstr "การชาร์จ"
+
+#, python-format
+msgid "Charges to be updated: %(n)s"
+msgstr "การชาร์จที่จะอัปเดต: %(n)s"
+
+msgid "Charging Costs"
+msgstr "ค่าใช้จ่ายในการชาร์จ"
+
+msgid "Config is empty or not a mapping."
+msgstr "การตั้งค่าว่างเปล่าหรือไม่ถูกต้อง"
+
+#, python-format
+msgid "Configuration problem: %(problem)s"
+msgstr "ปัญหาการตั้งค่า: %(problem)s"
+
+msgid "Coordinates are out of range."
+msgstr "พิกัดอยู่นอกช่วงที่กำหนด"
+
+msgid "Cost"
+msgstr "ค่าใช้จ่าย"
+
+msgid "Costs are converted to this currency using the ECB rate of the charging day."
+msgstr "ค่าใช้จ่ายจะถูกแปลงเป็นสกุลเงินนี้ตามอัตรา ECB ของวันที่ชาร์จ"
+
+msgid "Costs saved"
+msgstr "บันทึกค่าใช้จ่ายแล้ว"
+
+msgid "Could not load geo-fences from TeslaMate."
+msgstr "ไม่สามารถโหลดขอบเขตทางภูมิศาสตร์จาก TeslaMate ได้"
+
+msgid "Currency in TeslaMate"
+msgstr "สกุลเงินใน TeslaMate"
+
+msgid "Currency must be a 3-letter code, e.g. CZK."
+msgstr "สกุลเงินต้องเป็นรหัส 3 ตัวอักษร เช่น THB"
+
+msgid "Currency of your bill"
+msgstr "สกุลเงินในบิลของคุณ"
+
+msgid "Database"
+msgstr "ฐานข้อมูล"
+
+msgid "Delete"
+msgstr "ลบ"
+
+#, python-format
+msgid "Delete %(name)s? Costs already written stay in TeslaMate."
+msgstr "ลบ %(name)s หรือไม่? ค่าใช้จ่ายที่บันทึกแล้วจะยังคงอยู่ใน TeslaMate"
+
+msgid "Edit"
+msgstr "แก้ไข"
+
+msgid "End"
+msgstr "สิ้นสุด"
+
+#, python-format
+msgid "Errors: %(n)s"
+msgstr "ข้อผิดพลาด: %(n)s"
+
+msgid "From"
+msgstr "ตั้งแต่"
+
+msgid "Geo-Fences"
+msgstr "ขอบเขตทางภูมิศาสตร์"
+
+msgid "Host"
+msgstr "โฮสต์"
+
+msgid "Interval must be a number ≥ 0."
+msgstr "ช่วงเวลาต้องเป็นตัวเลข ≥ 0"
+
+#, python-format
+msgid "Invalid configuration: %(error)s"
+msgstr "การตั้งค่าไม่ถูกต้อง: %(error)s"
+
+msgid "Invalid or expired form token — reload the page and try again."
+msgstr "โทเค็นแบบฟอร์มไม่ถูกต้องหรือหมดอายุ โปรดโหลดหน้าใหม่แล้วลองอีกครั้ง"
+
+msgid "Language"
+msgstr "ภาษา"
+
+msgid "Last 100 finished charges. kWh = energy taken from the grid."
+msgstr "การชาร์จที่เสร็จแล้ว 100 ครั้งล่าสุด kWh = พลังงานที่ใช้จากโครงข่ายไฟฟ้า"
+
+#, python-format
+msgid "Last run: %(time)s"
+msgstr "ครั้งล่าสุด: %(time)s"
+
+msgid "Latitude"
+msgstr "ละติจูด"
+
+msgid "Loading…"
+msgstr "กำลังโหลด…"
+
+msgid "Location"
+msgstr "สถานที่"
+
+#, python-format
+msgid "Location '%(name)s' deleted."
+msgstr "ลบสถานที่ '%(name)s' แล้ว"
+
+#, python-format
+msgid ""
+"Location '%(name)s' has no timezone. Set a default timezone (e.g. Europe/Prague) or one for the "
+"location."
+msgstr ""
+"สถานที่ '%(name)s' ไม่มีเขตเวลา ตั้งค่าเขตเวลาเริ่มต้น (เช่น Asia/Bangkok) "
+"หรือเขตเวลาของสถานที่นี้"
+
+#, python-format
+msgid "Location '%(name)s' saved."
+msgstr "บันทึกสถานที่ '%(name)s' แล้ว"
+
+#, python-format
+msgid ""
+"Location '%(name)s', %(days)s: block %(block)s must start before it ends. Split blocks crossing "
+"midnight into two (…–24:00 and 00:00–…)."
+msgstr ""
+"สถานที่ '%(name)s', %(days)s: ช่วง %(block)s ต้องเริ่มก่อนสิ้นสุด "
+"แบ่งช่วงที่ข้ามเที่ยงคืนออกเป็นสองช่วง (…–24:00 และ 00:00–…)"
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: invalid block %(block)s. Expected from and to as HH:MM and a price."
+msgstr "สถานที่ '%(name)s', %(days)s: ช่วงไม่ถูกต้อง %(block)s ต้องมีเวลาเริ่มและสิ้นสุดแบบ HH:MM และราคา"
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: negative price in block %(block)s."
+msgstr "สถานที่ '%(name)s', %(days)s: ราคาติดลบในช่วง %(block)s"
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff after %(time)s (the last block must end at 24:00)."
+msgstr "สถานที่ '%(name)s', %(days)s: ไม่มีอัตราค่าไฟหลัง %(time)s (ช่วงสุดท้ายต้องสิ้นสุดที่ 24:00)"
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff between %(start)s and %(end)s."
+msgstr "สถานที่ '%(name)s', %(days)s: ไม่มีอัตราค่าไฟระหว่าง %(start)s ถึง %(end)s"
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariffs defined."
+msgstr "สถานที่ '%(name)s', %(days)s: ยังไม่ได้กำหนดอัตราค่าไฟ"
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: overlapping blocks around %(time)s."
+msgstr "สถานที่ '%(name)s', %(days)s: ช่วงเวลาซ้อนทับกันประมาณ %(time)s"
+
+#, python-format
+msgid "Location '%(name)s': missing '%(key)s'."
+msgstr "สถานที่ '%(name)s': ไม่มี '%(key)s'"
+
+#, python-format
+msgid "Location '%(name)s': missing 'timezone'."
+msgstr "สถานที่ '%(name)s': ไม่มีเขตเวลา"
+
+#, python-format
+msgid "Location '%(name)s': unknown timezone '%(tz)s'."
+msgstr "สถานที่ '%(name)s': ไม่รู้จักเขตเวลา '%(tz)s'"
+
+msgid "Location names must be unique."
+msgstr "ชื่อสถานที่ต้องไม่ซ้ำกัน"
+
+msgid "Locations"
+msgstr "สถานที่"
+
+msgid "Login required"
+msgstr "ต้องเข้าสู่ระบบ"
+
+msgid "Longitude"
+msgstr "ลองจิจูด"
+
+#, python-format
+msgid "Missing '%(key)s'."
+msgstr "ไม่มี '%(key)s'"
+
+msgid "Monday – Friday"
+msgstr "วันจันทร์ – วันศุกร์"
+
+msgid "Name"
+msgstr "ชื่อ"
+
+msgid "Name is required."
+msgstr "ต้องระบุชื่อ"
+
+msgid "New location"
+msgstr "สถานที่ใหม่"
+
+#, python-format
+msgid "Next run: %(time)s"
+msgstr "ครั้งถัดไป: %(time)s"
+
+msgid "No geo-fences in TeslaMate"
+msgstr "ไม่มีขอบเขตทางภูมิศาสตร์ใน TeslaMate"
+
+msgid "No locations yet. Add your home (or any private charger) and its electricity tariff."
+msgstr "ยังไม่มีสถานที่ เพิ่มบ้านของคุณ (หรือเครื่องชาร์จส่วนตัวอื่น) และอัตราค่าไฟฟ้า"
+
+#, python-format
+msgid "No password set — anyone who can reach this page can change your tariffs. Set %(var)s."
+msgstr "ยังไม่ได้ตั้งรหัสผ่าน ใครก็ตามที่เข้าถึงหน้านี้ได้สามารถเปลี่ยนอัตราค่าไฟของคุณได้ ตั้งค่า %(var)s"
+
+msgid "No price"
+msgstr "ไม่มีราคา"
+
+msgid "Overlap"
+msgstr "ซ้อนทับ"
+
+msgid "Per kWh"
+msgstr "ต่อกิโลวัตต์ชั่วโมง"
+
+msgid "Pick a TeslaMate geo-fence to fill in name, coordinates and radius."
+msgstr "เลือกขอบเขตทางภูมิศาสตร์จาก TeslaMate เพื่อกรอกชื่อ พิกัด และรัศมี"
+
+msgid "Preview"
+msgstr "ดูตัวอย่าง"
+
+msgid "Private charging"
+msgstr "การชาร์จส่วนตัว"
+
+msgid "Radius"
+msgstr "รัศมี"
+
+msgid "Radius must be positive."
+msgstr "รัศมีต้องเป็นค่าบวก"
+
+msgid "Remove"
+msgstr "นำออก"
+
+msgid "Run automatically every (hours)"
+msgstr "ทำงานอัตโนมัติทุก (ชั่วโมง)"
+
+#, python-format
+msgid "Runs automatically every %(hours)s h."
+msgstr "ทำงานอัตโนมัติทุก %(hours)s ชั่วโมง"
+
+msgid "Same as Monday – Friday"
+msgstr "เหมือนกับวันจันทร์ – วันศุกร์"
+
+msgid "Saturday – Sunday"
+msgstr "วันเสาร์ – วันอาทิตย์"
+
+msgid "Save"
+msgstr "บันทึก"
+
+msgid "Save these costs"
+msgstr "บันทึกค่าใช้จ่ายเหล่านี้"
+
+#, python-format
+msgid "Set with environment variables (%(vars)s), the same as in TeslaMate."
+msgstr "ตั้งค่าด้วยตัวแปรสภาพแวดล้อม (%(vars)s) เช่นเดียวกับ TeslaMate"
+
+msgid "Settings"
+msgstr "การตั้งค่า"
+
+msgid "Settings saved."
+msgstr "บันทึกการตั้งค่าแล้ว"
+
+msgid "Start"
+msgstr "เริ่ม"
+
+msgid "Tariff times are local times in this time zone. Summer time is handled automatically."
+msgstr "เวลาของอัตราค่าไฟเป็นเวลาท้องถิ่นของเขตเวลานี้ เวลาออมแสงจะจัดการให้อัตโนมัติ"
+
+msgid "TeslaMate database"
+msgstr "ฐานข้อมูล TeslaMate"
+
+msgid "Time zone"
+msgstr "เขตเวลา"
+
+msgid ""
+"Times are 24-hour (HH:MM); the last block ends at 24:00. A block over midnight (e.g. 22:00–06:00)"
+" is entered as 22:00–24:00 and 00:00–06:00."
+msgstr ""
+"เวลาเป็นแบบ 24 ชั่วโมง (HH:MM) ช่วงสุดท้ายสิ้นสุดที่ 24:00 ช่วงที่ข้ามเที่ยงคืน (เช่น "
+"22:00–06:00) ให้ป้อนเป็น 22:00–24:00 และ 00:00–06:00"
+
+msgid "To"
+msgstr "ถึง"
+
+msgid "Unavailable"
+msgstr "ไม่พร้อมใช้งาน"
+
+#, python-format
+msgid "Unexpected error: %(error)s"
+msgstr "ข้อผิดพลาดที่ไม่คาดคิด: %(error)s"
+
+#, python-format
+msgid "Unknown timezone '%(tz)s'."
+msgstr "ไม่รู้จักเขตเวลา '%(tz)s'"
+
+#, python-format
+msgid "Updated: %(n)s"
+msgstr "อัปเดตแล้ว: %(n)s"
+
+msgid "User"
+msgstr "ผู้ใช้"
+
+msgid "Web App"
+msgstr "เว็บแอป"
+
+msgid "Write costs to TeslaMate now?"
+msgstr "บันทึกค่าใช้จ่ายลงใน TeslaMate ตอนนี้หรือไม่?"
+
+msgid "pending"
+msgstr "รอดำเนินการ"
+
+msgid "— choose —"
+msgstr "— เลือก —"
+

@@ -3,6 +3,8 @@ from datetime import datetime, timedelta, time
 from functools import lru_cache
 from zoneinfo import ZoneInfo
 
+from i18n import _
+
 log = logging.getLogger(__name__)
 
 MINUTES_PER_DAY = 24 * 60
@@ -76,49 +78,56 @@ def validate_location(location: dict) -> None:
     name = location.get("name", "<unnamed>")
     for key in ("name", "lat", "lon", "radius_m", "currency", "tariffs"):
         if key not in location:
-            raise ValueError(f"Location '{name}': missing '{key}'.")
+            raise ValueError(_("Location '%(name)s': missing '%(key)s'.", name=name, key=key))
 
     if not location.get("timezone"):
-        raise ValueError(f"Location '{name}': missing 'timezone'.")
+        raise ValueError(_("Location '%(name)s': missing 'timezone'.", name=name))
     try:
         ZoneInfo(location["timezone"])
     except Exception as e:  # ZoneInfoNotFoundError, malformed keys
-        raise ValueError(f"Location '{name}': unknown timezone '{location.get('timezone')}'.") from e
+        raise ValueError(_("Location '%(name)s': unknown timezone '%(tz)s'.",
+                           name=name, tz=location.get("timezone"))) from e
 
+    hhmm = lambda m: f"{m // 60:02d}:{m % 60:02d}"  # noqa: E731
     for day_type in ("weekday", "weekend"):
+        days = _("Monday – Friday") if day_type == "weekday" else _("Saturday – Sunday")
         blocks = location["tariffs"].get(day_type)
         if not blocks:
-            raise ValueError(f"Location '{name}': no tariffs defined for '{day_type}'.")
+            raise ValueError(_("Location '%(name)s', %(days)s: no tariffs defined.",
+                               name=name, days=days))
 
         parsed = []
         for block in blocks:
-            where = f"Location '{name}', {day_type} block {block}"
+            where = dict(name=name, days=days, block=block)
             try:
                 start, end = parse_time(str(block["from"])), parse_time(str(block["to"]))
                 price = float(block["price"])
             except (KeyError, TypeError, ValueError) as e:
-                raise ValueError(f"{where}: invalid block ({e}). "
-                                 f"Expected {{from: 'HH:MM', to: 'HH:MM', price: number}}.") from e
+                raise ValueError(_("Location '%(name)s', %(days)s: invalid block %(block)s. "
+                                   "Expected from and to as HH:MM and a price.", **where)) from e
             if start >= end:
-                raise ValueError(f"{where}: 'from' must be before 'to'. "
-                                 "Split blocks crossing midnight into two (…–24:00 and 00:00–…).")
+                raise ValueError(_("Location '%(name)s', %(days)s: block %(block)s must start "
+                                   "before it ends. Split blocks crossing midnight into two "
+                                   "(…–24:00 and 00:00–…).", **where))
             if price < 0:
-                raise ValueError(f"{where}: negative price.")
+                raise ValueError(_("Location '%(name)s', %(days)s: negative price in block "
+                                   "%(block)s.", **where))
             parsed.append((start, end))
 
         expected = 0
         for start, end in sorted(parsed):
             if start > expected:
-                raise ValueError(f"Location '{name}', {day_type}: no tariff between "
-                                 f"{expected // 60:02d}:{expected % 60:02d} and "
-                                 f"{start // 60:02d}:{start % 60:02d}.")
+                raise ValueError(_("Location '%(name)s', %(days)s: no tariff between %(start)s "
+                                   "and %(end)s.", name=name, days=days,
+                                   start=hhmm(expected), end=hhmm(start)))
             if start < expected:
-                raise ValueError(f"Location '{name}', {day_type}: overlapping blocks around "
-                                 f"{start // 60:02d}:{start % 60:02d}.")
+                raise ValueError(_("Location '%(name)s', %(days)s: overlapping blocks around "
+                                   "%(time)s.", name=name, days=days, time=hhmm(start)))
             expected = end
         if expected != MINUTES_PER_DAY:
-            raise ValueError(f"Location '{name}', {day_type}: no tariff after "
-                             f"{expected // 60:02d}:{expected % 60:02d} (last block must end at 24:00).")
+            raise ValueError(_("Location '%(name)s', %(days)s: no tariff after %(time)s "
+                               "(the last block must end at 24:00).",
+                               name=name, days=days, time=hhmm(expected)))
 
 
 def energy_profile(samples: list, start: datetime, end: datetime, total_kwh: float) -> list:

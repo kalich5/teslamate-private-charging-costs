@@ -4,6 +4,7 @@
 
   const form = document.getElementById("location-form");
   const field = (name) => form.elements.namedItem(name);
+  const t = (key, fallback) => (window.I18N && window.I18N[key]) || fallback;
   const template = document.getElementById("row-template");
 
   const toMinutes = (value) => {
@@ -112,7 +113,7 @@
       const gap = covered[m] === 0;
       let n = m;
       while (n < 1440 && (gap ? covered[n] === 0 : covered[n] > 1)) n++;
-      const text = `${gap ? "No price" : "Overlap"} ${fmt(m)}–${fmt(n)}`;
+      const text = `${gap ? t("no_price", "No price") : t("overlap", "Overlap")} ${fmt(m)}–${fmt(n)}`;
       if (gap) addSeg(bar, "gap", m, n, "", text);
       problems.push(text);
       m = n;
@@ -161,10 +162,11 @@
     .then((data) => {
       const list = data.geofences || [];
       select.innerHTML = "";
-      select.add(new Option(list.length ? "— choose —" : "No geofences in TeslaMate", ""));
+      const empty = data.error ? t("unavailable", "Unavailable") : t("no_geofences", "No geo-fences in TeslaMate");
+      select.add(new Option(list.length ? t("choose", "— choose —") : empty, ""));
       list.forEach((g, i) => select.add(new Option(`${g.name} (${g.radius_m} m)`, String(i))));
       select.disabled = !list.length;
-      if (data.error) hint.textContent = "Could not load geofences from TeslaMate.";
+      if (data.error) hint.textContent = t("geofences_error", "Could not load geo-fences from TeslaMate.");
       select.addEventListener("change", () => {
         const g = list[Number(select.value)];
         if (!g || select.value === "") return;
@@ -175,9 +177,10 @@
       });
     })
     .catch(() => {
-      select.innerHTML = "<option>Unavailable</option>";
+      select.innerHTML = "";
+      select.add(new Option(t("unavailable", "Unavailable"), ""));
       select.disabled = true;
-      hint.textContent = "Could not load geofences from TeslaMate.";
+      hint.textContent = t("geofences_error", "Could not load geo-fences from TeslaMate.");
     });
 
   ["weekday", "weekend"].forEach(render);

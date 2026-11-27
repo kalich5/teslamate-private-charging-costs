@@ -139,6 +139,26 @@ No Tesla account is needed: TeslaMate already talks to Tesla, this tool only rea
 
 Changes are saved to `data/config.yaml` (a `.bak` copy of the previous version is kept). The importer CLI reads the same file.
 
+### Language
+
+The page uses the same languages as TeslaMate's web app — Catalan, Chinese (simplified/traditional), Czech, Danish, Dutch, English, Finnish, French, German, Hungarian, Italian, Japanese, Korean, Norwegian, Spanish, Swedish, Thai, Turkish and Ukrainian — and picks one the same way: your choice under **Settings → Language → Web App**, otherwise your browser's language, otherwise English.
+
+Translations live in `translations/<lang>/LC_MESSAGES/messages.po`. To improve one, edit the `.po` file and compile it:
+
+```bash
+pybabel compile -d translations
+```
+
+After changing texts in the code or templates, update the catalogs first:
+
+```bash
+pybabel extract -F babel.cfg --no-location --sort-output -o translations/messages.pot .
+```
+
+```bash
+pybabel update -i translations/messages.pot -d translations --no-location
+```
+
 ### Login
 
 Set `WEB_PASSWORD` in `.env` (user `admin`, or `WEB_USER`). Without it, anyone who can reach the port can change your tariffs, and the page shows a warning.
@@ -251,6 +271,8 @@ WHERE cost IS NOT NULL
 web.py             Web interface + scheduler (default container command)
 config_store.py    Reading/writing config.yaml for the web interface
 templates/, static/  Web interface pages, JS and bundled Bulma CSS
+i18n.py            Language selection (same rules and languages as TeslaMate)
+translations/      Translations (gettext .po/.mo), babel.cfg for extraction
 importer.py        Importer — DB read/write loop, also usable as CLI
 pricing.py         Tariff engine — minute-by-minute cost calculation
 geo.py             Geofencing — Haversine distance matching

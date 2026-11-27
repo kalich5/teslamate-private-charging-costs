@@ -242,3 +242,92 @@ class TestRunner:
             assert "in progress" in runner.run()["error"]
         finally:
             runner.lock.release()
+
+
+# ─── Translations ─────────────────────────────────────────────────────────────
+
+class TestLocaleMatching:
+    @pytest.mark.parametrize("tag, expected", [
+        ("cs", "cs"), ("cs-CZ", "cs"), ("de-AT", "de"), ("en-US", "en"),
+        ("nb", "nb"), ("nn", "nb"), ("no", "nb"),
+        ("zh", "zh_Hans"), ("zh-CN", "zh_Hans"), ("zh-Hans", "zh_Hans"),
+        ("zh-TW", "zh_Hant"), ("zh-HK", "zh_Hant"), ("zh-Hant-TW", "zh_Hant"),
+        ("zh_Hant", "zh_Hant"),
+        ("ru", None), ("pl", None), ("", None), (None, None),
+    ])
+    def test_match(self, tag, expected):
+        from i18n import match_locale
+        assert match_locale(tag) == expected
+
+    def test_order_query_session_browser_default(self):
+        from i18n import select_locale
+        session = {}
+        assert select_locale(None, session, ["ru", "de"]) == "de"       # strict browser match
+        assert select_locale(None, session, ["ru"]) == "en"             # default
+        assert select_locale("fr", session, ["de"]) == "fr"             # query wins …
+        assert session["locale"] == "fr"
+        assert select_locale(None, session, ["de"]) == "fr"             # … and is remembered
+        assert select_locale("xx", session, ["de"]) == "fr"             # invalid query ignored
+
+
+class TestTranslatedPages:
+    def test_browser_language(self, client):
+        html = client.get("/private-charging/",
+                          headers={**AUTH, "Accept-Language": "cs-CZ,cs;q=0.9"}).get_data(as_text=True)
+        assert '<html lang="cs">' in html
+        assert ">Místa<" in html and ">Nastavení<" in html
+
+    def test_switcher_is_remembered(self, client):
+        client.get("/private-charging/settings?locale=ja", headers=AUTH)
+        html = client.get("/private-charging/",
+                          headers={**AUTH, "Accept-Language": "de"}).get_data(as_text=True)
+        assert ">場所<" in html
+
+    def test_validation_message_translated(self, client):
+        token = csrf(client)
+        form = location_form(token, weekday_to=["05:00", "24:00"])
+        resp = client.post("/private-charging/location/new", data=form,
+                           headers={**AUTH, "Accept-Language": "de"})
+        assert "kein Tarif zwischen 05:00 und 06:00" in resp.get_data(as_text=True)
+
+    def test_unsupported_language_falls_back_to_english(self, client):
+        html = client.get("/private-charging/",
+                          headers={**AUTH, "Accept-Language": "ru"}).get_data(as_text=True)
+        assert '<html lang="en">' in html and ">Locations<" in html
+
+
+class TestCatalogs:
+    """Every TeslaMate UI language has a complete, compiled catalog."""
+
+    def _catalogs(self):
+        import os
+        from babel.messages.pofile import read_po
+        from i18n import LANGUAGES
+        base = os.path.join(os.path.dirname(__file__), "translations")
+        pot = read_po(open(os.path.join(base, "messages.pot"), "rb"))
+        for lang in LANGUAGES:
+            if lang == "en":
+                continue
+            path = os.path.join(base, lang, "LC_MESSAGES")
+            yield lang, pot, read_po(open(os.path.join(path, "messages.po"), "rb")), path
+
+    def test_complete(self):
+        import re
+        ph = lambda s: sorted(re.findall(r"%\(\w+\)s", s))  # noqa: E731
+        for lang, pot, po, _path in self._catalogs():
+            ids = {m.id for m in pot if m.id}
+            assert {m.id for m in po if m.id} == ids, lang
+            for m in po:
+                if m.id:
+                    assert m.string, f"{lang}: untranslated {m.id!r}"
+                    assert ph(m.string) == ph(m.id), f"{lang}: placeholders in {m.id!r}"
+
+    def test_compiled_mo_is_up_to_date(self):
+        import io, os
+        from babel.messages.mofile import write_mo
+        for lang, _pot, po, path in self._catalogs():
+            buf = io.BytesIO()
+            write_mo(buf, po)
+            with open(os.path.join(path, "messages.mo"), "rb") as fh:
+                assert fh.read() == buf.getvalue(), \
+                    f"{lang}: run `pybabel compile -d translations`"

@@ -28,6 +28,10 @@ from zoneinfo import available_timezones
 import psycopg2
 from flask import (Blueprint, Flask, Response, abort, flash, jsonify, redirect,
                    render_template, request, session, url_for)
+from flask_babel import Babel, get_locale
+
+import i18n
+from i18n import _
 
 import config_store
 from geo import find_location
@@ -72,19 +76,19 @@ class Runner:
     def run(self, dry_run: bool = False) -> dict:
         """Run once.  Returns the summary, or ``{"error": ...}``."""
         if not self.lock.acquire(blocking=False):
-            return {"error": "Another run is in progress, try again in a moment."}
+            return {"error": _("Another run is in progress, try again in a moment.")}
         try:
             started = datetime.now(timezone.utc)
             try:
                 config = prepare_config(config_store.load(self.config_path))
                 result = run_import(config, dry_run=dry_run)
             except ConfigError as e:
-                result = {"error": f"Invalid configuration: {e}"}
+                result = {"error": _("Invalid configuration: %(error)s", error=e)}
             except psycopg2.OperationalError as e:
-                result = {"error": f"Cannot connect to the TeslaMate database: {e}"}
+                result = {"error": _("Cannot connect to the TeslaMate database: %(error)s", error=e)}
             except Exception as e:  # never let the scheduler thread die
                 log.exception("Run failed")
-                result = {"error": f"Unexpected error: {e}"}
+                result = {"error": _("Unexpected error: %(error)s", error=e)}
             result["started"] = started
             result["dry_run"] = dry_run
             if not dry_run:
@@ -128,6 +132,7 @@ def tariffs_from_form(form) -> dict:
     tariffs = {}
     for day_type in DAY_TYPES:
         source = day_type
+        days = _("Monday – Friday") if day_type == "weekday" else _("Saturday – Sunday")
         if day_type == "weekend" and form.get("weekend_same"):
             source = "weekday"
         rows = zip(form.getlist(f"{source}_from"), form.getlist(f"{source}_to"),
@@ -139,7 +144,8 @@ def tariffs_from_form(form) -> dict:
             try:
                 price_value = float(str(price).replace(",", "."))
             except ValueError:
-                raise ConfigError(f"{day_type.capitalize()}: '{price}' is not a valid price.")
+                raise ConfigError(_("%(days)s: '%(price)s' is not a valid price.",
+                                    days=days, price=price))
             blocks.append({"from": frm.strip(), "to": to.strip(), "price": price_value})
         blocks.sort(key=lambda b: (b["from"] or ""))
         tariffs[day_type] = blocks
@@ -152,13 +158,14 @@ def location_from_form(form) -> dict:
         try:
             return cast(float(value)) if cast is int else cast(value)
         except ValueError:
-            raise ConfigError(f"{label}: '{value}' is not a valid number.")
+            raise ConfigError(_("%(field)s: '%(value)s' is not a valid number.",
+                                field=label, value=value))
 
     location = {
         "name": (form.get("name") or "").strip(),
-        "lat": number("lat", "Latitude"),
-        "lon": number("lon", "Longitude"),
-        "radius_m": number("radius_m", "Radius", int),
+        "lat": number("lat", _("Latitude")),
+        "lon": number("lon", _("Longitude")),
+        "radius_m": number("radius_m", _("Radius"), int),
         "currency": (form.get("currency") or "").strip().upper(),
         "tariffs": tariffs_from_form(form),
     }
@@ -166,13 +173,13 @@ def location_from_form(form) -> dict:
     if tz:
         location["timezone"] = tz
     if not location["name"]:
-        raise ConfigError("Name is required.")
+        raise ConfigError(_("Name is required."))
     if len(location["currency"]) != 3 or not location["currency"].isalpha():
-        raise ConfigError("Currency must be a 3-letter ISO code, e.g. CZK.")
+        raise ConfigError(_("Currency must be a 3-letter code, e.g. CZK."))
     if not -90 <= location["lat"] <= 90 or not -180 <= location["lon"] <= 180:
-        raise ConfigError("Coordinates are out of range.")
+        raise ConfigError(_("Coordinates are out of range."))
     if location["radius_m"] <= 0:
-        raise ConfigError("Radius must be positive.")
+        raise ConfigError(_("Radius must be positive."))
     return location
 
 
@@ -192,7 +199,7 @@ def tariff_bar(blocks: list) -> list:
             continue
         if end > start:
             parsed.append((start, end, price, b))
-    prices = sorted({p for _, _, p, _ in parsed})
+    prices = sorted({item[2] for item in parsed})
     out = []
     for start, end, price, b in parsed:
         level = round(prices.index(price) / (len(prices) - 1) * 4) if len(prices) > 1 else 0
@@ -222,6 +229,12 @@ def create_app(config_path=None, root_path=None, password=None, user=None,
     runner = Runner(config_path)
     app.extensions["runner"] = runner
 
+    # Language like TeslaMate: ?locale= → session → browser → English.
+    Babel(app, default_locale=i18n.DEFAULT_LOCALE,
+          default_translation_directories=os.path.join(os.path.dirname(__file__), "translations"),
+          locale_selector=lambda: i18n.select_locale(
+              request.args.get("locale"), session, request.accept_languages.values()))
+
     bp = Blueprint("ui", __name__, url_prefix=root_path or None,
                    static_folder="static", template_folder="templates")
 
@@ -238,13 +251,13 @@ def create_app(config_path=None, root_path=None, password=None, user=None,
         if request.endpoint == "ui.health":
             return None
         if not check_auth():
-            return Response("Login required", 401,
+            return Response(_("Login required"), 401,
                             {"WWW-Authenticate": 'Basic realm="Private charging"'})
         if request.method == "POST":
             token = request.form.get("csrf_token", "")
             expected = session.get("csrf_token", "")
             if not expected or not hmac.compare_digest(token, expected):
-                abort(400, "Invalid or expired form token — reload the page and try again.")
+                abort(400, _("Invalid or expired form token — reload the page and try again."))
         return None
 
     @bp.app_context_processor
@@ -252,7 +265,8 @@ def create_app(config_path=None, root_path=None, password=None, user=None,
         if "csrf_token" not in session:
             session["csrf_token"] = secrets.token_hex(16)
         return {"csrf_token": session["csrf_token"], "auth_enabled": bool(password),
-                "runner": runner}
+                "runner": runner, "locale": str(get_locale()),
+                "languages": i18n.language_options()}
 
     # ── helpers ──
     def load_config():
@@ -315,7 +329,7 @@ def create_app(config_path=None, root_path=None, password=None, user=None,
             finally:
                 conn.close()
         except Exception as e:
-            error = f"Cannot read sessions from the TeslaMate database: {e}"
+            error = _("Cannot read sessions from the TeslaMate database: %(error)s", error=e)
         return render_template("sessions.html", rows=rows, error=error, config=cfg)
 
     @bp.route("/location/new", methods=["GET", "POST"])
@@ -359,7 +373,7 @@ def create_app(config_path=None, root_path=None, password=None, user=None,
             save_config(new_cfg)
         except ConfigError as e:
             return render_location(location, index, str(e))
-        flash(f"Location '{location['name']}' saved.")
+        flash(_("Location '%(name)s' saved.", name=location["name"]))
         return redirect(url_for("ui.index"))
 
     @bp.route("/location/<int:index>/delete", methods=["POST"])
@@ -369,7 +383,7 @@ def create_app(config_path=None, root_path=None, password=None, user=None,
             abort(404)
         removed = cfg["LOCATIONS"].pop(index)
         config_store.save(config_path, cfg)
-        flash(f"Location '{removed['name']}' deleted.")
+        flash(_("Location '%(name)s' deleted.", name=removed["name"]))
         return redirect(url_for("ui.index"))
 
     @bp.route("/settings", methods=["GET", "POST"])
@@ -386,15 +400,15 @@ def create_app(config_path=None, root_path=None, password=None, user=None,
                     raise ValueError
                 new_cfg["SCHEDULE_HOURS"] = int(hours) if hours.is_integer() else hours
                 if len(new_cfg["BASE_CURRENCY"]) != 3 or not new_cfg["BASE_CURRENCY"].isalpha():
-                    raise ConfigError("Base currency must be a 3-letter ISO code, e.g. CZK.")
+                    raise ConfigError(_("Currency must be a 3-letter code, e.g. CZK."))
                 if new_cfg["TIMEZONE"] not in available_timezones():
-                    raise ConfigError(f"Unknown timezone '{new_cfg['TIMEZONE']}'.")
+                    raise ConfigError(_("Unknown timezone '%(tz)s'.", tz=new_cfg["TIMEZONE"]))
                 save_config(new_cfg)
                 runner.next_run = None  # re-plan with the new interval
-                flash("Settings saved.")
+                flash(_("Settings saved."))
                 return redirect(url_for("ui.index"))
             except ValueError as e:
-                error = str(e) if isinstance(e, ConfigError) else "Interval must be a number ≥ 0."
+                error = str(e) if isinstance(e, ConfigError) else _("Interval must be a number ≥ 0.")
                 cfg = new_cfg
         db = db_settings(cfg.get("DATABASE"))
         return render_template("settings.html", config=cfg, error=error,

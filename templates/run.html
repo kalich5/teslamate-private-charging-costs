@@ -1,19 +1,19 @@
 {% extends "base.html" %}
-{% block title %}{{ 'Preview' if result.dry_run else 'Result' }}{% endblock %}
+{% block title %}{{ _('Preview') if result.dry_run else _('Charging Costs') }}{% endblock %}
 {% block content %}
-<h1 class="title">{{ 'Preview' if result.dry_run else 'Costs saved' }}</h1>
+<h1 class="title">{{ _('Preview') if result.dry_run else _('Costs saved') }}</h1>
 
 {% if result.error %}
   <div class="notification is-danger is-light">{{ result.error }}</div>
 {% else %}
   <p class="mb-4">
-    {% if result.dry_run %}{{ result.updated }} session(s) would get a cost{% else %}{{ result.updated }} session(s) updated{% endif %},
-    {% if result.errors %}<span class="has-text-danger">{{ result.errors }} with errors</span>{% else %}no errors{% endif %}.
+    {% if result.dry_run %}{{ _('Charges to be updated: %(n)s', n=result.updated) }}{% else %}{{ _('Updated: %(n)s', n=result.updated) }}{% endif %},
+    {% if result.errors %}<span class="has-text-danger">{{ _('Errors: %(n)s', n=result.errors) }}</span>{% else %}{{ _('Errors: %(n)s', n=0) }}{% endif %}
   </p>
   {% if result.sessions %}
   <div class="table-container">
     <table class="table is-fullwidth is-striped">
-      <thead><tr><th>Start</th><th>Location</th><th class="has-text-right">kWh</th><th class="has-text-right">Cost ({{ config.BASE_CURRENCY }})</th><th></th></tr></thead>
+      <thead><tr><th>{{ _('Start') }}</th><th>{{ _('Location') }}</th><th class="has-text-right">kWh</th><th class="has-text-right">{{ _('Cost') }} ({{ config.BASE_CURRENCY }})</th><th></th></tr></thead>
       <tbody>
       {% for s in result.sessions %}
         <tr>
@@ -31,9 +31,9 @@
   {% if result.dry_run and result.updated %}
     <form method="post" action="{{ url_for('ui.run') }}" class="buttons">
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-      <button class="button is-info" name="mode" value="write">Save these costs</button>
+      <button class="button is-info" name="mode" value="write">{{ _('Save these costs') }}</button>
     </form>
   {% endif %}
 {% endif %}
-<a class="button" href="{{ url_for('ui.index') }}">Back</a>
+<a class="button" href="{{ url_for('ui.index') }}">{{ _('Back') }}</a>
 {% endblock %}

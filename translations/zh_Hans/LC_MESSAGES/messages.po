@@ -1,0 +1,371 @@
+# Chinese (Simplified) translations for teslamate-private-charging-costs.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the teslamate-private-charging-costs project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: teslamate-private-charging-costs VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-27 21:08+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_Hans\n"
+"Language-Team: zh_Hans <https://github.com/kalich5/teslamate-private-charging-costs>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.19.0\n"
+
+#, python-format
+msgid "%(days)s: '%(price)s' is not a valid price."
+msgstr "%(days)s：“%(price)s”不是有效的价格。"
+
+#, python-format
+msgid "%(field)s: '%(value)s' is not a valid number."
+msgstr "%(field)s：“%(value)s”不是有效的数字。"
+
+msgid "0 = only when you click “Calculate and save”."
+msgstr "0 = 仅在点击“计算并保存”时运行。"
+
+msgid "Add location"
+msgstr "添加地点"
+
+msgid "Add time block"
+msgstr "添加时段"
+
+msgid "Another run is in progress, try again in a moment."
+msgstr "另一个任务正在运行，请稍后再试。"
+
+msgid "Automatic runs are off."
+msgstr "自动运行已关闭。"
+
+msgid "Back"
+msgstr "后退"
+
+msgid "By default the language of your browser is used, as in TeslaMate."
+msgstr "与 TeslaMate 一样，默认使用浏览器的语言。"
+
+msgid "Calculate and save"
+msgstr "计算并保存"
+
+msgid ""
+"Calculates the cost of every finished charge at your locations that has no cost yet. Existing "
+"costs are never changed."
+msgstr "计算您所有地点中尚无费用的已完成充电的费用。已有的费用不会被修改。"
+
+msgid "Cancel"
+msgstr "取消"
+
+#, python-format
+msgid "Cannot connect to the TeslaMate database: %(error)s"
+msgstr "无法连接到 TeslaMate 数据库：%(error)s"
+
+#, python-format
+msgid "Cannot read sessions from the TeslaMate database: %(error)s"
+msgstr "无法从 TeslaMate 数据库读取充电记录：%(error)s"
+
+msgid "Charges"
+msgstr "充电记录"
+
+#, python-format
+msgid "Charges to be updated: %(n)s"
+msgstr "待更新的充电：%(n)s"
+
+msgid "Charging Costs"
+msgstr "充电费用"
+
+msgid "Config is empty or not a mapping."
+msgstr "配置为空或无效。"
+
+#, python-format
+msgid "Configuration problem: %(problem)s"
+msgstr "配置问题：%(problem)s"
+
+msgid "Coordinates are out of range."
+msgstr "坐标超出范围。"
+
+msgid "Cost"
+msgstr "费用"
+
+msgid "Costs are converted to this currency using the ECB rate of the charging day."
+msgstr "费用按充电当天的欧洲央行汇率换算为此货币。"
+
+msgid "Costs saved"
+msgstr "费用已保存"
+
+msgid "Could not load geo-fences from TeslaMate."
+msgstr "无法从 TeslaMate 加载收藏点。"
+
+msgid "Currency in TeslaMate"
+msgstr "TeslaMate 中的货币"
+
+msgid "Currency must be a 3-letter code, e.g. CZK."
+msgstr "货币必须是 3 个字母的代码，例如 CNY。"
+
+msgid "Currency of your bill"
+msgstr "账单货币"
+
+msgid "Database"
+msgstr "数据库"
+
+msgid "Delete"
+msgstr "删除"
+
+#, python-format
+msgid "Delete %(name)s? Costs already written stay in TeslaMate."
+msgstr "删除 %(name)s？已写入的费用会保留在 TeslaMate 中。"
+
+msgid "Edit"
+msgstr "编辑"
+
+msgid "End"
+msgstr "结束"
+
+#, python-format
+msgid "Errors: %(n)s"
+msgstr "错误：%(n)s"
+
+msgid "From"
+msgstr "从"
+
+msgid "Geo-Fences"
+msgstr "收藏点"
+
+msgid "Host"
+msgstr "主机"
+
+msgid "Interval must be a number ≥ 0."
+msgstr "间隔必须是 ≥ 0 的数字。"
+
+#, python-format
+msgid "Invalid configuration: %(error)s"
+msgstr "配置无效：%(error)s"
+
+msgid "Invalid or expired form token — reload the page and try again."
+msgstr "表单令牌无效或已过期——请刷新页面后重试。"
+
+msgid "Language"
+msgstr "语言"
+
+msgid "Last 100 finished charges. kWh = energy taken from the grid."
+msgstr "最近 100 次已完成的充电。kWh = 从电网获取的电量。"
+
+#, python-format
+msgid "Last run: %(time)s"
+msgstr "上次运行：%(time)s"
+
+msgid "Latitude"
+msgstr "纬度"
+
+msgid "Loading…"
+msgstr "加载中…"
+
+msgid "Location"
+msgstr "地点"
+
+#, python-format
+msgid "Location '%(name)s' deleted."
+msgstr "地点“%(name)s”已删除。"
+
+#, python-format
+msgid ""
+"Location '%(name)s' has no timezone. Set a default timezone (e.g. Europe/Prague) or one for the "
+"location."
+msgstr "地点“%(name)s”没有时区。请设置默认时区（如 Asia/Shanghai）或为该地点单独设置。"
+
+#, python-format
+msgid "Location '%(name)s' saved."
+msgstr "地点“%(name)s”已保存。"
+
+#, python-format
+msgid ""
+"Location '%(name)s', %(days)s: block %(block)s must start before it ends. Split blocks crossing "
+"midnight into two (…–24:00 and 00:00–…)."
+msgstr "地点“%(name)s”，%(days)s：时段 %(block)s 的开始时间必须早于结束时间。跨越午夜的时段请拆分为两个（…–24:00 和 00:00–…）。"
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: invalid block %(block)s. Expected from and to as HH:MM and a price."
+msgstr "地点“%(name)s”，%(days)s：无效的时段 %(block)s。需要 HH:MM 格式的开始和结束时间以及价格。"
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: negative price in block %(block)s."
+msgstr "地点“%(name)s”，%(days)s：时段 %(block)s 的价格为负数。"
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff after %(time)s (the last block must end at 24:00)."
+msgstr "地点“%(name)s”，%(days)s：%(time)s 之后没有电价（最后一个时段必须在 24:00 结束）。"
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff between %(start)s and %(end)s."
+msgstr "地点“%(name)s”，%(days)s：%(start)s 至 %(end)s 之间没有电价。"
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariffs defined."
+msgstr "地点“%(name)s”，%(days)s：未设置电价。"
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: overlapping blocks around %(time)s."
+msgstr "地点“%(name)s”，%(days)s：%(time)s 附近的时段重叠。"
+
+#, python-format
+msgid "Location '%(name)s': missing '%(key)s'."
+msgstr "地点“%(name)s”：缺少“%(key)s”。"
+
+#, python-format
+msgid "Location '%(name)s': missing 'timezone'."
+msgstr "地点“%(name)s”：缺少时区。"
+
+#, python-format
+msgid "Location '%(name)s': unknown timezone '%(tz)s'."
+msgstr "地点“%(name)s”：未知时区“%(tz)s”。"
+
+msgid "Location names must be unique."
+msgstr "地点名称不能重复。"
+
+msgid "Locations"
+msgstr "地点"
+
+msgid "Login required"
+msgstr "需要登录"
+
+msgid "Longitude"
+msgstr "经度"
+
+#, python-format
+msgid "Missing '%(key)s'."
+msgstr "缺少“%(key)s”。"
+
+msgid "Monday – Friday"
+msgstr "周一至周五"
+
+msgid "Name"
+msgstr "名字"
+
+msgid "Name is required."
+msgstr "名称为必填项。"
+
+msgid "New location"
+msgstr "新地点"
+
+#, python-format
+msgid "Next run: %(time)s"
+msgstr "下次运行：%(time)s"
+
+msgid "No geo-fences in TeslaMate"
+msgstr "TeslaMate 中没有收藏点"
+
+msgid "No locations yet. Add your home (or any private charger) and its electricity tariff."
+msgstr "还没有地点。请添加您的家（或任何私人充电桩）及其电价。"
+
+#, python-format
+msgid "No password set — anyone who can reach this page can change your tariffs. Set %(var)s."
+msgstr "未设置密码——任何能访问此页面的人都可以修改您的电价。请设置 %(var)s。"
+
+msgid "No price"
+msgstr "无价格"
+
+msgid "Overlap"
+msgstr "重叠"
+
+msgid "Per kWh"
+msgstr "每度电"
+
+msgid "Pick a TeslaMate geo-fence to fill in name, coordinates and radius."
+msgstr "选择一个 TeslaMate 收藏点以填入名称、坐标和半径。"
+
+msgid "Preview"
+msgstr "预览"
+
+msgid "Private charging"
+msgstr "私人充电"
+
+msgid "Radius"
+msgstr "半径"
+
+msgid "Radius must be positive."
+msgstr "半径必须为正数。"
+
+msgid "Remove"
+msgstr "移除"
+
+msgid "Run automatically every (hours)"
+msgstr "自动运行间隔（小时）"
+
+#, python-format
+msgid "Runs automatically every %(hours)s h."
+msgstr "每 %(hours)s 小时自动运行。"
+
+msgid "Same as Monday – Friday"
+msgstr "与周一至周五相同"
+
+msgid "Saturday – Sunday"
+msgstr "周六至周日"
+
+msgid "Save"
+msgstr "保存"
+
+msgid "Save these costs"
+msgstr "保存这些费用"
+
+#, python-format
+msgid "Set with environment variables (%(vars)s), the same as in TeslaMate."
+msgstr "与 TeslaMate 一样通过环境变量（%(vars)s）设置。"
+
+msgid "Settings"
+msgstr "设置"
+
+msgid "Settings saved."
+msgstr "设置已保存。"
+
+msgid "Start"
+msgstr "开始"
+
+msgid "Tariff times are local times in this time zone. Summer time is handled automatically."
+msgstr "电价时间为此时区的本地时间，夏令时会自动处理。"
+
+msgid "TeslaMate database"
+msgstr "TeslaMate 数据库"
+
+msgid "Time zone"
+msgstr "时区"
+
+msgid ""
+"Times are 24-hour (HH:MM); the last block ends at 24:00. A block over midnight (e.g. 22:00–06:00)"
+" is entered as 22:00–24:00 and 00:00–06:00."
+msgstr "时间为 24 小时制（HH:MM）；最后一个时段结束于 24:00。跨越午夜的时段（如 22:00–06:00）请分为 22:00–24:00 和 00:00–06:00 输入。"
+
+msgid "To"
+msgstr "至"
+
+msgid "Unavailable"
+msgstr "不可用"
+
+#, python-format
+msgid "Unexpected error: %(error)s"
+msgstr "意外错误：%(error)s"
+
+#, python-format
+msgid "Unknown timezone '%(tz)s'."
+msgstr "未知时区“%(tz)s”。"
+
+#, python-format
+msgid "Updated: %(n)s"
+msgstr "已更新：%(n)s"
+
+msgid "User"
+msgstr "用户"
+
+msgid "Web App"
+msgstr "Web应用程序"
+
+msgid "Write costs to TeslaMate now?"
+msgstr "现在将费用写入 TeslaMate 吗？"
+
+msgid "pending"
+msgstr "待处理"
+
+msgid "— choose —"
+msgstr "— 请选择 —"
+

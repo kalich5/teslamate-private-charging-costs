@@ -1,0 +1,373 @@
+# Japanese translations for teslamate-private-charging-costs.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the teslamate-private-charging-costs project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: teslamate-private-charging-costs VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-27 21:08+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <https://github.com/kalich5/teslamate-private-charging-costs>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.19.0\n"
+
+#, python-format
+msgid "%(days)s: '%(price)s' is not a valid price."
+msgstr "%(days)s: 「%(price)s」は有効な料金ではありません。"
+
+#, python-format
+msgid "%(field)s: '%(value)s' is not a valid number."
+msgstr "%(field)s: 「%(value)s」は有効な数値ではありません。"
+
+msgid "0 = only when you click “Calculate and save”."
+msgstr "0 = 「計算して保存」をクリックしたときのみ。"
+
+msgid "Add location"
+msgstr "場所を追加"
+
+msgid "Add time block"
+msgstr "時間帯を追加"
+
+msgid "Another run is in progress, try again in a moment."
+msgstr "別の処理を実行中です。しばらくしてからもう一度お試しください。"
+
+msgid "Automatic runs are off."
+msgstr "自動実行はオフです。"
+
+msgid "Back"
+msgstr "戻る"
+
+msgid "By default the language of your browser is used, as in TeslaMate."
+msgstr "TeslaMate と同様に、既定ではブラウザーの言語が使われます。"
+
+msgid "Calculate and save"
+msgstr "計算して保存"
+
+msgid ""
+"Calculates the cost of every finished charge at your locations that has no cost yet. Existing "
+"costs are never changed."
+msgstr "登録した場所で完了した充電のうち、まだ費用がないものの費用を計算します。既存の費用は変更されません。"
+
+msgid "Cancel"
+msgstr "キャンセル"
+
+#, python-format
+msgid "Cannot connect to the TeslaMate database: %(error)s"
+msgstr "TeslaMate データベースに接続できません: %(error)s"
+
+#, python-format
+msgid "Cannot read sessions from the TeslaMate database: %(error)s"
+msgstr "TeslaMate データベースから充電を読み込めません: %(error)s"
+
+msgid "Charges"
+msgstr "充電履歴"
+
+#, python-format
+msgid "Charges to be updated: %(n)s"
+msgstr "更新される充電: %(n)s"
+
+msgid "Charging Costs"
+msgstr "充電費用"
+
+msgid "Config is empty or not a mapping."
+msgstr "設定が空か、無効です。"
+
+#, python-format
+msgid "Configuration problem: %(problem)s"
+msgstr "設定の問題: %(problem)s"
+
+msgid "Coordinates are out of range."
+msgstr "座標が範囲外です。"
+
+msgid "Cost"
+msgstr "コスト"
+
+msgid "Costs are converted to this currency using the ECB rate of the charging day."
+msgstr "費用は充電日の ECB レートでこの通貨に換算されます。"
+
+msgid "Costs saved"
+msgstr "費用を保存しました"
+
+msgid "Could not load geo-fences from TeslaMate."
+msgstr "TeslaMate からジオフェンスを読み込めませんでした。"
+
+msgid "Currency in TeslaMate"
+msgstr "TeslaMate の通貨"
+
+msgid "Currency must be a 3-letter code, e.g. CZK."
+msgstr "通貨は 3 文字のコードで入力してください（例: JPY）。"
+
+msgid "Currency of your bill"
+msgstr "請求書の通貨"
+
+msgid "Database"
+msgstr "データベース"
+
+msgid "Delete"
+msgstr "削除"
+
+#, python-format
+msgid "Delete %(name)s? Costs already written stay in TeslaMate."
+msgstr "%(name)s を削除しますか？書き込み済みの費用は TeslaMate に残ります。"
+
+msgid "Edit"
+msgstr "編集"
+
+msgid "End"
+msgstr "終了"
+
+#, python-format
+msgid "Errors: %(n)s"
+msgstr "エラー: %(n)s"
+
+msgid "From"
+msgstr "開始"
+
+msgid "Geo-Fences"
+msgstr "ジオフェンス"
+
+msgid "Host"
+msgstr "ホスト"
+
+msgid "Interval must be a number ≥ 0."
+msgstr "間隔は 0 以上の数値で入力してください。"
+
+#, python-format
+msgid "Invalid configuration: %(error)s"
+msgstr "無効な設定: %(error)s"
+
+msgid "Invalid or expired form token — reload the page and try again."
+msgstr "フォームのトークンが無効または期限切れです。ページを再読み込みしてもう一度お試しください。"
+
+msgid "Language"
+msgstr "言語"
+
+msgid "Last 100 finished charges. kWh = energy taken from the grid."
+msgstr "直近の完了した充電 100 件。kWh = 電力網から取得したエネルギー。"
+
+#, python-format
+msgid "Last run: %(time)s"
+msgstr "前回実行: %(time)s"
+
+msgid "Latitude"
+msgstr "緯度"
+
+msgid "Loading…"
+msgstr "読み込み中…"
+
+msgid "Location"
+msgstr "場所"
+
+#, python-format
+msgid "Location '%(name)s' deleted."
+msgstr "場所「%(name)s」を削除しました。"
+
+#, python-format
+msgid ""
+"Location '%(name)s' has no timezone. Set a default timezone (e.g. Europe/Prague) or one for the "
+"location."
+msgstr "場所「%(name)s」にタイムゾーンがありません。既定のタイムゾーン（例: Asia/Tokyo）か、この場所のタイムゾーンを設定してください。"
+
+#, python-format
+msgid "Location '%(name)s' saved."
+msgstr "場所「%(name)s」を保存しました。"
+
+#, python-format
+msgid ""
+"Location '%(name)s', %(days)s: block %(block)s must start before it ends. Split blocks crossing "
+"midnight into two (…–24:00 and 00:00–…)."
+msgstr "場所「%(name)s」、%(days)s: 時間帯 %(block)s は終了より前に開始する必要があります。日付をまたぐ時間帯は 2 つ（…–24:00 と 00:00–…）に分けてください。"
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: invalid block %(block)s. Expected from and to as HH:MM and a price."
+msgstr "場所「%(name)s」、%(days)s: 無効な時間帯 %(block)s。開始と終了（HH:MM）と料金が必要です。"
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: negative price in block %(block)s."
+msgstr "場所「%(name)s」、%(days)s: 時間帯 %(block)s の料金がマイナスです。"
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff after %(time)s (the last block must end at 24:00)."
+msgstr "場所「%(name)s」、%(days)s: %(time)s 以降の料金がありません（最後の時間帯は 24:00 で終わる必要があります）。"
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariff between %(start)s and %(end)s."
+msgstr "場所「%(name)s」、%(days)s: %(start)s から %(end)s までの料金がありません。"
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: no tariffs defined."
+msgstr "場所「%(name)s」、%(days)s: 料金が設定されていません。"
+
+#, python-format
+msgid "Location '%(name)s', %(days)s: overlapping blocks around %(time)s."
+msgstr "場所「%(name)s」、%(days)s: %(time)s 付近で時間帯が重複しています。"
+
+#, python-format
+msgid "Location '%(name)s': missing '%(key)s'."
+msgstr "場所「%(name)s」: 「%(key)s」がありません。"
+
+#, python-format
+msgid "Location '%(name)s': missing 'timezone'."
+msgstr "場所「%(name)s」: タイムゾーンがありません。"
+
+#, python-format
+msgid "Location '%(name)s': unknown timezone '%(tz)s'."
+msgstr "場所「%(name)s」: 不明なタイムゾーン「%(tz)s」。"
+
+msgid "Location names must be unique."
+msgstr "場所の名前は重複できません。"
+
+msgid "Locations"
+msgstr "場所"
+
+msgid "Login required"
+msgstr "ログインが必要です"
+
+msgid "Longitude"
+msgstr "経度"
+
+#, python-format
+msgid "Missing '%(key)s'."
+msgstr "「%(key)s」がありません。"
+
+msgid "Monday – Friday"
+msgstr "月曜日～金曜日"
+
+msgid "Name"
+msgstr "名前"
+
+msgid "Name is required."
+msgstr "名前は必須です。"
+
+msgid "New location"
+msgstr "新しい場所"
+
+#, python-format
+msgid "Next run: %(time)s"
+msgstr "次回実行: %(time)s"
+
+msgid "No geo-fences in TeslaMate"
+msgstr "TeslaMate にジオフェンスがありません"
+
+msgid "No locations yet. Add your home (or any private charger) and its electricity tariff."
+msgstr "まだ場所がありません。自宅（またはその他の個人用充電器）と電気料金を追加してください。"
+
+#, python-format
+msgid "No password set — anyone who can reach this page can change your tariffs. Set %(var)s."
+msgstr "パスワードが設定されていません。このページにアクセスできる人は誰でも料金を変更できます。%(var)s を設定してください。"
+
+msgid "No price"
+msgstr "料金なし"
+
+msgid "Overlap"
+msgstr "重複"
+
+msgid "Per kWh"
+msgstr "kWh毎"
+
+msgid "Pick a TeslaMate geo-fence to fill in name, coordinates and radius."
+msgstr "TeslaMate のジオフェンスを選ぶと、名前・座標・半径が入力されます。"
+
+msgid "Preview"
+msgstr "プレビュー"
+
+msgid "Private charging"
+msgstr "プライベート充電"
+
+msgid "Radius"
+msgstr "半径"
+
+msgid "Radius must be positive."
+msgstr "半径は正の値で入力してください。"
+
+msgid "Remove"
+msgstr "削除"
+
+msgid "Run automatically every (hours)"
+msgstr "自動実行の間隔（時間）"
+
+#, python-format
+msgid "Runs automatically every %(hours)s h."
+msgstr "%(hours)s 時間ごとに自動実行されます。"
+
+msgid "Same as Monday – Friday"
+msgstr "月曜日～金曜日と同じ"
+
+msgid "Saturday – Sunday"
+msgstr "土曜日～日曜日"
+
+msgid "Save"
+msgstr "保存"
+
+msgid "Save these costs"
+msgstr "この費用を保存"
+
+#, python-format
+msgid "Set with environment variables (%(vars)s), the same as in TeslaMate."
+msgstr "TeslaMate と同じ環境変数（%(vars)s）で設定します。"
+
+msgid "Settings"
+msgstr "設定"
+
+msgid "Settings saved."
+msgstr "設定を保存しました。"
+
+msgid "Start"
+msgstr "開始"
+
+msgid "Tariff times are local times in this time zone. Summer time is handled automatically."
+msgstr "料金の時刻はこのタイムゾーンの現地時刻です。夏時間は自動的に処理されます。"
+
+msgid "TeslaMate database"
+msgstr "TeslaMate データベース"
+
+msgid "Time zone"
+msgstr "タイムゾーン"
+
+msgid ""
+"Times are 24-hour (HH:MM); the last block ends at 24:00. A block over midnight (e.g. 22:00–06:00)"
+" is entered as 22:00–24:00 and 00:00–06:00."
+msgstr ""
+"時刻は24時間表記（HH:MM）です。最後の時間帯は 24:00 で終わります。日付をまたぐ時間帯（例: 22:00–06:00）は 22:00–24:00 と 00:00–06:00 "
+"に分けて入力します。"
+
+msgid "To"
+msgstr "終了"
+
+msgid "Unavailable"
+msgstr "利用不可"
+
+#, python-format
+msgid "Unexpected error: %(error)s"
+msgstr "予期しないエラー: %(error)s"
+
+#, python-format
+msgid "Unknown timezone '%(tz)s'."
+msgstr "不明なタイムゾーン「%(tz)s」。"
+
+#, python-format
+msgid "Updated: %(n)s"
+msgstr "更新: %(n)s"
+
+msgid "User"
+msgstr "ユーザー"
+
+msgid "Web App"
+msgstr "ウェブアプリ"
+
+msgid "Write costs to TeslaMate now?"
+msgstr "今すぐ費用を TeslaMate に書き込みますか？"
+
+msgid "pending"
+msgstr "保留中"
+
+msgid "— choose —"
+msgstr "— 選択 —"
+

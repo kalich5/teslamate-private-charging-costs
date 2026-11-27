@@ -8,6 +8,7 @@ import yaml
 from datetime import datetime, timezone
 
 from geo import find_location
+from i18n import _
 from pricing import calculate_cost_profile, energy_profile, location_zone, validate_location
 from fx import convert
 
@@ -180,10 +181,10 @@ def prepare_config(config: dict) -> dict:
     Returns a new dict; the input is not modified.  Raises ``ConfigError``.
     """
     if not isinstance(config, dict):
-        raise ConfigError("Config is empty or not a mapping.")
+        raise ConfigError(_("Config is empty or not a mapping."))
     for key in ("BASE_CURRENCY", "LOCATIONS"):
         if not config.get(key):
-            raise ConfigError(f"Missing '{key}'.")
+            raise ConfigError(_("Missing '%(key)s'.", key=key))
 
     # Tariff times are local wall-clock times.  Each location may override the
     # global TIMEZONE (e.g. a cottage abroad).
@@ -193,8 +194,9 @@ def prepare_config(config: dict) -> dict:
         loc = {**loc}
         loc["timezone"] = loc.get("timezone") or default_tz
         if not loc["timezone"]:
-            raise ConfigError(f"Location '{loc.get('name')}' has no timezone. Set TIMEZONE "
-                              "(e.g. Europe/Prague) or 'timezone' on the location.")
+            raise ConfigError(_("Location '%(name)s' has no timezone. Set a default timezone "
+                                "(e.g. Europe/Prague) or one for the location.",
+                                name=loc.get("name")))
         # Fail fast on config errors (gaps, overlaps, midnight-crossing blocks…)
         # instead of writing wrong costs that would never be recalculated.
         try:
@@ -205,7 +207,7 @@ def prepare_config(config: dict) -> dict:
 
     names = [loc["name"] for loc in locations]
     if len(set(names)) != len(names):
-        raise ConfigError("Location names must be unique.")
+        raise ConfigError(_("Location names must be unique."))
 
     return {**config, "LOCATIONS": locations}
 

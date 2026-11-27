@@ -4,3 +4,4 @@ requests>=2.31
 tzdata>=2024.1
 flask>=3.0
 waitress>=3.0
+flask-babel>=4.0

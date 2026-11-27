@@ -10,6 +10,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY *.py ./
 COPY templates/ templates/
 COPY static/ static/
+COPY translations/ translations/
 
 # Run as non-root (uid 1000 matches the first user on most Linux hosts, so the
 # bind-mounted ./data directory is writable without extra steps).

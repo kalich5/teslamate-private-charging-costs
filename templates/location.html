@@ -1,27 +1,27 @@
 {% extends "base.html" %}
 {% from "_tariff_bar.html" import tariff_bar_html %}
-{% block title %}{{ location.name or 'New location' }}{% endblock %}
+{% block title %}{{ location.name or _('New location') }}{% endblock %}
 {% macro tariff_table(day, blocks) %}
   <table class="table is-narrow tariffs" data-day="{{ day }}">
-    <thead><tr><th>From</th><th>To</th><th>Price per kWh</th><th></th></tr></thead>
+    <thead><tr><th>{{ _('From') }}</th><th>{{ _('To') }}</th><th>{{ _('Per kWh') }}</th><th></th></tr></thead>
     <tbody>
     {% for b in blocks %}
       <tr>
         <td><input class="input time-from" type="text" name="{{ day }}_from" value="{{ b['from'] }}" pattern="([01]\d|2[0-3]):[0-5]\d" placeholder="HH:MM" inputmode="numeric" required></td>
         <td><input class="input time-to" type="text" name="{{ day }}_to" value="{{ b['to'] }}" pattern="([01]\d|2[0-3]):[0-5]\d|24:00" placeholder="HH:MM" inputmode="numeric" required></td>
         <td><input class="input price" type="text" name="{{ day }}_price" value="{{ b['price'] }}" inputmode="decimal" required></td>
-        <td><button type="button" class="delete remove" title="Remove block"></button></td>
+        <td><button type="button" class="delete remove" title="{{ _('Remove') }}"></button></td>
       </tr>
     {% endfor %}
     </tbody>
   </table>
   <div class="tariff-preview">{{ tariff_bar_html(blocks, day) }}</div>
   <p class="help is-danger coverage" data-day="{{ day }}"></p>
-  <button type="button" class="button is-small add" data-day="{{ day }}">Add block</button>
+  <button type="button" class="button is-small add" data-day="{{ day }}">{{ _('Add time block') }}</button>
 {% endmacro %}
 
 {% block content %}
-<h1 class="title">{{ location.name or 'New location' }}</h1>
+<h1 class="title">{{ location.name or _('New location') }}</h1>
 
 {% if error %}<div class="notification is-danger is-light">{{ error }}</div>{% endif %}
 
@@ -29,64 +29,64 @@
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
   <div class="field">
-    <label class="label" for="geofence">TeslaMate geofence</label>
+    <label class="label" for="geofence">{{ _('Geo-Fences') }}</label>
     <div class="control">
-      <div class="select"><select id="geofence"><option value="">Loading…</option></select></div>
+      <div class="select"><select id="geofence"><option value="">{{ _('Loading…') }}</option></select></div>
     </div>
-    <p class="help" id="geofence-hint">Fills in name, coordinates and radius.</p>
+    <p class="help" id="geofence-hint">{{ _('Pick a TeslaMate geo-fence to fill in name, coordinates and radius.') }}</p>
   </div>
 
   <div class="columns is-multiline">
     <div class="column is-3 field">
-      <label class="label">Name</label>
+      <label class="label">{{ _('Name') }}</label>
       <input class="input" name="name" value="{{ location.name }}" required maxlength="60">
     </div>
     <div class="column is-3 field">
-      <label class="label">Latitude</label>
+      <label class="label">{{ _('Latitude') }}</label>
       <input class="input" name="lat" value="{{ location.lat }}" inputmode="decimal" required>
     </div>
     <div class="column is-3 field">
-      <label class="label">Longitude</label>
+      <label class="label">{{ _('Longitude') }}</label>
       <input class="input" name="lon" value="{{ location.lon }}" inputmode="decimal" required>
     </div>
     <div class="column is-3 field">
-      <label class="label">Radius (m)</label>
+      <label class="label">{{ _('Radius') }} (m)</label>
       <input class="input" name="radius_m" type="number" min="10" max="5000" value="{{ location.radius_m }}" required>
     </div>
     <div class="column is-3 field">
-      <label class="label">Currency of your bill</label>
+      <label class="label">{{ _('Currency of your bill') }}</label>
       <input class="input" name="currency" value="{{ location.currency }}" list="currencies" maxlength="3" required>
     </div>
     <div class="column is-3 field">
-      <label class="label">Timezone</label>
+      <label class="label">{{ _('Time zone') }}</label>
       <input class="input" name="timezone" value="{{ location.timezone or '' }}" list="timezones" placeholder="{{ default_tz }}">
     </div>
   </div>
 
-  <h2 class="title is-5 mt-5">Monday – Friday</h2>
+  <h2 class="title is-5 mt-5">{{ _('Monday – Friday') }}</h2>
   {{ tariff_table('weekday', location.tariffs.get('weekday') or []) }}
 
-  <h2 class="title is-5 mt-5">Saturday – Sunday</h2>
+  <h2 class="title is-5 mt-5">{{ _('Saturday – Sunday') }}</h2>
   <label class="checkbox mb-3"><input type="checkbox" name="weekend_same" id="weekend-same"
     {{ 'checked' if location.get('weekend_same') or (location.tariffs.get('weekday') and location.tariffs.get('weekday') == location.tariffs.get('weekend')) }}>
-    Same as Monday – Friday</label>
+    {{ _('Same as Monday – Friday') }}</label>
   <div id="weekend-wrap">
     {{ tariff_table('weekend', location.tariffs.get('weekend') or []) }}
   </div>
 
-  <p class="help mt-4">Times are 24-hour (HH:MM); the last block ends at 24:00. A block over midnight (e.g. 22:00–06:00) is entered as 22:00–24:00 and 00:00–06:00.</p>
+  <p class="help mt-4">{{ _('Times are 24-hour (HH:MM); the last block ends at 24:00. A block over midnight (e.g. 22:00–06:00) is entered as 22:00–24:00 and 00:00–06:00.') }}</p>
 
   <div class="buttons mt-5">
-    <button class="button is-info">Save</button>
-    <a class="button" href="{{ url_for('ui.index') }}">Cancel</a>
+    <button class="button is-info">{{ _('Save') }}</button>
+    <a class="button" href="{{ url_for('ui.index') }}">{{ _('Cancel') }}</a>
   </div>
 </form>
 
 {% if index is not none %}
 <form method="post" action="{{ url_for('ui.location_delete', index=index) }}" class="mt-5"
-      onsubmit="return confirm('Delete location {{ location.name }}? Costs already written stay in TeslaMate.')">
+      onsubmit="return confirm({{ _('Delete %(name)s? Costs already written stay in TeslaMate.', name=location.name)|tojson|forceescape }})">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <button class="button is-danger is-outlined is-small">Delete location</button>
+  <button class="button is-danger is-outlined is-small">{{ _('Delete') }}</button>
 </form>
 {% endif %}
 
@@ -97,11 +97,19 @@
     <td><input class="input time-from" type="text" pattern="([01]\d|2[0-3]):[0-5]\d" placeholder="HH:MM" inputmode="numeric" required></td>
     <td><input class="input time-to" type="text" pattern="([01]\d|2[0-3]):[0-5]\d|24:00" placeholder="HH:MM" inputmode="numeric" required></td>
     <td><input class="input price" type="text" inputmode="decimal" required></td>
-    <td><button type="button" class="delete remove" title="Remove block"></button></td>
+    <td><button type="button" class="delete remove" title="{{ _('Remove') }}"></button></td>
   </tr>
 </template>
 {% endblock %}
 {% block scripts %}
-<script>window.GEOFENCES_URL = "{{ url_for('ui.geofences') }}";</script>
+<script>
+  window.GEOFENCES_URL = {{ url_for('ui.geofences')|tojson }};
+  window.I18N = {{ {
+    'no_price': _('No price'), 'overlap': _('Overlap'), 'choose': _('— choose —'),
+    'no_geofences': _('No geo-fences in TeslaMate'),
+    'geofences_error': _('Could not load geo-fences from TeslaMate.'),
+    'unavailable': _('Unavailable')
+  }|tojson }};
+</script>
 <script src="{{ url_for('ui.static', filename='location.js') }}"></script>
 {% endblock %}

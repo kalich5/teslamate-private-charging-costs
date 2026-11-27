@@ -1,23 +1,23 @@
 {% extends "base.html" %}
 {% from "_tariff_bar.html" import tariff_bar_html %}
-{% block title %}Locations{% endblock %}
+{% block title %}{{ _('Locations') }}{% endblock %}
 {% macro blocks(list, currency) %}
   {{ tariff_bar_html(list) }}
   {% for b in list or [] %}<div>{{ b['from'] }}–{{ b['to'] }} &nbsp;{{ b.price }} {{ currency }}</div>{% endfor %}
 {% endmacro %}
 {% block content %}
 <div class="level is-mobile">
-  <div class="level-left"><h1 class="title">Locations</h1></div>
-  <div class="level-right"><a class="button is-info" href="{{ url_for('ui.location_new') }}">Add location</a></div>
+  <div class="level-left"><h1 class="title">{{ _('Locations') }}</h1></div>
+  <div class="level-right"><a class="button is-info" href="{{ url_for('ui.location_new') }}">{{ _('Add location') }}</a></div>
 </div>
 
-{% if problem %}<div class="notification is-danger is-light">Configuration problem: {{ problem }}</div>{% endif %}
+{% if problem %}<div class="notification is-danger is-light">{{ _('Configuration problem: %(problem)s', problem=problem) }}</div>{% endif %}
 
 {% if locations %}
 <div class="table-container">
   <table class="table is-fullwidth is-hoverable">
     <thead>
-      <tr><th>Name</th><th>Radius</th><th>Mon–Fri (per kWh)</th><th>Sat–Sun (per kWh)</th><th></th></tr>
+      <tr><th>{{ _('Name') }}</th><th>{{ _('Radius') }}</th><th>{{ _('Monday – Friday') }}</th><th>{{ _('Saturday – Sunday') }}</th><th></th></tr>
     </thead>
     <tbody>
     {% for loc in locations %}
@@ -26,32 +26,32 @@
         <td>{{ loc.radius_m }} m</td>
         <td class="is-size-7 tariff-cell">{{ blocks(loc.tariffs.weekday, loc.currency) }}</td>
         <td class="is-size-7 tariff-cell">{{ blocks(loc.tariffs.weekend, loc.currency) }}</td>
-        <td class="has-text-right"><a class="button is-small" href="{{ url_for('ui.location_edit', index=loop.index0) }}">Edit</a></td>
+        <td class="has-text-right"><a class="button is-small" href="{{ url_for('ui.location_edit', index=loop.index0) }}">{{ _('Edit') }}</a></td>
       </tr>
     {% endfor %}
     </tbody>
   </table>
 </div>
 {% else %}
-  <p class="has-text-grey mb-5">No locations yet. Add your home (or any private charger) and its electricity tariff.</p>
+  <p class="has-text-grey mb-5">{{ _('No locations yet. Add your home (or any private charger) and its electricity tariff.') }}</p>
 {% endif %}
 
-<h2 class="title is-5 mt-6">Calculate costs</h2>
+<h2 class="title is-5 mt-6">{{ _('Charging Costs') }}</h2>
 <p class="mb-2">
-  Prices every finished session at your locations that has no cost yet; existing costs are never changed.
-  {% if config.SCHEDULE_HOURS %}Runs automatically every {{ config.SCHEDULE_HOURS }} h{% if next_run %} (next {{ next_run|dt(config.TIMEZONE) }}){% endif %}.
-  {% else %}Automatic runs are off.{% endif %}
+  {{ _('Calculates the cost of every finished charge at your locations that has no cost yet. Existing costs are never changed.') }}
+  {% if config.SCHEDULE_HOURS %}{{ _('Runs automatically every %(hours)s h.', hours=config.SCHEDULE_HOURS) }}{% if next_run %} {{ _('Next run: %(time)s', time=next_run|dt(config.TIMEZONE)) }}{% endif %}
+  {% else %}{{ _('Automatic runs are off.') }}{% endif %}
 </p>
 {% if last_run %}
-  <p class="mb-2 is-size-7 has-text-grey">Last run {{ last_run.started|dt(config.TIMEZONE) }}:
+  <p class="mb-2 is-size-7 has-text-grey">{{ _('Last run: %(time)s', time=last_run.started|dt(config.TIMEZONE)) }} —
     {% if last_run.error %}<span class="has-text-danger">{{ last_run.error }}</span>
-    {% else %}{{ last_run.updated }} updated, {{ last_run.errors }} errors{% endif %}
+    {% else %}{{ _('Updated: %(n)s', n=last_run.updated) }}, {{ _('Errors: %(n)s', n=last_run.errors) }}{% endif %}
   </p>
 {% endif %}
 <form method="post" action="{{ url_for('ui.run') }}" class="buttons">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <button class="button" name="mode" value="preview" {{ 'disabled' if not locations }}>Preview</button>
+  <button class="button" name="mode" value="preview" {{ 'disabled' if not locations }}>{{ _('Preview') }}</button>
   <button class="button is-info" name="mode" value="write" {{ 'disabled' if not locations }}
-          onclick="return confirm('Write costs to TeslaMate now?')">Calculate &amp; save</button>
+          onclick="return confirm({{ _('Write costs to TeslaMate now?')|tojson|forceescape }})">{{ _('Calculate and save') }}</button>
 </form>
 {% endblock %}
