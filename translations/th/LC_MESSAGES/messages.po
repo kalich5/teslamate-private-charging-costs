@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: teslamate-private-charging-costs VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-27 21:08+0000\n"
+"POT-Creation-Date: 2026-11-27 21:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: th\n"
@@ -19,6 +19,10 @@ msgstr ""
 "Generated-By: Babel 2.19.0\n"
 
 #, python-format
+msgid "%(days)s from %(date)s"
+msgstr "%(days)s ตั้งแต่ %(date)s"
+
+#, python-format
 msgid "%(days)s: '%(price)s' is not a valid price."
 msgstr "%(days)s: '%(price)s' ไม่ใช่ราคาที่ถูกต้อง"
 
@@ -28,6 +32,9 @@ msgstr "%(field)s: '%(value)s' ไม่ใช่ตัวเลขที่ถ�
 
 msgid "0 = only when you click “Calculate and save”."
 msgstr "0 = เฉพาะเมื่อคุณคลิก “คำนวณและบันทึก”"
+
+msgid "A location needs at least one price list."
+msgstr "สถานที่ต้องมีตารางราคาอย่างน้อยหนึ่งรายการ"
 
 msgid "Add location"
 msgstr "เพิ่มสถานที่"
@@ -119,11 +126,25 @@ msgstr "ลบ"
 msgid "Delete %(name)s? Costs already written stay in TeslaMate."
 msgstr "ลบ %(name)s หรือไม่? ค่าใช้จ่ายที่บันทึกแล้วจะยังคงอยู่ใน TeslaMate"
 
+msgid "Each charge is priced with the price list that was valid on its day."
+msgstr "การชาร์จแต่ละครั้งจะคำนวณตามตารางราคาที่มีผลในวันนั้น"
+
+msgid ""
+"Each price list applies from its date until the next one starts; the oldest one also applies to "
+"all earlier charges. Keep old price lists — they are needed to recalculate past charges."
+msgstr ""
+"ตารางราคาแต่ละรายการมีผลตั้งแต่วันที่ของตนจนถึงวันที่ตารางถัดไปเริ่มต้น "
+"ตารางที่เก่าที่สุดใช้กับการชาร์จก่อนหน้าทั้งหมดด้วย โปรดเก็บตารางราคาเก่าไว้ "
+"เพราะจำเป็นสำหรับการคำนวณการชาร์จในอดีตใหม่"
+
 msgid "Edit"
 msgstr "แก้ไข"
 
 msgid "End"
 msgstr "สิ้นสุด"
+
+msgid "Enter both dates as YYYY-MM-DD."
+msgstr "ป้อนวันที่ทั้งสองในรูปแบบ YYYY-MM-DD"
 
 #, python-format
 msgid "Errors: %(n)s"
@@ -147,6 +168,13 @@ msgstr "การตั้งค่าไม่ถูกต้อง: %(error)s"
 
 msgid "Invalid or expired form token — reload the page and try again."
 msgstr "โทเค็นแบบฟอร์มไม่ถูกต้องหรือหมดอายุ โปรดโหลดหน้าใหม่แล้วลองอีกครั้ง"
+
+msgid "Invalid price lists — open the location to fix them."
+msgstr "ตารางราคาไม่ถูกต้อง เปิดสถานที่เพื่อแก้ไข"
+
+#, python-format
+msgid "Invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "วันที่เริ่มต้นของตารางราคา '%(date)s' ไม่ถูกต้อง (ต้องเป็น YYYY-MM-DD)"
 
 msgid "Language"
 msgstr "ภาษา"
@@ -216,12 +244,24 @@ msgid "Location '%(name)s', %(days)s: overlapping blocks around %(time)s."
 msgstr "สถานที่ '%(name)s', %(days)s: ช่วงเวลาซ้อนทับกันประมาณ %(time)s"
 
 #, python-format
+msgid "Location '%(name)s': invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "สถานที่ '%(name)s': วันที่เริ่มต้นของตารางราคา '%(date)s' ไม่ถูกต้อง (ต้องเป็น YYYY-MM-DD)"
+
+#, python-format
 msgid "Location '%(name)s': missing '%(key)s'."
 msgstr "สถานที่ '%(name)s': ไม่มี '%(key)s'"
 
 #, python-format
 msgid "Location '%(name)s': missing 'timezone'."
 msgstr "สถานที่ '%(name)s': ไม่มีเขตเวลา"
+
+#, python-format
+msgid "Location '%(name)s': no price lists defined."
+msgstr "สถานที่ '%(name)s': ยังไม่ได้กำหนดตารางราคา"
+
+#, python-format
+msgid "Location '%(name)s': two price lists start on %(date)s."
+msgstr "สถานที่ '%(name)s': มีตารางราคาสองรายการเริ่มวันที่ %(date)s"
 
 #, python-format
 msgid "Location '%(name)s': unknown timezone '%(tz)s'."
@@ -255,6 +295,9 @@ msgstr "ต้องระบุชื่อ"
 msgid "New location"
 msgstr "สถานที่ใหม่"
 
+msgid "New price list from date"
+msgstr "ตารางราคาใหม่ตั้งแต่วันที่"
+
 #, python-format
 msgid "Next run: %(time)s"
 msgstr "ครั้งถัดไป: %(time)s"
@@ -275,6 +318,10 @@ msgstr "ไม่มีราคา"
 msgid "Overlap"
 msgstr "ซ้อนทับ"
 
+#, python-format
+msgid "Overwrite all costs at %(name)s in this period?"
+msgstr "เขียนทับค่าใช้จ่ายทั้งหมดของ %(name)s ในช่วงเวลานี้หรือไม่?"
+
 msgid "Per kWh"
 msgstr "ต่อกิโลวัตต์ชั่วโมง"
 
@@ -283,6 +330,20 @@ msgstr "เลือกขอบเขตทางภูมิศาสตร์
 
 msgid "Preview"
 msgstr "ดูตัวอย่าง"
+
+msgid "Previous cost"
+msgstr "ค่าใช้จ่ายเดิม"
+
+#, python-format
+msgid "Price list from %(date)s"
+msgstr "ตารางราคาตั้งแต่ %(date)s"
+
+msgid "Price lists"
+msgstr "ตารางราคา"
+
+#, python-format
+msgid "Price lists: %(n)s"
+msgstr "ตารางราคา: %(n)s"
 
 msgid "Private charging"
 msgstr "การชาร์จส่วนตัว"
@@ -293,8 +354,26 @@ msgstr "รัศมี"
 msgid "Radius must be positive."
 msgstr "รัศมีต้องเป็นค่าบวก"
 
+msgid "Recalculate"
+msgstr "คำนวณใหม่"
+
+msgid "Recalculate and overwrite"
+msgstr "คำนวณใหม่และเขียนทับ"
+
+msgid "Recalculate costs"
+msgstr "คำนวณค่าใช้จ่ายใหม่"
+
+msgid "Recalculate costs…"
+msgstr "คำนวณค่าใช้จ่ายใหม่…"
+
+msgid "Recalculation overwrites ALL costs of charges at this location in the selected period"
+msgstr "การคำนวณใหม่จะเขียนทับค่าใช้จ่ายทั้งหมดของการชาร์จในสถานที่นี้ในช่วงเวลาที่เลือก"
+
 msgid "Remove"
 msgstr "นำออก"
+
+msgid "Remove price list"
+msgstr "นำตารางราคาออก"
 
 msgid "Run automatically every (hours)"
 msgstr "ทำงานอัตโนมัติทุก (ชั่วโมง)"
@@ -334,6 +413,9 @@ msgstr "เวลาของอัตราค่าไฟเป็นเวล
 msgid "TeslaMate database"
 msgstr "ฐานข้อมูล TeslaMate"
 
+msgid "The start date must not be after the end date."
+msgstr "วันที่เริ่มต้นต้องไม่อยู่หลังวันที่สิ้นสุด"
+
 msgid "Time zone"
 msgstr "เขตเวลา"
 
@@ -355,6 +437,10 @@ msgid "Unexpected error: %(error)s"
 msgstr "ข้อผิดพลาดที่ไม่คาดคิด: %(error)s"
 
 #, python-format
+msgid "Unknown location '%(name)s'."
+msgstr "ไม่รู้จักสถานที่ '%(name)s'"
+
+#, python-format
 msgid "Unknown timezone '%(tz)s'."
 msgstr "ไม่รู้จักเขตเวลา '%(tz)s'"
 
@@ -365,11 +451,17 @@ msgstr "อัปเดตแล้ว: %(n)s"
 msgid "User"
 msgstr "ผู้ใช้"
 
+msgid "Valid from"
+msgstr "มีผลตั้งแต่"
+
 msgid "Web App"
 msgstr "เว็บแอป"
 
 msgid "Write costs to TeslaMate now?"
 msgstr "บันทึกค่าใช้จ่ายลงใน TeslaMate ตอนนี้หรือไม่?"
+
+msgid "including costs entered in TeslaMate and costs calculated earlier. Check the preview first."
+msgstr "รวมถึงค่าใช้จ่ายที่ป้อนใน TeslaMate และที่คำนวณไว้ก่อนหน้า โปรดตรวจสอบตัวอย่างก่อน"
 
 msgid "pending"
 msgstr "รอดำเนินการ"

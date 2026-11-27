@@ -5,7 +5,7 @@ import sys
 
 import psycopg2
 import yaml
-from datetime import datetime, timezone
+from datetime import date, datetime, time, timedelta, timezone
 
 from geo import find_location
 from i18n import _
@@ -61,7 +61,7 @@ def db_connect(settings):
 # TeslaMate links every charging process to the position recorded when it
 # started (charging_processes.position_id), so a direct join is enough — no
 # need to scan the (very large) positions table per session.
-FETCH_QUERY = """
+_FETCH = """
 SELECT
     cp.id,
     cp.start_date,
@@ -69,14 +69,22 @@ SELECT
     p.latitude,
     p.longitude,
     cp.charge_energy_added,
-    cp.charge_energy_used
+    cp.charge_energy_used,
+    cp.cost
 FROM charging_processes cp
 LEFT JOIN positions p ON p.id = cp.position_id
-WHERE cp.cost IS NULL
+WHERE {condition}
   AND cp.end_date IS NOT NULL
   AND (cp.charge_energy_added > 0 OR cp.charge_energy_used > 0)
-ORDER BY cp.id
+ORDER BY cp.start_date
 """
+
+# Normal run: only sessions without a cost.
+FETCH_QUERY = _FETCH.format(condition="cp.cost IS NULL")
+
+# Recalculation: every session that started in [from, to) (UTC), whatever
+# its current cost.
+FETCH_RANGE_QUERY = _FETCH.format(condition="cp.start_date >= %s AND cp.start_date < %s")
 
 # Per-sample charging data, used to find *when* the energy was actually
 # delivered (e.g. plugged in at 18:00 but scheduled charging starts at 00:00).
@@ -212,16 +220,32 @@ def prepare_config(config: dict) -> dict:
     return {**config, "LOCATIONS": locations}
 
 
-def run_import(config: dict, dry_run: bool = False, conn=None) -> dict:
+def recalculation_range(location: dict, date_from: date, date_to: date) -> tuple:
+    """
+    UTC bounds ``[start, end)`` (naive, like TeslaMate's columns) for the local
+    dates *date_from* … *date_to* (inclusive) of *location*.
+    """
+    tz = location_zone(location)
+    start = datetime.combine(date_from, time.min, tz)
+    end = datetime.combine(date_to + timedelta(days=1), time.min, tz)
+    as_naive_utc = lambda dt: dt.astimezone(timezone.utc).replace(tzinfo=None)  # noqa: E731
+    return as_naive_utc(start), as_naive_utc(end)
+
+
+def run_import(config: dict, dry_run: bool = False, conn=None, recalculate: dict = None) -> dict:
     """
     Price all sessions with missing cost and (unless *dry_run*) write them.
+
+    With *recalculate* ``{"location": name, "date_from": date, "date_to": date}``
+    every session at that location that started within the (local, inclusive)
+    dates is priced again and its cost **overwritten**, whatever it was.
 
     *config* must already be prepared with :func:`prepare_config`.  If *conn*
     is not given, a connection is opened from the config / environment.
 
     Returns ``{"updated", "skipped", "errors", "found", "dry_run", "sessions"}``
     where ``sessions`` lists ``{"id", "start", "location", "kwh", "cost",
-    "status", "error"}`` for every session matched to a location.
+    "old_cost", "status", "error"}`` for every session matched to a location.
 
     Raises ``psycopg2.OperationalError`` if the database is unreachable.
     """
@@ -229,12 +253,24 @@ def run_import(config: dict, dry_run: bool = False, conn=None) -> dict:
     base_currency = config["BASE_CURRENCY"]
     db_cfg = db_settings(config.get("DATABASE"))
 
+    query, params = FETCH_QUERY, ()
+    if recalculate:
+        locations = [loc for loc in locations if loc["name"] == recalculate["location"]]
+        if not locations:
+            raise ConfigError(_("Unknown location '%(name)s'.", name=recalculate["location"]))
+        query = FETCH_RANGE_QUERY
+        params = recalculation_range(locations[0], recalculate["date_from"],
+                                     recalculate["date_to"])
+
     log.info("=" * 50)
     log.info("  TeslaMate Private Charging Cost Importer")
     log.info("  DB:        %s@%s:%s/%s",
              db_cfg["user"], db_cfg["host"], db_cfg["port"], db_cfg["dbname"])
     log.info("  Currency:  %s", base_currency)
     log.info("  Locations: %s", ", ".join(f'{loc["name"]} ({loc["timezone"]})' for loc in locations))
+    if recalculate:
+        log.info("  Recalculate: %s, %s – %s (overwrites existing costs)", recalculate["location"],
+                 recalculate["date_from"], recalculate["date_to"])
     if dry_run:
         log.info("  Mode:      DRY-RUN (no writes)")
     log.info("=" * 50)
@@ -244,20 +280,23 @@ def run_import(config: dict, dry_run: bool = False, conn=None) -> dict:
         conn = db_connect(db_cfg)
 
     summary = {"updated": 0, "skipped": 0, "errors": 0, "found": 0,
-               "dry_run": dry_run, "sessions": []}
+               "dry_run": dry_run, "recalculate": recalculate, "sessions": []}
     cur = conn.cursor()
     try:
         def load_samples(session_id):
             cur.execute(CHARGES_QUERY, (session_id,))
             return cur.fetchall()
 
-        cur.execute(FETCH_QUERY)
+        cur.execute(query, params)
         rows = cur.fetchall()
         summary["found"] = len(rows)
-        log.info("Found %d charging session(s) with missing cost.", len(rows))
+        if recalculate:
+            log.info("Found %d charging session(s) in the period.", len(rows))
+        else:
+            log.info("Found %d charging session(s) with missing cost.", len(rows))
 
         for row in rows:
-            tm_id, start, end, lat, lon, added, used = row
+            tm_id, start, end, lat, lon, added, used, old_cost = row
 
             session = {
                 "id":         tm_id,
@@ -267,8 +306,8 @@ def run_import(config: dict, dry_run: bool = False, conn=None) -> dict:
                 "longitude":  to_float(lon),
                 "kwh":        billed_energy(added, used),
             }
-            entry = {"id": tm_id, "start": start, "location": None,
-                     "kwh": session["kwh"], "cost": None, "status": None, "error": None}
+            entry = {"id": tm_id, "start": start, "location": None, "kwh": session["kwh"],
+                     "cost": None, "old_cost": to_float(old_cost), "status": None, "error": None}
 
             try:
                 result = process_session(session, locations, base_currency, load_samples)
@@ -342,6 +381,9 @@ Examples:
 
   # Verbose output (show skipped sessions)
   python importer.py --verbose
+
+  # Recalculate (and OVERWRITE) all costs at "home" in 2025
+  python importer.py --recalculate home --from 2025-01-01 --to 2025-12-31 --dry-run
         """,
     )
     arg_parser.add_argument(
@@ -360,7 +402,19 @@ Examples:
         action="store_true",
         help="Show debug messages including skipped sessions",
     )
+    arg_parser.add_argument(
+        "--recalculate",
+        metavar="LOCATION",
+        help="Recalculate all charges at LOCATION between --from and --to, "
+             "overwriting existing costs",
+    )
+    arg_parser.add_argument("--from", dest="date_from", type=date.fromisoformat,
+                            metavar="YYYY-MM-DD", help="First day to recalculate (local date)")
+    arg_parser.add_argument("--to", dest="date_to", type=date.fromisoformat,
+                            metavar="YYYY-MM-DD", help="Last day to recalculate (default: today)")
     args = arg_parser.parse_args()
+    if args.recalculate and not args.date_from:
+        arg_parser.error("--recalculate needs --from")
 
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
@@ -371,8 +425,16 @@ Examples:
         log.error("Invalid config: %s", e)
         sys.exit(1)
 
+    recalculate = None
+    if args.recalculate:
+        recalculate = {"location": args.recalculate, "date_from": args.date_from,
+                       "date_to": args.date_to or date.today()}
+
     try:
-        run_import(config, dry_run=args.dry_run)
+        run_import(config, dry_run=args.dry_run, recalculate=recalculate)
+    except ConfigError as e:
+        log.error("%s", e)
+        sys.exit(1)
     except psycopg2.OperationalError as e:
         log.error("Cannot connect to database: %s", e)
         sys.exit(1)

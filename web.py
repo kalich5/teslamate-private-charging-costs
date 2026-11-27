@@ -17,13 +17,14 @@ Environment:
 
 import hmac
 import logging
+import re
 import os
 import secrets
 import threading
 import time
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from functools import wraps
-from zoneinfo import available_timezones
+from zoneinfo import ZoneInfo, available_timezones
 
 import psycopg2
 from flask import (Blueprint, Flask, Response, abort, flash, jsonify, redirect,
@@ -35,7 +36,7 @@ from i18n import _
 
 import config_store
 from geo import find_location
-from pricing import parse_time
+from pricing import parse_date, parse_time, period_for, tariff_periods
 from importer import (ConfigError, db_connect, db_settings, prepare_config, run_import,
                       to_float, billed_energy)
 
@@ -66,22 +67,31 @@ LIMIT %s
 class Runner:
     """Runs the importer (manually or on a schedule), one run at a time."""
 
-    def __init__(self, config_path: str):
+    def __init__(self, config_path: str, connect=None):
         self.config_path = config_path
+        self.connect = connect     # optional DB connection factory
         self.lock = threading.Lock()
         self.last_run = None       # summary dict of the last real (non dry-run) run
         self.next_run = None       # epoch seconds
         self._stop = threading.Event()
 
-    def run(self, dry_run: bool = False) -> dict:
-        """Run once.  Returns the summary, or ``{"error": ...}``."""
+    def run(self, dry_run: bool = False, recalculate: dict = None) -> dict:
+        """Run once (see :func:`importer.run_import`).  Returns the summary or ``{"error": ...}``."""
         if not self.lock.acquire(blocking=False):
             return {"error": _("Another run is in progress, try again in a moment.")}
         try:
             started = datetime.now(timezone.utc)
             try:
                 config = prepare_config(config_store.load(self.config_path))
-                result = run_import(config, dry_run=dry_run)
+                if self.connect:
+                    conn = self.connect()
+                    try:
+                        result = run_import(config, dry_run=dry_run, conn=conn,
+                                            recalculate=recalculate)
+                    finally:
+                        conn.close()
+                else:
+                    result = run_import(config, dry_run=dry_run, recalculate=recalculate)
             except ConfigError as e:
                 result = {"error": _("Invalid configuration: %(error)s", error=e)}
             except psycopg2.OperationalError as e:
@@ -91,7 +101,8 @@ class Runner:
                 result = {"error": _("Unexpected error: %(error)s", error=e)}
             result["started"] = started
             result["dry_run"] = dry_run
-            if not dry_run:
+            result["recalculate"] = recalculate
+            if not dry_run and not recalculate:
                 self.last_run = result
             return result
         finally:
@@ -127,29 +138,58 @@ class Runner:
 
 # ─── Form handling ────────────────────────────────────────────────────────────
 
-def tariffs_from_form(form) -> dict:
-    """Read tariff rows (``weekday_from`` / ``weekday_to`` / ``weekday_price`` lists)."""
-    tariffs = {}
-    for day_type in DAY_TYPES:
-        source = day_type
-        days = _("Monday – Friday") if day_type == "weekday" else _("Saturday – Sunday")
-        if day_type == "weekend" and form.get("weekend_same"):
-            source = "weekday"
-        rows = zip(form.getlist(f"{source}_from"), form.getlist(f"{source}_to"),
-                   form.getlist(f"{source}_price"))
-        blocks = []
-        for frm, to, price in rows:
-            if not (frm or to or price):
-                continue  # empty row
+_PERIOD_ID = re.compile(r"^[a-z0-9]{1,12}$")
+
+
+def periods_from_form(form, strict: bool = True) -> list:
+    """
+    Read the price lists from the location form.
+
+    Each price list has an id listed in ``period``; its fields are
+    ``<id>_valid_from``, ``<id>_weekday_from`` / ``_to`` / ``_price`` (lists)
+    and the same for ``weekend`` unless ``<id>_weekend_same`` is ticked.
+    With *strict*, prices and dates are parsed (``ConfigError`` on bad input);
+    otherwise the raw strings are returned for re-displaying the form.
+    """
+    periods = []
+    for pid in form.getlist("period"):
+        if not _PERIOD_ID.match(pid):
+            continue
+        raw_date = (form.get(f"{pid}_valid_from") or "").strip()
+        period = {"valid_from": raw_date, "weekend_same": bool(form.get(f"{pid}_weekend_same"))}
+        if strict:
             try:
-                price_value = float(str(price).replace(",", "."))
+                period["valid_from"] = parse_date(raw_date)
             except ValueError:
-                raise ConfigError(_("%(days)s: '%(price)s' is not a valid price.",
-                                    days=days, price=price))
-            blocks.append({"from": frm.strip(), "to": to.strip(), "price": price_value})
-        blocks.sort(key=lambda b: (b["from"] or ""))
-        tariffs[day_type] = blocks
-    return tariffs
+                raise ConfigError(_("Invalid start date '%(date)s' of a price list "
+                                    "(expected YYYY-MM-DD).", date=raw_date))
+            del period["weekend_same"]
+        for day_type in DAY_TYPES:
+            source = day_type
+            if day_type == "weekend" and form.get(f"{pid}_weekend_same"):
+                source = "weekday"
+            days = _("%(days)s from %(date)s",
+                     days=_("Monday – Friday") if day_type == "weekday" else _("Saturday – Sunday"),
+                     date=raw_date)
+            rows = zip(form.getlist(f"{pid}_{source}_from"), form.getlist(f"{pid}_{source}_to"),
+                       form.getlist(f"{pid}_{source}_price"))
+            blocks = []
+            for frm, to, price in rows:
+                if not (frm or to or price):
+                    continue  # empty row
+                if strict:
+                    try:
+                        price = float(str(price).replace(",", "."))
+                    except ValueError:
+                        raise ConfigError(_("%(days)s: '%(price)s' is not a valid price.",
+                                            days=days, price=price))
+                blocks.append({"from": frm.strip(), "to": to.strip(), "price": price})
+            blocks.sort(key=lambda b: (b["from"] or ""))
+            period[day_type] = blocks
+        periods.append(period)
+    if strict:
+        periods.sort(key=lambda p: p["valid_from"])
+    return periods
 
 
 def location_from_form(form) -> dict:
@@ -167,7 +207,7 @@ def location_from_form(form) -> dict:
         "lon": number("lon", _("Longitude")),
         "radius_m": number("radius_m", _("Radius"), int),
         "currency": (form.get("currency") or "").strip().upper(),
-        "tariffs": tariffs_from_form(form),
+        "tariffs": periods_from_form(form),
     }
     tz = (form.get("timezone") or "").strip()
     if tz:
@@ -209,6 +249,37 @@ def tariff_bar(blocks: list) -> list:
     return out
 
 
+def current_price_list(location: dict, config: dict):
+    """``(valid_from, price_list, count)`` valid today at *location*, or None if invalid."""
+    try:
+        tz = ZoneInfo(location.get("timezone") or config.get("TIMEZONE") or "UTC")
+        periods = tariff_periods(location)
+        today = datetime.now(tz).date()
+        period = period_for(periods, today)
+        valid_from = next(d for d, p in periods if p is period)
+        return {"valid_from": valid_from, "prices": period, "count": len(periods)}
+    except Exception:
+        return None
+
+
+def form_price_lists(location: dict) -> list:
+    """Price lists for the editor: newest first, with ids and string dates."""
+    raw = location.get("tariffs")
+    if not isinstance(raw, list):
+        raw = []
+    blank = [{"from": "00:00", "to": "24:00", "price": ""}]
+    items = []
+    for i, period in enumerate(raw):
+        valid_from = period.get("valid_from")
+        valid_from = valid_from.isoformat() if hasattr(valid_from, "isoformat") else str(valid_from or "")
+        weekday, weekend = period.get("weekday") or [], period.get("weekend") or []
+        same = period.get("weekend_same", bool(weekday) and weekday == weekend)
+        items.append({"id": f"p{i}", "valid_from": valid_from, "weekday": weekday or blank,
+                      "weekend": weekend or blank, "same": same})
+    items.sort(key=lambda item: item["valid_from"], reverse=True)
+    return items
+
+
 # ─── App ──────────────────────────────────────────────────────────────────────
 
 def create_app(config_path=None, root_path=None, password=None, user=None,
@@ -226,7 +297,7 @@ def create_app(config_path=None, root_path=None, password=None, user=None,
     app.secret_key = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
     app.config.update(SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE="Lax",
                       SESSION_COOKIE_PATH=root_path or "/")
-    runner = Runner(config_path)
+    runner = Runner(config_path, db_connector)
     app.extensions["runner"] = runner
 
     # Language like TeslaMate: ?locale= → session → browser → English.
@@ -282,6 +353,7 @@ def create_app(config_path=None, root_path=None, password=None, user=None,
         cfg = load_config()
         return render_template(
             "location.html", location=location, index=index, error=error,
+            price_lists=form_price_lists(location), today=date.today().isoformat(),
             default_tz=cfg.get("TIMEZONE", ""), timezones=sorted(available_timezones()),
             currencies=COMMON_CURRENCIES, day_types=DAY_TYPES,
         ), 400 if error else 200
@@ -300,7 +372,9 @@ def create_app(config_path=None, root_path=None, password=None, user=None,
                 prepare_config(cfg)
         except ConfigError as e:
             problem = str(e)
-        return render_template("index.html", config=cfg, locations=cfg.get("LOCATIONS", []),
+        return render_template("index.html", config=cfg,
+                               locations=[{**loc, "current": current_price_list(loc, cfg)}
+                                          for loc in cfg.get("LOCATIONS", [])],
                                problem=problem,
                                last_run=runner.last_run,
                                next_run=datetime.fromtimestamp(runner.next_run, timezone.utc)
@@ -337,8 +411,9 @@ def create_app(config_path=None, root_path=None, password=None, user=None,
         if request.method == "GET":
             blank = {"name": "", "lat": "", "lon": "", "radius_m": 150,
                      "currency": load_config().get("BASE_CURRENCY", "CZK"),
-                     "tariffs": {"weekday": [{"from": "00:00", "to": "24:00", "price": ""}],
-                                 "weekend": [{"from": "00:00", "to": "24:00", "price": ""}]}}
+                     "tariffs": [{"valid_from": date.today().isoformat(),
+                                  "weekday": [{"from": "00:00", "to": "24:00", "price": ""}],
+                                  "weekend": [{"from": "00:00", "to": "24:00", "price": ""}]}]}
             return render_location(blank, None)
         return save_location(None)
 
@@ -357,11 +432,7 @@ def create_app(config_path=None, root_path=None, password=None, user=None,
             location = location_from_form(request.form)
         except ConfigError as e:
             draft = {**request.form.to_dict(),
-                     "tariffs": {d: [{"from": f, "to": t, "price": p} for f, t, p in
-                                     zip(request.form.getlist(f"{d}_from"),
-                                         request.form.getlist(f"{d}_to"),
-                                         request.form.getlist(f"{d}_price"))]
-                                 for d in DAY_TYPES}}
+                     "tariffs": periods_from_form(request.form, strict=False)}
             return render_location(draft, index, str(e))
         locations = list(cfg["LOCATIONS"])
         if index is None:
@@ -420,8 +491,31 @@ def create_app(config_path=None, root_path=None, password=None, user=None,
     @bp.route("/run", methods=["POST"])
     def run():
         dry_run = request.form.get("mode") != "write"
-        result = runner.run(dry_run=dry_run)
+        recalculate = None
+        if request.form.get("recalc_location"):
+            try:
+                recalculate = {"location": request.form["recalc_location"],
+                               "date_from": parse_date(request.form.get("recalc_from", "")),
+                               "date_to": parse_date(request.form.get("recalc_to", ""))}
+            except ValueError:
+                abort(400, _("Enter both dates as YYYY-MM-DD."))
+            if recalculate["date_from"] > recalculate["date_to"]:
+                abort(400, _("The start date must not be after the end date."))
+        result = runner.run(dry_run=dry_run, recalculate=recalculate)
         return render_template("run.html", result=result, config=load_config())
+
+    @bp.route("/location/<int:index>/recalculate")
+    def location_recalculate(index):
+        cfg = load_config()
+        if not 0 <= index < len(cfg["LOCATIONS"]):
+            abort(404)
+        location = cfg["LOCATIONS"][index]
+        try:
+            oldest = tariff_periods(location)[0][0]
+        except Exception:
+            oldest = date.today() - timedelta(days=365)
+        return render_template("recalculate.html", location=location, config=cfg,
+                               date_from=oldest.isoformat(), date_to=date.today().isoformat())
 
     @bp.route("/api/geofences")
     def geofences():

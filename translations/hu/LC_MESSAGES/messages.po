@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: teslamate-private-charging-costs VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-27 21:08+0000\n"
+"POT-Creation-Date: 2026-11-27 21:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: hu\n"
@@ -19,6 +19,10 @@ msgstr ""
 "Generated-By: Babel 2.19.0\n"
 
 #, python-format
+msgid "%(days)s from %(date)s"
+msgstr "%(days)s, %(date)s-tól"
+
+#, python-format
 msgid "%(days)s: '%(price)s' is not a valid price."
 msgstr "%(days)s: „%(price)s” nem érvényes ár."
 
@@ -28,6 +32,9 @@ msgstr "%(field)s: „%(value)s” nem érvényes szám."
 
 msgid "0 = only when you click “Calculate and save”."
 msgstr "0 = csak a „Számítás és mentés” gombra kattintva."
+
+msgid "A location needs at least one price list."
+msgstr "Egy helyszínhez legalább egy árlista szükséges."
 
 msgid "Add location"
 msgstr "Helyszín hozzáadása"
@@ -119,11 +126,24 @@ msgstr "Törlés"
 msgid "Delete %(name)s? Costs already written stay in TeslaMate."
 msgstr "Törli: %(name)s? A már beírt költségek megmaradnak a TeslaMate-ben."
 
+msgid "Each charge is priced with the price list that was valid on its day."
+msgstr "Minden töltés az aznap érvényes árlista szerint kerül kiszámításra."
+
+msgid ""
+"Each price list applies from its date until the next one starts; the oldest one also applies to "
+"all earlier charges. Keep old price lists — they are needed to recalculate past charges."
+msgstr ""
+"Minden árlista a dátumától érvényes a következő kezdetéig; a legrégebbi a korábbi töltésekre is "
+"vonatkozik. Tartsa meg a régi árlistákat — szükségesek a korábbi töltések újraszámításához."
+
 msgid "Edit"
 msgstr "Szerkesztés"
 
 msgid "End"
 msgstr "Vége"
+
+msgid "Enter both dates as YYYY-MM-DD."
+msgstr "Mindkét dátumot ÉÉÉÉ-HH-NN formában adja meg."
 
 #, python-format
 msgid "Errors: %(n)s"
@@ -147,6 +167,13 @@ msgstr "Érvénytelen beállítás: %(error)s"
 
 msgid "Invalid or expired form token — reload the page and try again."
 msgstr "Érvénytelen vagy lejárt űrlaptoken – töltse újra az oldalt, és próbálja újra."
+
+msgid "Invalid price lists — open the location to fix them."
+msgstr "Érvénytelen árlisták – nyissa meg a helyszínt a javításhoz."
+
+#, python-format
+msgid "Invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Érvénytelen árlista-kezdődátum: „%(date)s” (várt formátum: ÉÉÉÉ-HH-NN)."
 
 msgid "Language"
 msgstr "Nyelv"
@@ -220,12 +247,24 @@ msgid "Location '%(name)s', %(days)s: overlapping blocks around %(time)s."
 msgstr "„%(name)s” helyszín, %(days)s: átfedő sávok %(time)s körül."
 
 #, python-format
+msgid "Location '%(name)s': invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "„%(name)s” helyszín: érvénytelen árlista-kezdődátum: „%(date)s” (várt formátum: ÉÉÉÉ-HH-NN)."
+
+#, python-format
 msgid "Location '%(name)s': missing '%(key)s'."
 msgstr "„%(name)s” helyszín: hiányzik: „%(key)s”."
 
 #, python-format
 msgid "Location '%(name)s': missing 'timezone'."
 msgstr "„%(name)s” helyszín: hiányzik az időzóna."
+
+#, python-format
+msgid "Location '%(name)s': no price lists defined."
+msgstr "„%(name)s” helyszín: nincs megadva árlista."
+
+#, python-format
+msgid "Location '%(name)s': two price lists start on %(date)s."
+msgstr "„%(name)s” helyszín: két árlista is %(date)s-án kezdődik."
 
 #, python-format
 msgid "Location '%(name)s': unknown timezone '%(tz)s'."
@@ -259,6 +298,9 @@ msgstr "A név megadása kötelező."
 msgid "New location"
 msgstr "Új helyszín"
 
+msgid "New price list from date"
+msgstr "Új árlista dátumtól"
+
 #, python-format
 msgid "Next run: %(time)s"
 msgstr "Következő futás: %(time)s"
@@ -281,6 +323,10 @@ msgstr "Nincs ár"
 msgid "Overlap"
 msgstr "Átfedés"
 
+#, python-format
+msgid "Overwrite all costs at %(name)s in this period?"
+msgstr "Felülírja a(z) %(name)s összes költségét ebben az időszakban?"
+
 msgid "Per kWh"
 msgstr "kWh-nként"
 
@@ -289,6 +335,20 @@ msgstr "Válasszon egy TeslaMate geokerítést a név, a koordináták és a sug
 
 msgid "Preview"
 msgstr "Előnézet"
+
+msgid "Previous cost"
+msgstr "Korábbi költség"
+
+#, python-format
+msgid "Price list from %(date)s"
+msgstr "Árlista %(date)s-tól"
+
+msgid "Price lists"
+msgstr "Árlisták"
+
+#, python-format
+msgid "Price lists: %(n)s"
+msgstr "Árlisták: %(n)s"
 
 msgid "Private charging"
 msgstr "Magántöltés"
@@ -299,8 +359,26 @@ msgstr "Sugár"
 msgid "Radius must be positive."
 msgstr "A sugárnak pozitívnak kell lennie."
 
+msgid "Recalculate"
+msgstr "Újraszámítás"
+
+msgid "Recalculate and overwrite"
+msgstr "Újraszámítás és felülírás"
+
+msgid "Recalculate costs"
+msgstr "Költségek újraszámítása"
+
+msgid "Recalculate costs…"
+msgstr "Költségek újraszámítása…"
+
+msgid "Recalculation overwrites ALL costs of charges at this location in the selected period"
+msgstr "Az újraszámítás felülírja a helyszín ÖSSZES töltésének költségét a kiválasztott időszakban"
+
 msgid "Remove"
 msgstr "Eltávolítás"
+
+msgid "Remove price list"
+msgstr "Árlista eltávolítása"
 
 msgid "Run automatically every (hours)"
 msgstr "Automatikus futtatás (óránként)"
@@ -342,6 +420,9 @@ msgstr ""
 msgid "TeslaMate database"
 msgstr "TeslaMate-adatbázis"
 
+msgid "The start date must not be after the end date."
+msgstr "A kezdő dátum nem lehet a záró dátum után."
+
 msgid "Time zone"
 msgstr "Időzóna"
 
@@ -363,6 +444,10 @@ msgid "Unexpected error: %(error)s"
 msgstr "Váratlan hiba: %(error)s"
 
 #, python-format
+msgid "Unknown location '%(name)s'."
+msgstr "Ismeretlen helyszín: „%(name)s”."
+
+#, python-format
 msgid "Unknown timezone '%(tz)s'."
 msgstr "Ismeretlen időzóna: „%(tz)s”."
 
@@ -373,11 +458,19 @@ msgstr "Frissítve: %(n)s"
 msgid "User"
 msgstr "Felhasználó"
 
+msgid "Valid from"
+msgstr "Érvényes ettől"
+
 msgid "Web App"
 msgstr "Webalkalmazás"
 
 msgid "Write costs to TeslaMate now?"
 msgstr "Beírja most a költségeket a TeslaMate-be?"
+
+msgid "including costs entered in TeslaMate and costs calculated earlier. Check the preview first."
+msgstr ""
+"beleértve a TeslaMate-ben megadott és a korábban kiszámított költségeket is. Először nézze meg az"
+" előnézetet."
 
 msgid "pending"
 msgstr "függőben"

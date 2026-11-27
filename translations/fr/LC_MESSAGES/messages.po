@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: teslamate-private-charging-costs VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-27 21:08+0000\n"
+"POT-Creation-Date: 2026-11-27 21:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -19,6 +19,10 @@ msgstr ""
 "Generated-By: Babel 2.19.0\n"
 
 #, python-format
+msgid "%(days)s from %(date)s"
+msgstr "%(days)s à partir du %(date)s"
+
+#, python-format
 msgid "%(days)s: '%(price)s' is not a valid price."
 msgstr "%(days)s : « %(price)s » n'est pas un prix valide."
 
@@ -28,6 +32,9 @@ msgstr "%(field)s : « %(value)s » n'est pas un nombre valide."
 
 msgid "0 = only when you click “Calculate and save”."
 msgstr "0 = uniquement en cliquant sur « Calculer et enregistrer »."
+
+msgid "A location needs at least one price list."
+msgstr "Un lieu doit avoir au moins une grille tarifaire."
 
 msgid "Add location"
 msgstr "Ajouter un lieu"
@@ -119,11 +126,25 @@ msgstr "Supprimer"
 msgid "Delete %(name)s? Costs already written stay in TeslaMate."
 msgstr "Supprimer %(name)s ? Les coûts déjà écrits restent dans TeslaMate."
 
+msgid "Each charge is priced with the price list that was valid on its day."
+msgstr "Chaque recharge est calculée avec la grille tarifaire en vigueur ce jour-là."
+
+msgid ""
+"Each price list applies from its date until the next one starts; the oldest one also applies to "
+"all earlier charges. Keep old price lists — they are needed to recalculate past charges."
+msgstr ""
+"Chaque grille s'applique à partir de sa date jusqu'au début de la suivante ; la plus ancienne "
+"s'applique aussi à toutes les recharges antérieures. Conservez les anciennes grilles — elles "
+"servent à recalculer les recharges passées."
+
 msgid "Edit"
 msgstr "Modifier"
 
 msgid "End"
 msgstr "Fin"
+
+msgid "Enter both dates as YYYY-MM-DD."
+msgstr "Saisissez les deux dates au format AAAA-MM-JJ."
 
 #, python-format
 msgid "Errors: %(n)s"
@@ -147,6 +168,13 @@ msgstr "Configuration invalide : %(error)s"
 
 msgid "Invalid or expired form token — reload the page and try again."
 msgstr "Jeton de formulaire invalide ou expiré — rechargez la page et réessayez."
+
+msgid "Invalid price lists — open the location to fix them."
+msgstr "Grilles tarifaires invalides — ouvrez le lieu pour les corriger."
+
+#, python-format
+msgid "Invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Date de début invalide « %(date)s » d'une grille tarifaire (attendu AAAA-MM-JJ)."
 
 msgid "Language"
 msgstr "Langue"
@@ -220,12 +248,26 @@ msgid "Location '%(name)s', %(days)s: overlapping blocks around %(time)s."
 msgstr "Lieu « %(name)s », %(days)s : plages qui se chevauchent vers %(time)s."
 
 #, python-format
+msgid "Location '%(name)s': invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr ""
+"Lieu « %(name)s » : date de début invalide « %(date)s » d'une grille tarifaire (attendu AAAA-MM-"
+"JJ)."
+
+#, python-format
 msgid "Location '%(name)s': missing '%(key)s'."
 msgstr "Lieu « %(name)s » : « %(key)s » manquant."
 
 #, python-format
 msgid "Location '%(name)s': missing 'timezone'."
 msgstr "Lieu « %(name)s » : fuseau horaire manquant."
+
+#, python-format
+msgid "Location '%(name)s': no price lists defined."
+msgstr "Lieu « %(name)s » : aucune grille tarifaire définie."
+
+#, python-format
+msgid "Location '%(name)s': two price lists start on %(date)s."
+msgstr "Lieu « %(name)s » : deux grilles tarifaires commencent le %(date)s."
 
 #, python-format
 msgid "Location '%(name)s': unknown timezone '%(tz)s'."
@@ -259,6 +301,9 @@ msgstr "Le nom est obligatoire."
 msgid "New location"
 msgstr "Nouveau lieu"
 
+msgid "New price list from date"
+msgstr "Nouvelle grille tarifaire à partir d'une date"
+
 #, python-format
 msgid "Next run: %(time)s"
 msgstr "Prochaine exécution : %(time)s"
@@ -283,6 +328,10 @@ msgstr "Pas de prix"
 msgid "Overlap"
 msgstr "Chevauchement"
 
+#, python-format
+msgid "Overwrite all costs at %(name)s in this period?"
+msgstr "Écraser tous les coûts de %(name)s sur cette période ?"
+
 msgid "Per kWh"
 msgstr "Par kWh"
 
@@ -291,6 +340,20 @@ msgstr "Choisissez un géorepérage TeslaMate pour remplir le nom, les coordonn�
 
 msgid "Preview"
 msgstr "Aperçu"
+
+msgid "Previous cost"
+msgstr "Coût précédent"
+
+#, python-format
+msgid "Price list from %(date)s"
+msgstr "Grille tarifaire à partir du %(date)s"
+
+msgid "Price lists"
+msgstr "Grilles tarifaires"
+
+#, python-format
+msgid "Price lists: %(n)s"
+msgstr "Grilles tarifaires : %(n)s"
 
 msgid "Private charging"
 msgstr "Recharge privée"
@@ -301,8 +364,26 @@ msgstr "Rayon"
 msgid "Radius must be positive."
 msgstr "Le rayon doit être positif."
 
+msgid "Recalculate"
+msgstr "Recalculer"
+
+msgid "Recalculate and overwrite"
+msgstr "Recalculer et écraser"
+
+msgid "Recalculate costs"
+msgstr "Recalculer les coûts"
+
+msgid "Recalculate costs…"
+msgstr "Recalculer les coûts…"
+
+msgid "Recalculation overwrites ALL costs of charges at this location in the selected period"
+msgstr "Le recalcul écrase TOUS les coûts des recharges de ce lieu sur la période choisie"
+
 msgid "Remove"
 msgstr "Retirer"
+
+msgid "Remove price list"
+msgstr "Retirer la grille tarifaire"
 
 msgid "Run automatically every (hours)"
 msgstr "Exécuter automatiquement toutes les (heures)"
@@ -344,6 +425,9 @@ msgstr ""
 msgid "TeslaMate database"
 msgstr "Base de données TeslaMate"
 
+msgid "The start date must not be after the end date."
+msgstr "La date de début ne doit pas être postérieure à la date de fin."
+
 msgid "Time zone"
 msgstr "Fuseau horaire"
 
@@ -365,6 +449,10 @@ msgid "Unexpected error: %(error)s"
 msgstr "Erreur inattendue : %(error)s"
 
 #, python-format
+msgid "Unknown location '%(name)s'."
+msgstr "Lieu inconnu « %(name)s »."
+
+#, python-format
 msgid "Unknown timezone '%(tz)s'."
 msgstr "Fuseau horaire inconnu « %(tz)s »."
 
@@ -375,11 +463,17 @@ msgstr "Mises à jour : %(n)s"
 msgid "User"
 msgstr "Utilisateur"
 
+msgid "Valid from"
+msgstr "Valable à partir du"
+
 msgid "Web App"
 msgstr "App Web"
 
 msgid "Write costs to TeslaMate now?"
 msgstr "Écrire les coûts dans TeslaMate maintenant ?"
+
+msgid "including costs entered in TeslaMate and costs calculated earlier. Check the preview first."
+msgstr "y compris les coûts saisis dans TeslaMate et ceux calculés auparavant. Vérifiez d'abord l'aperçu."
 
 msgid "pending"
 msgstr "en attente"

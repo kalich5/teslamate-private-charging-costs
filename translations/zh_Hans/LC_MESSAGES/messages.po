@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: teslamate-private-charging-costs VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-27 21:08+0000\n"
+"POT-Creation-Date: 2026-11-27 21:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hans\n"
@@ -19,6 +19,10 @@ msgstr ""
 "Generated-By: Babel 2.19.0\n"
 
 #, python-format
+msgid "%(days)s from %(date)s"
+msgstr "%(days)s（自 %(date)s 起）"
+
+#, python-format
 msgid "%(days)s: '%(price)s' is not a valid price."
 msgstr "%(days)s：“%(price)s”不是有效的价格。"
 
@@ -28,6 +32,9 @@ msgstr "%(field)s：“%(value)s”不是有效的数字。"
 
 msgid "0 = only when you click “Calculate and save”."
 msgstr "0 = 仅在点击“计算并保存”时运行。"
+
+msgid "A location needs at least one price list."
+msgstr "每个地点至少需要一个价目表。"
 
 msgid "Add location"
 msgstr "添加地点"
@@ -117,11 +124,22 @@ msgstr "删除"
 msgid "Delete %(name)s? Costs already written stay in TeslaMate."
 msgstr "删除 %(name)s？已写入的费用会保留在 TeslaMate 中。"
 
+msgid "Each charge is priced with the price list that was valid on its day."
+msgstr "每次充电按当天有效的价目表计价。"
+
+msgid ""
+"Each price list applies from its date until the next one starts; the oldest one also applies to "
+"all earlier charges. Keep old price lists — they are needed to recalculate past charges."
+msgstr "每个价目表从其日期起生效，直到下一个开始；最早的价目表也适用于之前的所有充电。请保留旧价目表——重新计算过去的充电需要它们。"
+
 msgid "Edit"
 msgstr "编辑"
 
 msgid "End"
 msgstr "结束"
+
+msgid "Enter both dates as YYYY-MM-DD."
+msgstr "请按 YYYY-MM-DD 格式输入两个日期。"
 
 #, python-format
 msgid "Errors: %(n)s"
@@ -145,6 +163,13 @@ msgstr "配置无效：%(error)s"
 
 msgid "Invalid or expired form token — reload the page and try again."
 msgstr "表单令牌无效或已过期——请刷新页面后重试。"
+
+msgid "Invalid price lists — open the location to fix them."
+msgstr "价目表无效——请打开该地点进行修正。"
+
+#, python-format
+msgid "Invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "价目表的开始日期“%(date)s”无效（应为 YYYY-MM-DD）。"
 
 msgid "Language"
 msgstr "语言"
@@ -210,12 +235,24 @@ msgid "Location '%(name)s', %(days)s: overlapping blocks around %(time)s."
 msgstr "地点“%(name)s”，%(days)s：%(time)s 附近的时段重叠。"
 
 #, python-format
+msgid "Location '%(name)s': invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "地点“%(name)s”：价目表的开始日期“%(date)s”无效（应为 YYYY-MM-DD）。"
+
+#, python-format
 msgid "Location '%(name)s': missing '%(key)s'."
 msgstr "地点“%(name)s”：缺少“%(key)s”。"
 
 #, python-format
 msgid "Location '%(name)s': missing 'timezone'."
 msgstr "地点“%(name)s”：缺少时区。"
+
+#, python-format
+msgid "Location '%(name)s': no price lists defined."
+msgstr "地点“%(name)s”：未设置价目表。"
+
+#, python-format
+msgid "Location '%(name)s': two price lists start on %(date)s."
+msgstr "地点“%(name)s”：有两个价目表都从 %(date)s 开始。"
 
 #, python-format
 msgid "Location '%(name)s': unknown timezone '%(tz)s'."
@@ -249,6 +286,9 @@ msgstr "名称为必填项。"
 msgid "New location"
 msgstr "新地点"
 
+msgid "New price list from date"
+msgstr "从某日期起的新价目表"
+
 #, python-format
 msgid "Next run: %(time)s"
 msgstr "下次运行：%(time)s"
@@ -269,6 +309,10 @@ msgstr "无价格"
 msgid "Overlap"
 msgstr "重叠"
 
+#, python-format
+msgid "Overwrite all costs at %(name)s in this period?"
+msgstr "覆盖 %(name)s 在此期间的所有费用吗？"
+
 msgid "Per kWh"
 msgstr "每度电"
 
@@ -277,6 +321,20 @@ msgstr "选择一个 TeslaMate 收藏点以填入名称、坐标和半径。"
 
 msgid "Preview"
 msgstr "预览"
+
+msgid "Previous cost"
+msgstr "原费用"
+
+#, python-format
+msgid "Price list from %(date)s"
+msgstr "自 %(date)s 起的价目表"
+
+msgid "Price lists"
+msgstr "价目表"
+
+#, python-format
+msgid "Price lists: %(n)s"
+msgstr "价目表：%(n)s"
 
 msgid "Private charging"
 msgstr "私人充电"
@@ -287,8 +345,26 @@ msgstr "半径"
 msgid "Radius must be positive."
 msgstr "半径必须为正数。"
 
+msgid "Recalculate"
+msgstr "重新计算"
+
+msgid "Recalculate and overwrite"
+msgstr "重新计算并覆盖"
+
+msgid "Recalculate costs"
+msgstr "重新计算费用"
+
+msgid "Recalculate costs…"
+msgstr "重新计算费用…"
+
+msgid "Recalculation overwrites ALL costs of charges at this location in the selected period"
+msgstr "重新计算将覆盖此地点在所选期间内的所有充电费用"
+
 msgid "Remove"
 msgstr "移除"
+
+msgid "Remove price list"
+msgstr "移除价目表"
 
 msgid "Run automatically every (hours)"
 msgstr "自动运行间隔（小时）"
@@ -328,6 +404,9 @@ msgstr "电价时间为此时区的本地时间，夏令时会自动处理。"
 msgid "TeslaMate database"
 msgstr "TeslaMate 数据库"
 
+msgid "The start date must not be after the end date."
+msgstr "开始日期不能晚于结束日期。"
+
 msgid "Time zone"
 msgstr "时区"
 
@@ -347,6 +426,10 @@ msgid "Unexpected error: %(error)s"
 msgstr "意外错误：%(error)s"
 
 #, python-format
+msgid "Unknown location '%(name)s'."
+msgstr "未知地点“%(name)s”。"
+
+#, python-format
 msgid "Unknown timezone '%(tz)s'."
 msgstr "未知时区“%(tz)s”。"
 
@@ -357,11 +440,17 @@ msgstr "已更新：%(n)s"
 msgid "User"
 msgstr "用户"
 
+msgid "Valid from"
+msgstr "生效日期"
+
 msgid "Web App"
 msgstr "Web应用程序"
 
 msgid "Write costs to TeslaMate now?"
 msgstr "现在将费用写入 TeslaMate 吗？"
+
+msgid "including costs entered in TeslaMate and costs calculated earlier. Check the preview first."
+msgstr "包括在 TeslaMate 中输入的费用和之前计算的费用。请先查看预览。"
 
 msgid "pending"
 msgstr "待处理"

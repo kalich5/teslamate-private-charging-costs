@@ -74,13 +74,18 @@ def csrf(client, url="/private-charging/"):
 
 
 def location_form(token, **overrides):
+    """Form with one price list "p0"; weekday_*/weekend_*/valid_from map to it."""
     form = {
         "csrf_token": token, "name": "Home", "lat": "49.1951", "lon": "16,6068",
-        "radius_m": "100", "currency": "czk", "timezone": "",
-        "weekday_from": ["00:00", "06:00"], "weekday_to": ["06:00", "24:00"],
-        "weekday_price": ["4", "7,5"], "weekend_same": "on",
+        "radius_m": "100", "currency": "czk", "timezone": "", "period": ["p0"],
+        "p0_valid_from": "2024-01-01",
+        "p0_weekday_from": ["00:00", "06:00"], "p0_weekday_to": ["06:00", "24:00"],
+        "p0_weekday_price": ["4", "7,5"], "p0_weekend_same": "on",
     }
-    form.update(overrides)
+    for key, value in overrides.items():
+        if key.startswith(("weekday_", "weekend_", "valid_from")):
+            key = "p0_" + key
+        form[key] = value
     return form
 
 
@@ -141,10 +146,12 @@ class TestLocationEditing:
         assert loc["lon"] == pytest.approx(16.6068)          # comma decimal accepted
         assert loc["currency"] == "CZK"                      # upper-cased
         assert "timezone" not in loc                         # empty → global default
-        assert loc["tariffs"]["weekday"] == [
+        prices = loc["tariffs"][0]
+        assert str(prices["valid_from"]) == "2024-01-01"
+        assert prices["weekday"] == [
             {"from": "00:00", "to": "06:00", "price": 4.0},
             {"from": "06:00", "to": "24:00", "price": 7.5}]
-        assert loc["tariffs"]["weekend"] == loc["tariffs"]["weekday"]  # "same as weekdays"
+        assert prices["weekend"] == prices["weekday"]  # "same as weekdays"
 
     def test_gap_is_rejected_and_not_saved(self, app, client):
         token = csrf(client)
@@ -171,10 +178,41 @@ class TestLocationEditing:
                     headers=AUTH)
         loc = yaml.safe_load(app.config_path.read_text())["LOCATIONS"][0]
         assert loc["name"] == "Cottage"
-        assert loc["tariffs"]["weekend"] == [{"from": "00:00", "to": "24:00", "price": 3.0}]
+        assert loc["tariffs"][0]["weekend"] == [{"from": "00:00", "to": "24:00", "price": 3.0}]
 
         client.post("/private-charging/location/0/delete", data={"csrf_token": token}, headers=AUTH)
         assert yaml.safe_load(app.config_path.read_text())["LOCATIONS"] == []
+
+    def test_several_price_lists(self, app, client):
+        token = csrf(client)
+        form = location_form(token, period=["n1", "p0"],
+                             n1_valid_from="2025-07-01", n1_weekend_same="on",
+                             n1_weekday_from=["00:00"], n1_weekday_to=["24:00"],
+                             n1_weekday_price=["9"])
+        assert client.post("/private-charging/location/new", data=form,
+                           headers=AUTH).status_code == 302
+        tariffs = yaml.safe_load(app.config_path.read_text())["LOCATIONS"][0]["tariffs"]
+        assert [str(p["valid_from"]) for p in tariffs] == ["2024-01-01", "2025-07-01"]  # sorted
+        assert tariffs[1]["weekend"] == [{"from": "00:00", "to": "24:00", "price": 9.0}]
+        html = client.get("/private-charging/location/0", headers=AUTH).get_data(as_text=True)
+        assert html.index('value="2025-07-01"') < html.index('value="2024-01-01"')  # newest first
+
+    def test_duplicate_start_date_rejected(self, app, client):
+        token = csrf(client)
+        form = location_form(token, period=["n1", "p0"], n1_valid_from="2024-01-01",
+                             n1_weekend_same="on", n1_weekday_from=["00:00"],
+                             n1_weekday_to=["24:00"], n1_weekday_price=["9"])
+        resp = client.post("/private-charging/location/new", data=form, headers=AUTH)
+        assert resp.status_code == 400
+        assert "two price lists start on 2024-01-01" in resp.get_data(as_text=True)
+        assert not app.config_path.exists()
+
+    def test_invalid_start_date(self, client):
+        token = csrf(client)
+        resp = client.post("/private-charging/location/new",
+                           data=location_form(token, valid_from="1.7.2025"), headers=AUTH)
+        assert resp.status_code == 400
+        assert "Invalid start date" in resp.get_data(as_text=True)
 
     def test_unknown_location_404(self, client):
         assert client.get("/private-charging/location/5", headers=AUTH).status_code == 404
@@ -331,3 +369,100 @@ class TestCatalogs:
             with open(os.path.join(path, "messages.mo"), "rb") as fh:
                 assert fh.read() == buf.getvalue(), \
                     f"{lang}: run `pybabel compile -d translations`"
+
+
+# ─── Recalculation ────────────────────────────────────────────────────────────
+
+class RecalcDB:
+    """Fake TeslaMate DB for run_import: charging sessions + recorded UPDATEs."""
+
+    def __init__(self, sessions):
+        self.sessions = sessions
+        self.updates = []
+        self.queries = []
+
+    def __call__(self):  # used as db_connector
+        return self
+
+    def cursor(self):
+        return self
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+    def execute(self, query, params=()):
+        self.queries.append((query, params))
+        self._rows = []
+        if query.lstrip().startswith("UPDATE"):
+            self.updates.append(params)
+        elif "FROM charging_processes" in query:
+            self._rows = self.sessions
+        elif "FROM geofences" in query:
+            self._rows = GEOFENCES
+
+    def fetchall(self):
+        return self._rows
+
+    def commit(self):
+        pass
+
+    def rollback(self):
+        pass
+
+    def close(self):
+        pass
+
+
+class TestRecalculation:
+    from datetime import datetime as _dt
+    SESSIONS = [
+        # id, start (UTC), end, lat, lon, added, used, cost
+        (1, _dt(2024, 3, 1, 10), _dt(2024, 3, 1, 11), 49.1951, 16.6068, 10.0, 10.0, 99.0),
+        (2, _dt(2024, 3, 2, 10), _dt(2024, 3, 2, 11), 50.0755, 14.4378, 5.0, 5.0, 12.0),  # elsewhere
+    ]
+
+    @pytest.fixture
+    def setup(self, tmp_path):
+        db = RecalcDB(self.SESSIONS)
+        app = create_app(config_path=str(tmp_path / "config.yaml"), root_path="/pc",
+                         password="", db_connector=db)
+        client = app.test_client()
+        token = csrf(client, "/pc/")
+        assert client.post("/pc/location/new", data=location_form(token)).status_code == 302
+        return client, token, db
+
+    def recalc(self, client, token, mode):
+        return client.post("/pc/run", data={
+            "csrf_token": token, "mode": mode, "recalc_location": "Home",
+            "recalc_from": "2024-03-01", "recalc_to": "2024-03-31"})
+
+    def test_page_warns(self, setup):
+        client, _token, _db = setup
+        html = client.get("/pc/location/0/recalculate").get_data(as_text=True)
+        assert "overwrites ALL costs" in html
+        assert 'value="2024-01-01"' in html   # defaults to the oldest price list
+
+    def test_preview_shows_old_and_new_without_writing(self, setup):
+        client, token, db = setup
+        html = self.recalc(client, token, "preview").get_data(as_text=True)
+        assert "99.00" in html and "75.00" in html   # Fri 11:00 CET → 10 kWh × 7.5
+        assert db.updates == []
+
+    def test_overwrites_only_this_location(self, setup):
+        client, token, db = setup
+        self.recalc(client, token, "write")
+        assert db.updates == [(75.0, 1)]
+        query, params = next(q for q in db.queries if "FROM charging_processes" in q[0])
+        assert "start_date >=" in query and "cost IS NULL" not in query
+        # local (Europe/Prague) dates → naive UTC bounds
+        assert params == (self._dt(2024, 2, 29, 23), self._dt(2024, 3, 31, 22))
+
+    def test_invalid_dates(self, setup):
+        client, token, _db = setup
+        resp = client.post("/pc/run", data={"csrf_token": token, "mode": "preview",
+                                            "recalc_location": "Home",
+                                            "recalc_from": "2024-04-01", "recalc_to": "2024-03-01"})
+        assert resp.status_code == 400

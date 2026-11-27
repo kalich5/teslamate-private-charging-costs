@@ -1,7 +1,11 @@
 {% extends "base.html" %}
+{% set recalc = result.recalculate %}
 {% block title %}{{ _('Preview') if result.dry_run else _('Charging Costs') }}{% endblock %}
 {% block content %}
-<h1 class="title">{{ _('Preview') if result.dry_run else _('Costs saved') }}</h1>
+<h1 class="title">
+  {{ _('Preview') if result.dry_run else _('Costs saved') }}
+  {% if recalc %}<span class="has-text-grey">– {{ _('Recalculate costs') }}: {{ recalc.location }}, {{ recalc.date_from.isoformat() }} – {{ recalc.date_to.isoformat() }}</span>{% endif %}
+</h1>
 
 {% if result.error %}
   <div class="notification is-danger is-light">{{ result.error }}</div>
@@ -13,13 +17,18 @@
   {% if result.sessions %}
   <div class="table-container">
     <table class="table is-fullwidth is-striped">
-      <thead><tr><th>{{ _('Start') }}</th><th>{{ _('Location') }}</th><th class="has-text-right">kWh</th><th class="has-text-right">{{ _('Cost') }} ({{ config.BASE_CURRENCY }})</th><th></th></tr></thead>
+      <thead><tr>
+        <th>{{ _('Start') }}</th><th>{{ _('Location') }}</th><th class="has-text-right">kWh</th>
+        {% if recalc %}<th class="has-text-right">{{ _('Previous cost') }} ({{ config.BASE_CURRENCY }})</th>{% endif %}
+        <th class="has-text-right">{{ _('Cost') }} ({{ config.BASE_CURRENCY }})</th><th></th>
+      </tr></thead>
       <tbody>
       {% for s in result.sessions %}
         <tr>
           <td>{{ s.start|dt(config.TIMEZONE) }}</td>
           <td>{{ s.location or '—' }}</td>
           <td class="has-text-right">{{ '%.2f'|format(s.kwh) if s.kwh is not none }}</td>
+          {% if recalc %}<td class="has-text-right has-text-grey">{{ '%.2f'|format(s.old_cost) if s.old_cost is not none else '—' }}</td>{% endif %}
           <td class="has-text-right">{{ '%.2f'|format(s.cost) if s.cost is not none }}</td>
           <td class="is-size-7 {{ 'has-text-danger' if s.status == 'error' }}">{{ s.error or '' }}</td>
         </tr>
@@ -31,7 +40,15 @@
   {% if result.dry_run and result.updated %}
     <form method="post" action="{{ url_for('ui.run') }}" class="buttons">
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-      <button class="button is-info" name="mode" value="write">{{ _('Save these costs') }}</button>
+      {% if recalc %}
+        <input type="hidden" name="recalc_location" value="{{ recalc.location }}">
+        <input type="hidden" name="recalc_from" value="{{ recalc.date_from.isoformat() }}">
+        <input type="hidden" name="recalc_to" value="{{ recalc.date_to.isoformat() }}">
+        <button class="button is-danger" name="mode" value="write"
+                onclick="return confirm({{ _('Overwrite all costs at %(name)s in this period?', name=recalc.location)|tojson|forceescape }})">{{ _('Recalculate and overwrite') }}</button>
+      {% else %}
+        <button class="button is-info" name="mode" value="write">{{ _('Save these costs') }}</button>
+      {% endif %}
     </form>
   {% endif %}
 {% endif %}

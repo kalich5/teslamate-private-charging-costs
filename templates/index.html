@@ -22,11 +22,24 @@
     <tbody>
     {% for loc in locations %}
       <tr>
-        <td>{{ loc.name }}<br><span class="is-size-7 has-text-grey">{{ loc.timezone or config.TIMEZONE }}</span></td>
+        <td>{{ loc.name }}<br><span class="is-size-7 has-text-grey">{{ loc.timezone or config.TIMEZONE }}</span>
+          {% if loc.current %}<br><span class="is-size-7 has-text-grey">
+            {{ _('Price list from %(date)s', date=loc.current.valid_from.isoformat()) }}{% if loc.current.count > 1 %} · {{ _('Price lists: %(n)s', n=loc.current.count) }}{% endif %}
+          </span>{% endif %}
+        </td>
         <td>{{ loc.radius_m }} m</td>
-        <td class="is-size-7 tariff-cell">{{ blocks(loc.tariffs.weekday, loc.currency) }}</td>
-        <td class="is-size-7 tariff-cell">{{ blocks(loc.tariffs.weekend, loc.currency) }}</td>
-        <td class="has-text-right"><a class="button is-small" href="{{ url_for('ui.location_edit', index=loop.index0) }}">{{ _('Edit') }}</a></td>
+        {% if loc.current %}
+          <td class="is-size-7 tariff-cell">{{ blocks(loc.current.prices.weekday, loc.currency) }}</td>
+          <td class="is-size-7 tariff-cell">{{ blocks(loc.current.prices.weekend, loc.currency) }}</td>
+        {% else %}
+          <td colspan="2" class="has-text-danger is-size-7">{{ _('Invalid price lists — open the location to fix them.') }}</td>
+        {% endif %}
+        <td class="has-text-right">
+          <div class="buttons is-right">
+            <a class="button is-small" href="{{ url_for('ui.location_edit', index=loop.index0) }}">{{ _('Edit') }}</a>
+            <a class="button is-small" href="{{ url_for('ui.location_recalculate', index=loop.index0) }}">{{ _('Recalculate') }}</a>
+          </div>
+        </td>
       </tr>
     {% endfor %}
     </tbody>

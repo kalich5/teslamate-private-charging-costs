@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: teslamate-private-charging-costs VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-27 21:08+0000\n"
+"POT-Creation-Date: 2026-11-27 21:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: nb\n"
@@ -19,6 +19,10 @@ msgstr ""
 "Generated-By: Babel 2.19.0\n"
 
 #, python-format
+msgid "%(days)s from %(date)s"
+msgstr "%(days)s fra %(date)s"
+
+#, python-format
 msgid "%(days)s: '%(price)s' is not a valid price."
 msgstr "%(days)s: «%(price)s» er ikke en gyldig pris."
 
@@ -28,6 +32,9 @@ msgstr "%(field)s: «%(value)s» er ikke et gyldig tall."
 
 msgid "0 = only when you click “Calculate and save”."
 msgstr "0 = bare når du klikker «Beregn og lagre»."
+
+msgid "A location needs at least one price list."
+msgstr "Et sted må ha minst én prisliste."
 
 msgid "Add location"
 msgstr "Legg til sted"
@@ -119,11 +126,24 @@ msgstr "Slett"
 msgid "Delete %(name)s? Costs already written stay in TeslaMate."
 msgstr "Slette %(name)s? Priser som allerede er skrevet, blir værende i TeslaMate."
 
+msgid "Each charge is priced with the price list that was valid on its day."
+msgstr "Hver lading prises med prislisten som gjaldt den dagen."
+
+msgid ""
+"Each price list applies from its date until the next one starts; the oldest one also applies to "
+"all earlier charges. Keep old price lists — they are needed to recalculate past charges."
+msgstr ""
+"Hver prisliste gjelder fra sin dato til den neste starter; den eldste gjelder også for alle "
+"tidligere ladinger. Behold gamle prislister — de trengs for å beregne tidligere ladinger på nytt."
+
 msgid "Edit"
 msgstr "Rediger"
 
 msgid "End"
 msgstr "Slutt"
+
+msgid "Enter both dates as YYYY-MM-DD."
+msgstr "Angi begge datoene som ÅÅÅÅ-MM-DD."
 
 #, python-format
 msgid "Errors: %(n)s"
@@ -147,6 +167,13 @@ msgstr "Ugyldig konfigurasjon: %(error)s"
 
 msgid "Invalid or expired form token — reload the page and try again."
 msgstr "Ugyldig eller utløpt skjematoken – last inn siden på nytt og prøv igjen."
+
+msgid "Invalid price lists — open the location to fix them."
+msgstr "Ugyldige prislister – åpne stedet for å rette dem."
+
+#, python-format
+msgid "Invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Ugyldig startdato «%(date)s» for en prisliste (forventet ÅÅÅÅ-MM-DD)."
 
 msgid "Language"
 msgstr "Språk"
@@ -216,12 +243,24 @@ msgid "Location '%(name)s', %(days)s: overlapping blocks around %(time)s."
 msgstr "Sted «%(name)s», %(days)s: overlappende blokker rundt %(time)s."
 
 #, python-format
+msgid "Location '%(name)s': invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Sted «%(name)s»: ugyldig startdato «%(date)s» for en prisliste (forventet ÅÅÅÅ-MM-DD)."
+
+#, python-format
 msgid "Location '%(name)s': missing '%(key)s'."
 msgstr "Sted «%(name)s»: mangler «%(key)s»."
 
 #, python-format
 msgid "Location '%(name)s': missing 'timezone'."
 msgstr "Sted «%(name)s»: mangler tidssone."
+
+#, python-format
+msgid "Location '%(name)s': no price lists defined."
+msgstr "Sted «%(name)s»: ingen prislister angitt."
+
+#, python-format
+msgid "Location '%(name)s': two price lists start on %(date)s."
+msgstr "Sted «%(name)s»: to prislister starter %(date)s."
 
 #, python-format
 msgid "Location '%(name)s': unknown timezone '%(tz)s'."
@@ -255,6 +294,9 @@ msgstr "Navn er påkrevd."
 msgid "New location"
 msgstr "Nytt sted"
 
+msgid "New price list from date"
+msgstr "Ny prisliste fra dato"
+
 #, python-format
 msgid "Next run: %(time)s"
 msgstr "Neste kjøring: %(time)s"
@@ -275,6 +317,10 @@ msgstr "Ingen pris"
 msgid "Overlap"
 msgstr "Overlapp"
 
+#, python-format
+msgid "Overwrite all costs at %(name)s in this period?"
+msgstr "Overskrive alle priser for %(name)s i denne perioden?"
+
 msgid "Per kWh"
 msgstr "Pr kWh"
 
@@ -283,6 +329,20 @@ msgstr "Velg en geo-lokasjon fra TeslaMate for å fylle inn navn, koordinater og
 
 msgid "Preview"
 msgstr "Forhåndsvisning"
+
+msgid "Previous cost"
+msgstr "Tidligere pris"
+
+#, python-format
+msgid "Price list from %(date)s"
+msgstr "Prisliste fra %(date)s"
+
+msgid "Price lists"
+msgstr "Prislister"
+
+#, python-format
+msgid "Price lists: %(n)s"
+msgstr "Prislister: %(n)s"
 
 msgid "Private charging"
 msgstr "Privat lading"
@@ -293,8 +353,26 @@ msgstr "Radius"
 msgid "Radius must be positive."
 msgstr "Radius må være positiv."
 
+msgid "Recalculate"
+msgstr "Beregn på nytt"
+
+msgid "Recalculate and overwrite"
+msgstr "Beregn på nytt og overskriv"
+
+msgid "Recalculate costs"
+msgstr "Beregn priser på nytt"
+
+msgid "Recalculate costs…"
+msgstr "Beregn priser på nytt…"
+
+msgid "Recalculation overwrites ALL costs of charges at this location in the selected period"
+msgstr "Ny beregning overskriver ALLE priser for ladinger på dette stedet i valgt periode"
+
 msgid "Remove"
 msgstr "Fjern"
+
+msgid "Remove price list"
+msgstr "Fjern prisliste"
 
 msgid "Run automatically every (hours)"
 msgstr "Kjør automatisk hver (timer)"
@@ -334,6 +412,9 @@ msgstr "Tariffenes tider er lokal tid i denne tidssonen. Sommertid håndteres au
 msgid "TeslaMate database"
 msgstr "TeslaMate-database"
 
+msgid "The start date must not be after the end date."
+msgstr "Startdatoen kan ikke være etter sluttdatoen."
+
 msgid "Time zone"
 msgstr "Tidssone"
 
@@ -355,6 +436,10 @@ msgid "Unexpected error: %(error)s"
 msgstr "Uventet feil: %(error)s"
 
 #, python-format
+msgid "Unknown location '%(name)s'."
+msgstr "Ukjent sted «%(name)s»."
+
+#, python-format
 msgid "Unknown timezone '%(tz)s'."
 msgstr "Ukjent tidssone «%(tz)s»."
 
@@ -365,11 +450,17 @@ msgstr "Oppdatert: %(n)s"
 msgid "User"
 msgstr "Bruker"
 
+msgid "Valid from"
+msgstr "Gjelder fra"
+
 msgid "Web App"
 msgstr "Dashboard"
 
 msgid "Write costs to TeslaMate now?"
 msgstr "Skrive prisene til TeslaMate nå?"
+
+msgid "including costs entered in TeslaMate and costs calculated earlier. Check the preview first."
+msgstr "også priser lagt inn i TeslaMate og tidligere beregnede priser. Sjekk forhåndsvisningen først."
 
 msgid "pending"
 msgstr "venter"

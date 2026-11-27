@@ -30,8 +30,12 @@ DATABASE:
 # currency: the local currency for electricity bills at this location.
 # The importer converts it to BASE_CURRENCY using historical FX rates.
 #
-# tariff prices are in currency-unit per kWh (e.g. CZK/kWh).
+# tariffs: a list of price lists. Each price list applies from 00:00 local
+# time on its `valid_from` date until the next one starts; the oldest one
+# also applies to everything before its date. Keep old price lists — they
+# are needed to (re)calculate past charges correctly.
 #
+# Prices are in currency-unit per kWh (e.g. CZK/kWh).
 # Time blocks must cover 00:00–24:00 without gaps.
 # Use "24:00" for the last block end — it is handled correctly.
 LOCATIONS:
@@ -42,14 +46,23 @@ LOCATIONS:
     currency: CZK
 
     tariffs:
-      weekday:
-        - { from: "00:00", to: "06:00", price: 4.0 }   # low tariff (NT)
-        - { from: "06:00", to: "12:00", price: 7.5 }   # high tariff (VT)
-        - { from: "12:00", to: "15:00", price: 4.0 }   # low tariff (NT)
-        - { from: "15:00", to: "24:00", price: 7.5 }   # high tariff (VT)
+      - valid_from: 2024-01-01
+        weekday:
+          - { from: "00:00", to: "06:00", price: 4.0 }   # low tariff (NT)
+          - { from: "06:00", to: "12:00", price: 7.5 }   # high tariff (VT)
+          - { from: "12:00", to: "15:00", price: 4.0 }   # low tariff (NT)
+          - { from: "15:00", to: "24:00", price: 7.5 }   # high tariff (VT)
+        weekend:
+          - { from: "00:00", to: "24:00", price: 4.0 }   # flat low tariff
 
-      weekend:
-        - { from: "00:00", to: "24:00", price: 4.0 }   # flat low tariff
+      - valid_from: 2025-07-01                           # new contract
+        weekday:
+          - { from: "00:00", to: "06:00", price: 4.5 }
+          - { from: "06:00", to: "12:00", price: 8.2 }
+          - { from: "12:00", to: "15:00", price: 4.5 }
+          - { from: "15:00", to: "24:00", price: 8.2 }
+        weekend:
+          - { from: "00:00", to: "24:00", price: 4.5 }
 
   # Example: second location with a different currency
   # - name: cottage
@@ -59,7 +72,8 @@ LOCATIONS:
   #   currency: EUR
   #   timezone: Europe/Paris   # optional, overrides TIMEZONE
   #   tariffs:
-  #     weekday:
-  #       - { from: "00:00", to: "24:00", price: 0.22 }
-  #     weekend:
-  #       - { from: "00:00", to: "24:00", price: 0.22 }
+  #     - valid_from: 2024-01-01
+  #       weekday:
+  #         - { from: "00:00", to: "24:00", price: 0.22 }
+  #       weekend:
+  #         - { from: "00:00", to: "24:00", price: 0.22 }

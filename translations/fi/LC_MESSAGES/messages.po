@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: teslamate-private-charging-costs VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-27 21:08+0000\n"
+"POT-Creation-Date: 2026-11-27 21:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fi\n"
@@ -19,6 +19,10 @@ msgstr ""
 "Generated-By: Babel 2.19.0\n"
 
 #, python-format
+msgid "%(days)s from %(date)s"
+msgstr "%(days)s alkaen %(date)s"
+
+#, python-format
 msgid "%(days)s: '%(price)s' is not a valid price."
 msgstr "%(days)s: ”%(price)s” ei ole kelvollinen hinta."
 
@@ -28,6 +32,9 @@ msgstr "%(field)s: ”%(value)s” ei ole kelvollinen luku."
 
 msgid "0 = only when you click “Calculate and save”."
 msgstr "0 = vain kun napsautat ”Laske ja tallenna”."
+
+msgid "A location needs at least one price list."
+msgstr "Sijainnilla on oltava vähintään yksi hinnasto."
 
 msgid "Add location"
 msgstr "Lisää sijainti"
@@ -119,11 +126,25 @@ msgstr "Poista"
 msgid "Delete %(name)s? Costs already written stay in TeslaMate."
 msgstr "Poistetaanko %(name)s? Jo kirjoitetut hinnat säilyvät TeslaMatessa."
 
+msgid "Each charge is priced with the price list that was valid on its day."
+msgstr "Jokainen lataus hinnoitellaan sinä päivänä voimassa olleella hinnastolla."
+
+msgid ""
+"Each price list applies from its date until the next one starts; the oldest one also applies to "
+"all earlier charges. Keep old price lists — they are needed to recalculate past charges."
+msgstr ""
+"Kukin hinnasto on voimassa päivämäärästään, kunnes seuraava alkaa; vanhin koskee myös kaikkia "
+"aiempia latauksia. Säilytä vanhat hinnastot — niitä tarvitaan aiempien latausten "
+"uudelleenlaskentaan."
+
 msgid "Edit"
 msgstr "Muokkaa"
 
 msgid "End"
 msgstr "Loppu"
+
+msgid "Enter both dates as YYYY-MM-DD."
+msgstr "Anna molemmat päivämäärät muodossa VVVV-KK-PP."
 
 #, python-format
 msgid "Errors: %(n)s"
@@ -147,6 +168,13 @@ msgstr "Virheellinen määritys: %(error)s"
 
 msgid "Invalid or expired form token — reload the page and try again."
 msgstr "Lomakkeen tunniste on virheellinen tai vanhentunut – lataa sivu uudelleen ja yritä uudelleen."
+
+msgid "Invalid price lists — open the location to fix them."
+msgstr "Virheelliset hinnastot – avaa sijainti korjataksesi ne."
+
+#, python-format
+msgid "Invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Hinnaston virheellinen alkupäivä ”%(date)s” (odotettiin VVVV-KK-PP)."
 
 msgid "Language"
 msgstr "Kieli"
@@ -220,12 +248,24 @@ msgid "Location '%(name)s', %(days)s: overlapping blocks around %(time)s."
 msgstr "Sijainti ”%(name)s”, %(days)s: päällekkäisiä jaksoja noin klo %(time)s."
 
 #, python-format
+msgid "Location '%(name)s': invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Sijainti ”%(name)s”: hinnaston virheellinen alkupäivä ”%(date)s” (odotettiin VVVV-KK-PP)."
+
+#, python-format
 msgid "Location '%(name)s': missing '%(key)s'."
 msgstr "Sijainti ”%(name)s”: ”%(key)s” puuttuu."
 
 #, python-format
 msgid "Location '%(name)s': missing 'timezone'."
 msgstr "Sijainti ”%(name)s”: aikavyöhyke puuttuu."
+
+#, python-format
+msgid "Location '%(name)s': no price lists defined."
+msgstr "Sijainti ”%(name)s”: hinnastoja ei ole määritetty."
+
+#, python-format
+msgid "Location '%(name)s': two price lists start on %(date)s."
+msgstr "Sijainti ”%(name)s”: kaksi hinnastoa alkaa %(date)s."
 
 #, python-format
 msgid "Location '%(name)s': unknown timezone '%(tz)s'."
@@ -259,6 +299,9 @@ msgstr "Nimi vaaditaan."
 msgid "New location"
 msgstr "Uusi sijainti"
 
+msgid "New price list from date"
+msgstr "Uusi hinnasto päivämäärästä"
+
 #, python-format
 msgid "Next run: %(time)s"
 msgstr "Seuraava suoritus: %(time)s"
@@ -281,6 +324,10 @@ msgstr "Ei hintaa"
 msgid "Overlap"
 msgstr "Päällekkäisyys"
 
+#, python-format
+msgid "Overwrite all costs at %(name)s in this period?"
+msgstr "Korvataanko kaikki sijainnin %(name)s hinnat tällä jaksolla?"
+
 msgid "Per kWh"
 msgstr "Per kWh"
 
@@ -289,6 +336,20 @@ msgstr "Valitse TeslaMaten georajaus, niin nimi, koordinaatit ja säde täytetä
 
 msgid "Preview"
 msgstr "Esikatselu"
+
+msgid "Previous cost"
+msgstr "Aiempi hinta"
+
+#, python-format
+msgid "Price list from %(date)s"
+msgstr "Hinnasto alkaen %(date)s"
+
+msgid "Price lists"
+msgstr "Hinnastot"
+
+#, python-format
+msgid "Price lists: %(n)s"
+msgstr "Hinnastoja: %(n)s"
 
 msgid "Private charging"
 msgstr "Yksityinen lataus"
@@ -299,8 +360,26 @@ msgstr "Säde"
 msgid "Radius must be positive."
 msgstr "Säteen on oltava positiivinen."
 
+msgid "Recalculate"
+msgstr "Laske uudelleen"
+
+msgid "Recalculate and overwrite"
+msgstr "Laske uudelleen ja korvaa"
+
+msgid "Recalculate costs"
+msgstr "Hintojen uudelleenlaskenta"
+
+msgid "Recalculate costs…"
+msgstr "Laske hinnat uudelleen…"
+
+msgid "Recalculation overwrites ALL costs of charges at this location in the selected period"
+msgstr "Uudelleenlaskenta korvaa KAIKKI tämän sijainnin latausten hinnat valitulla jaksolla"
+
 msgid "Remove"
 msgstr "Poista"
+
+msgid "Remove price list"
+msgstr "Poista hinnasto"
 
 msgid "Run automatically every (hours)"
 msgstr "Suorita automaattisesti (tunnin välein)"
@@ -340,6 +419,9 @@ msgstr "Tariffien ajat ovat tämän aikavyöhykkeen paikallisaikoja. Kesäaika h
 msgid "TeslaMate database"
 msgstr "TeslaMate-tietokanta"
 
+msgid "The start date must not be after the end date."
+msgstr "Alkupäivä ei voi olla loppupäivän jälkeen."
+
 msgid "Time zone"
 msgstr "Aikavyöhyke"
 
@@ -361,6 +443,10 @@ msgid "Unexpected error: %(error)s"
 msgstr "Odottamaton virhe: %(error)s"
 
 #, python-format
+msgid "Unknown location '%(name)s'."
+msgstr "Tuntematon sijainti ”%(name)s”."
+
+#, python-format
 msgid "Unknown timezone '%(tz)s'."
 msgstr "Tuntematon aikavyöhyke ”%(tz)s”."
 
@@ -371,11 +457,17 @@ msgstr "Päivitetty: %(n)s"
 msgid "User"
 msgstr "Käyttäjä"
 
+msgid "Valid from"
+msgstr "Voimassa alkaen"
+
 msgid "Web App"
 msgstr "Verkkosivu"
 
 msgid "Write costs to TeslaMate now?"
 msgstr "Kirjoitetaanko hinnat TeslaMateen nyt?"
+
+msgid "including costs entered in TeslaMate and costs calculated earlier. Check the preview first."
+msgstr "myös TeslaMateen syötetyt ja aiemmin lasketut hinnat. Tarkista ensin esikatselu."
 
 msgid "pending"
 msgstr "odottaa"

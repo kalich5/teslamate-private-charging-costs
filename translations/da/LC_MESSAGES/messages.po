@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: teslamate-private-charging-costs VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-27 21:08+0000\n"
+"POT-Creation-Date: 2026-11-27 21:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: da\n"
@@ -19,6 +19,10 @@ msgstr ""
 "Generated-By: Babel 2.19.0\n"
 
 #, python-format
+msgid "%(days)s from %(date)s"
+msgstr "%(days)s fra %(date)s"
+
+#, python-format
 msgid "%(days)s: '%(price)s' is not a valid price."
 msgstr "%(days)s: '%(price)s' er ikke en gyldig pris."
 
@@ -28,6 +32,9 @@ msgstr "%(field)s: '%(value)s' er ikke et gyldigt tal."
 
 msgid "0 = only when you click “Calculate and save”."
 msgstr "0 = kun når du klikker på »Beregn og gem«."
+
+msgid "A location needs at least one price list."
+msgstr "En placering skal have mindst én prisliste."
 
 msgid "Add location"
 msgstr "Tilføj placering"
@@ -119,11 +126,25 @@ msgstr "Slet"
 msgid "Delete %(name)s? Costs already written stay in TeslaMate."
 msgstr "Slet %(name)s? Priser, der allerede er skrevet, forbliver i TeslaMate."
 
+msgid "Each charge is priced with the price list that was valid on its day."
+msgstr "Hver opladning prissættes med den prisliste, der gjaldt den dag."
+
+msgid ""
+"Each price list applies from its date until the next one starts; the oldest one also applies to "
+"all earlier charges. Keep old price lists — they are needed to recalculate past charges."
+msgstr ""
+"Hver prisliste gælder fra sin dato, indtil den næste starter; den ældste gælder også for alle "
+"tidligere opladninger. Behold gamle prislister — de skal bruges til at genberegne tidligere "
+"opladninger."
+
 msgid "Edit"
 msgstr "Rediger"
 
 msgid "End"
 msgstr "Slut"
+
+msgid "Enter both dates as YYYY-MM-DD."
+msgstr "Angiv begge datoer som ÅÅÅÅ-MM-DD."
 
 #, python-format
 msgid "Errors: %(n)s"
@@ -147,6 +168,13 @@ msgstr "Ugyldig konfiguration: %(error)s"
 
 msgid "Invalid or expired form token — reload the page and try again."
 msgstr "Ugyldig eller udløbet formular-token — genindlæs siden, og prøv igen."
+
+msgid "Invalid price lists — open the location to fix them."
+msgstr "Ugyldige prislister — åbn placeringen for at rette dem."
+
+#, python-format
+msgid "Invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Ugyldig startdato '%(date)s' for en prisliste (forventet ÅÅÅÅ-MM-DD)."
 
 msgid "Language"
 msgstr "Sprog"
@@ -220,12 +248,24 @@ msgid "Location '%(name)s', %(days)s: overlapping blocks around %(time)s."
 msgstr "Placering '%(name)s', %(days)s: overlappende blokke omkring %(time)s."
 
 #, python-format
+msgid "Location '%(name)s': invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Placering '%(name)s': ugyldig startdato '%(date)s' for en prisliste (forventet ÅÅÅÅ-MM-DD)."
+
+#, python-format
 msgid "Location '%(name)s': missing '%(key)s'."
 msgstr "Placering '%(name)s': mangler '%(key)s'."
 
 #, python-format
 msgid "Location '%(name)s': missing 'timezone'."
 msgstr "Placering '%(name)s': mangler tidszone."
+
+#, python-format
+msgid "Location '%(name)s': no price lists defined."
+msgstr "Placering '%(name)s': ingen prislister angivet."
+
+#, python-format
+msgid "Location '%(name)s': two price lists start on %(date)s."
+msgstr "Placering '%(name)s': to prislister starter %(date)s."
 
 #, python-format
 msgid "Location '%(name)s': unknown timezone '%(tz)s'."
@@ -259,6 +299,9 @@ msgstr "Navn er påkrævet."
 msgid "New location"
 msgstr "Ny placering"
 
+msgid "New price list from date"
+msgstr "Ny prisliste fra dato"
+
 #, python-format
 msgid "Next run: %(time)s"
 msgstr "Næste kørsel: %(time)s"
@@ -279,6 +322,10 @@ msgstr "Ingen pris"
 msgid "Overlap"
 msgstr "Overlap"
 
+#, python-format
+msgid "Overwrite all costs at %(name)s in this period?"
+msgstr "Overskriv alle priser på %(name)s i denne periode?"
+
 msgid "Per kWh"
 msgstr "Per kWh"
 
@@ -287,6 +334,20 @@ msgstr "Vælg en geografisk afgrænsning fra TeslaMate for at udfylde navn, koor
 
 msgid "Preview"
 msgstr "Forhåndsvisning"
+
+msgid "Previous cost"
+msgstr "Tidligere pris"
+
+#, python-format
+msgid "Price list from %(date)s"
+msgstr "Prisliste fra %(date)s"
+
+msgid "Price lists"
+msgstr "Prislister"
+
+#, python-format
+msgid "Price lists: %(n)s"
+msgstr "Prislister: %(n)s"
 
 msgid "Private charging"
 msgstr "Privat opladning"
@@ -297,8 +358,26 @@ msgstr "Radius"
 msgid "Radius must be positive."
 msgstr "Radius skal være positiv."
 
+msgid "Recalculate"
+msgstr "Genberegn"
+
+msgid "Recalculate and overwrite"
+msgstr "Genberegn og overskriv"
+
+msgid "Recalculate costs"
+msgstr "Genberegn priser"
+
+msgid "Recalculate costs…"
+msgstr "Genberegn priser…"
+
+msgid "Recalculation overwrites ALL costs of charges at this location in the selected period"
+msgstr "Genberegning overskriver ALLE priser for opladninger på denne placering i den valgte periode"
+
 msgid "Remove"
 msgstr "Fjern"
+
+msgid "Remove price list"
+msgstr "Fjern prisliste"
 
 msgid "Run automatically every (hours)"
 msgstr "Kør automatisk hver (timer)"
@@ -338,6 +417,9 @@ msgstr "Tariftider er lokal tid i denne tidszone. Sommertid håndteres automatis
 msgid "TeslaMate database"
 msgstr "TeslaMate-database"
 
+msgid "The start date must not be after the end date."
+msgstr "Startdatoen må ikke ligge efter slutdatoen."
+
 msgid "Time zone"
 msgstr "Tidszone"
 
@@ -359,6 +441,10 @@ msgid "Unexpected error: %(error)s"
 msgstr "Uventet fejl: %(error)s"
 
 #, python-format
+msgid "Unknown location '%(name)s'."
+msgstr "Ukendt placering '%(name)s'."
+
+#, python-format
 msgid "Unknown timezone '%(tz)s'."
 msgstr "Ukendt tidszone '%(tz)s'."
 
@@ -369,11 +455,17 @@ msgstr "Opdateret: %(n)s"
 msgid "User"
 msgstr "Bruger"
 
+msgid "Valid from"
+msgstr "Gælder fra"
+
 msgid "Web App"
 msgstr "Webapp"
 
 msgid "Write costs to TeslaMate now?"
 msgstr "Skriv priserne til TeslaMate nu?"
+
+msgid "including costs entered in TeslaMate and costs calculated earlier. Check the preview first."
+msgstr "herunder priser indtastet i TeslaMate og tidligere beregnede priser. Tjek forhåndsvisningen først."
 
 msgid "pending"
 msgstr "afventer"

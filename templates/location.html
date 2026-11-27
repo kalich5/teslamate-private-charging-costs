@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% from "_tariff_bar.html" import tariff_bar_html %}
 {% block title %}{{ location.name or _('New location') }}{% endblock %}
-{% macro tariff_table(day, blocks) %}
+{% macro tariff_table(pid, day, blocks) %}
   <table class="table is-narrow tariffs" data-day="{{ day }}">
     <thead><tr><th>{{ _('From') }}</th><th>{{ _('To') }}</th><th>{{ _('Per kWh') }}</th><th></th></tr></thead>
     <tbody>
     {% for b in blocks %}
       <tr>
-        <td><input class="input time-from" type="text" name="{{ day }}_from" value="{{ b['from'] }}" pattern="([01]\d|2[0-3]):[0-5]\d" placeholder="HH:MM" inputmode="numeric" required></td>
-        <td><input class="input time-to" type="text" name="{{ day }}_to" value="{{ b['to'] }}" pattern="([01]\d|2[0-3]):[0-5]\d|24:00" placeholder="HH:MM" inputmode="numeric" required></td>
-        <td><input class="input price" type="text" name="{{ day }}_price" value="{{ b['price'] }}" inputmode="decimal" required></td>
+        <td><input class="input time-from" type="text" name="{{ pid }}_{{ day }}_from" value="{{ b['from'] }}" pattern="([01]\d|2[0-3]):[0-5]\d" placeholder="HH:MM" inputmode="numeric" required></td>
+        <td><input class="input time-to" type="text" name="{{ pid }}_{{ day }}_to" value="{{ b['to'] }}" pattern="([01]\d|2[0-3]):[0-5]\d|24:00" placeholder="HH:MM" inputmode="numeric" required></td>
+        <td><input class="input price" type="text" name="{{ pid }}_{{ day }}_price" value="{{ b['price'] }}" inputmode="decimal" required></td>
         <td><button type="button" class="delete remove" title="{{ _('Remove') }}"></button></td>
       </tr>
     {% endfor %}
@@ -18,6 +18,33 @@
   <div class="tariff-preview">{{ tariff_bar_html(blocks, day) }}</div>
   <p class="help is-danger coverage" data-day="{{ day }}"></p>
   <button type="button" class="button is-small add" data-day="{{ day }}">{{ _('Add time block') }}</button>
+{% endmacro %}
+
+{% macro price_list(p) %}
+  <div class="box price-list" data-period="{{ p.id }}">
+    <input type="hidden" name="period" value="{{ p.id }}">
+    <div class="level is-mobile mb-3">
+      <div class="level-left">
+        <div class="field is-horizontal mb-0">
+          <label class="label mr-3 mb-0 valid-from-label">{{ _('Valid from') }}</label>
+          <input class="input valid-from" type="date" name="{{ p.id }}_valid_from" value="{{ p.valid_from }}" required>
+        </div>
+      </div>
+      <div class="level-right">
+        <button type="button" class="button is-small is-danger is-light remove-period">{{ _('Remove price list') }}</button>
+      </div>
+    </div>
+
+    <h3 class="title is-6 mt-4 mb-2">{{ _('Monday – Friday') }}</h3>
+    {{ tariff_table(p.id, 'weekday', p.weekday) }}
+
+    <h3 class="title is-6 mt-5 mb-2">{{ _('Saturday – Sunday') }}</h3>
+    <label class="checkbox mb-3"><input type="checkbox" class="weekend-same" name="{{ p.id }}_weekend_same" {{ 'checked' if p.same }}>
+      {{ _('Same as Monday – Friday') }}</label>
+    <div class="weekend-wrap">
+      {{ tariff_table(p.id, 'weekend', p.weekend) }}
+    </div>
+  </div>
 {% endmacro %}
 
 {% block content %}
@@ -63,15 +90,15 @@
     </div>
   </div>
 
-  <h2 class="title is-5 mt-5">{{ _('Monday – Friday') }}</h2>
-  {{ tariff_table('weekday', location.tariffs.get('weekday') or []) }}
-
-  <h2 class="title is-5 mt-5">{{ _('Saturday – Sunday') }}</h2>
-  <label class="checkbox mb-3"><input type="checkbox" name="weekend_same" id="weekend-same"
-    {{ 'checked' if location.get('weekend_same') or (location.tariffs.get('weekday') and location.tariffs.get('weekday') == location.tariffs.get('weekend')) }}>
-    {{ _('Same as Monday – Friday') }}</label>
-  <div id="weekend-wrap">
-    {{ tariff_table('weekend', location.tariffs.get('weekend') or []) }}
+  <div class="level is-mobile mt-5 mb-3">
+    <div class="level-left"><h2 class="title is-5 mb-0">{{ _('Price lists') }}</h2></div>
+    <div class="level-right">
+      <button type="button" class="button is-small is-info is-light" id="add-period">{{ _('New price list from date') }}</button>
+    </div>
+  </div>
+  <p class="help mb-3">{{ _('Each price list applies from its date until the next one starts; the oldest one also applies to all earlier charges. Keep old price lists — they are needed to recalculate past charges.') }}</p>
+  <div id="price-lists">
+    {% for p in price_lists %}{{ price_list(p) }}{% endfor %}
   </div>
 
   <p class="help mt-4">{{ _('Times are 24-hour (HH:MM); the last block ends at 24:00. A block over midnight (e.g. 22:00–06:00) is entered as 22:00–24:00 and 00:00–06:00.') }}</p>
@@ -83,7 +110,8 @@
 </form>
 
 {% if index is not none %}
-<form method="post" action="{{ url_for('ui.location_delete', index=index) }}" class="mt-5"
+<p class="mt-5"><a class="button is-small" href="{{ url_for('ui.location_recalculate', index=index) }}">{{ _('Recalculate costs…') }}</a></p>
+<form method="post" action="{{ url_for('ui.location_delete', index=index) }}" class="mt-3"
       onsubmit="return confirm({{ _('Delete %(name)s? Costs already written stay in TeslaMate.', name=location.name)|tojson|forceescape }})">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
   <button class="button is-danger is-outlined is-small">{{ _('Delete') }}</button>
@@ -108,8 +136,10 @@
     'no_price': _('No price'), 'overlap': _('Overlap'), 'choose': _('— choose —'),
     'no_geofences': _('No geo-fences in TeslaMate'),
     'geofences_error': _('Could not load geo-fences from TeslaMate.'),
-    'unavailable': _('Unavailable')
+    'unavailable': _('Unavailable'),
+    'last_price_list': _('A location needs at least one price list.')
   }|tojson }};
+  window.TODAY = {{ today|tojson }};
 </script>
 <script src="{{ url_for('ui.static', filename='location.js') }}"></script>
 {% endblock %}

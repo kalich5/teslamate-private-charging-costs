@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: teslamate-private-charging-costs VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-27 21:08+0000\n"
+"POT-Creation-Date: 2026-11-27 21:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -19,6 +19,10 @@ msgstr ""
 "Generated-By: Babel 2.19.0\n"
 
 #, python-format
+msgid "%(days)s from %(date)s"
+msgstr "%(days)s（%(date)s 以降）"
+
+#, python-format
 msgid "%(days)s: '%(price)s' is not a valid price."
 msgstr "%(days)s: 「%(price)s」は有効な料金ではありません。"
 
@@ -28,6 +32,9 @@ msgstr "%(field)s: 「%(value)s」は有効な数値ではありません。"
 
 msgid "0 = only when you click “Calculate and save”."
 msgstr "0 = 「計算して保存」をクリックしたときのみ。"
+
+msgid "A location needs at least one price list."
+msgstr "場所には少なくとも 1 つの料金表が必要です。"
 
 msgid "Add location"
 msgstr "場所を追加"
@@ -117,11 +124,22 @@ msgstr "削除"
 msgid "Delete %(name)s? Costs already written stay in TeslaMate."
 msgstr "%(name)s を削除しますか？書き込み済みの費用は TeslaMate に残ります。"
 
+msgid "Each charge is priced with the price list that was valid on its day."
+msgstr "各充電は、その日に有効だった料金表で計算されます。"
+
+msgid ""
+"Each price list applies from its date until the next one starts; the oldest one also applies to "
+"all earlier charges. Keep old price lists — they are needed to recalculate past charges."
+msgstr "各料金表は、その日付から次の料金表が始まるまで適用されます。最も古い料金表はそれ以前のすべての充電にも適用されます。過去の充電を再計算するために、古い料金表は残しておいてください。"
+
 msgid "Edit"
 msgstr "編集"
 
 msgid "End"
 msgstr "終了"
+
+msgid "Enter both dates as YYYY-MM-DD."
+msgstr "両方の日付を YYYY-MM-DD 形式で入力してください。"
 
 #, python-format
 msgid "Errors: %(n)s"
@@ -145,6 +163,13 @@ msgstr "無効な設定: %(error)s"
 
 msgid "Invalid or expired form token — reload the page and try again."
 msgstr "フォームのトークンが無効または期限切れです。ページを再読み込みしてもう一度お試しください。"
+
+msgid "Invalid price lists — open the location to fix them."
+msgstr "料金表が無効です。場所を開いて修正してください。"
+
+#, python-format
+msgid "Invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "料金表の開始日「%(date)s」が無効です（YYYY-MM-DD 形式）。"
 
 msgid "Language"
 msgstr "言語"
@@ -210,12 +235,24 @@ msgid "Location '%(name)s', %(days)s: overlapping blocks around %(time)s."
 msgstr "場所「%(name)s」、%(days)s: %(time)s 付近で時間帯が重複しています。"
 
 #, python-format
+msgid "Location '%(name)s': invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "場所「%(name)s」: 料金表の開始日「%(date)s」が無効です（YYYY-MM-DD 形式）。"
+
+#, python-format
 msgid "Location '%(name)s': missing '%(key)s'."
 msgstr "場所「%(name)s」: 「%(key)s」がありません。"
 
 #, python-format
 msgid "Location '%(name)s': missing 'timezone'."
 msgstr "場所「%(name)s」: タイムゾーンがありません。"
+
+#, python-format
+msgid "Location '%(name)s': no price lists defined."
+msgstr "場所「%(name)s」: 料金表が設定されていません。"
+
+#, python-format
+msgid "Location '%(name)s': two price lists start on %(date)s."
+msgstr "場所「%(name)s」: 2 つの料金表が %(date)s に始まっています。"
 
 #, python-format
 msgid "Location '%(name)s': unknown timezone '%(tz)s'."
@@ -249,6 +286,9 @@ msgstr "名前は必須です。"
 msgid "New location"
 msgstr "新しい場所"
 
+msgid "New price list from date"
+msgstr "日付から新しい料金表"
+
 #, python-format
 msgid "Next run: %(time)s"
 msgstr "次回実行: %(time)s"
@@ -269,6 +309,10 @@ msgstr "料金なし"
 msgid "Overlap"
 msgstr "重複"
 
+#, python-format
+msgid "Overwrite all costs at %(name)s in this period?"
+msgstr "この期間の %(name)s の費用をすべて上書きしますか？"
+
 msgid "Per kWh"
 msgstr "kWh毎"
 
@@ -277,6 +321,20 @@ msgstr "TeslaMate のジオフェンスを選ぶと、名前・座標・半径�
 
 msgid "Preview"
 msgstr "プレビュー"
+
+msgid "Previous cost"
+msgstr "以前の費用"
+
+#, python-format
+msgid "Price list from %(date)s"
+msgstr "%(date)s からの料金表"
+
+msgid "Price lists"
+msgstr "料金表"
+
+#, python-format
+msgid "Price lists: %(n)s"
+msgstr "料金表: %(n)s"
 
 msgid "Private charging"
 msgstr "プライベート充電"
@@ -287,8 +345,26 @@ msgstr "半径"
 msgid "Radius must be positive."
 msgstr "半径は正の値で入力してください。"
 
+msgid "Recalculate"
+msgstr "再計算"
+
+msgid "Recalculate and overwrite"
+msgstr "再計算して上書き"
+
+msgid "Recalculate costs"
+msgstr "費用の再計算"
+
+msgid "Recalculate costs…"
+msgstr "費用を再計算…"
+
+msgid "Recalculation overwrites ALL costs of charges at this location in the selected period"
+msgstr "再計算すると、選択した期間のこの場所のすべての充電費用が上書きされます"
+
 msgid "Remove"
 msgstr "削除"
+
+msgid "Remove price list"
+msgstr "料金表を削除"
 
 msgid "Run automatically every (hours)"
 msgstr "自動実行の間隔（時間）"
@@ -328,6 +404,9 @@ msgstr "料金の時刻はこのタイムゾーンの現地時刻です。夏時
 msgid "TeslaMate database"
 msgstr "TeslaMate データベース"
 
+msgid "The start date must not be after the end date."
+msgstr "開始日は終了日より後にできません。"
+
 msgid "Time zone"
 msgstr "タイムゾーン"
 
@@ -349,6 +428,10 @@ msgid "Unexpected error: %(error)s"
 msgstr "予期しないエラー: %(error)s"
 
 #, python-format
+msgid "Unknown location '%(name)s'."
+msgstr "不明な場所「%(name)s」。"
+
+#, python-format
 msgid "Unknown timezone '%(tz)s'."
 msgstr "不明なタイムゾーン「%(tz)s」。"
 
@@ -359,11 +442,17 @@ msgstr "更新: %(n)s"
 msgid "User"
 msgstr "ユーザー"
 
+msgid "Valid from"
+msgstr "適用開始日"
+
 msgid "Web App"
 msgstr "ウェブアプリ"
 
 msgid "Write costs to TeslaMate now?"
 msgstr "今すぐ費用を TeslaMate に書き込みますか？"
+
+msgid "including costs entered in TeslaMate and costs calculated earlier. Check the preview first."
+msgstr "TeslaMate で入力した費用や以前に計算した費用も含まれます。まずプレビューを確認してください。"
 
 msgid "pending"
 msgstr "保留中"

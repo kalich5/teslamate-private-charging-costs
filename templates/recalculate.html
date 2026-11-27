@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Recalculate costs') }}{% endblock %}
+{% block content %}
+<h1 class="title">{{ _('Recalculate costs') }} – {{ location.name }}</h1>
+
+<div class="notification is-warning">
+  <strong>{{ _('Recalculation overwrites ALL costs of charges at this location in the selected period') }}</strong>
+  — {{ _('including costs entered in TeslaMate and costs calculated earlier. Check the preview first.') }}
+</div>
+
+<p class="mb-4">{{ _('Each charge is priced with the price list that was valid on its day.') }}</p>
+
+<form method="post" action="{{ url_for('ui.run') }}" class="settings">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <input type="hidden" name="recalc_location" value="{{ location.name }}">
+  <div class="field">
+    <label class="label" for="recalc-from">{{ _('From') }}</label>
+    <input class="input" type="date" id="recalc-from" name="recalc_from" value="{{ date_from }}" required>
+  </div>
+  <div class="field">
+    <label class="label" for="recalc-to">{{ _('To') }}</label>
+    <input class="input" type="date" id="recalc-to" name="recalc_to" value="{{ date_to }}" required>
+  </div>
+  <div class="buttons mt-5">
+    <button class="button" name="mode" value="preview">{{ _('Preview') }}</button>
+    <button class="button is-danger" name="mode" value="write"
+            onclick="return confirm({{ _('Overwrite all costs at %(name)s in this period?', name=location.name)|tojson|forceescape }})">{{ _('Recalculate and overwrite') }}</button>
+    <a class="button" href="{{ url_for('ui.index') }}">{{ _('Cancel') }}</a>
+  </div>
+</form>
+{% endblock %}

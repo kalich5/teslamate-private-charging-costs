@@ -22,7 +22,8 @@ This project fills that gap by reading charging sessions from the TeslaMate Post
 | 🏠 Multiple locations | Home, work, cottage — unlimited |
 | ⏱ Time-of-use tariffs | VT / NT / custom blocks per weekday & weekend |
 | 💱 Currency conversion | Per-location currency → base currency via Frankfurter API |
-| 🔒 Safe by default | Only processes sessions where `cost IS NULL` |
+| 🔒 Safe by default | Only processes sessions where `cost IS NULL` (recalculation is explicit) |
+| 🗓 Price lists over time | Tariffs valid from a date; recalculate past charges for a location |
 | 📊 Grafana-ready | Writes directly to `charging_processes.cost` |
 | 🖥 Web interface | Manage locations and tariffs in the browser, pick TeslaMate geofences, preview & run |
 
@@ -89,13 +90,20 @@ LOCATIONS:
     currency: CZK
 
     tariffs:
-      weekday:
-        - { from: "00:00", to: "06:00", price: 4.0 }
-        - { from: "06:00", to: "12:00", price: 7.5 }
-        - { from: "12:00", to: "15:00", price: 4.0 }
-        - { from: "15:00", to: "24:00", price: 7.5 }
-      weekend:
-        - { from: "00:00", to: "24:00", price: 4.0 }
+      - valid_from: 2024-01-01
+        weekday:
+          - { from: "00:00", to: "06:00", price: 4.0 }
+          - { from: "06:00", to: "12:00", price: 7.5 }
+          - { from: "12:00", to: "15:00", price: 4.0 }
+          - { from: "15:00", to: "24:00", price: 7.5 }
+        weekend:
+          - { from: "00:00", to: "24:00", price: 4.0 }
+      - valid_from: 2025-07-01          # new contract
+        weekday:
+          - { from: "00:00", to: "06:00", price: 4.5 }
+          - { from: "06:00", to: "24:00", price: 8.2 }
+        weekend:
+          - { from: "00:00", to: "24:00", price: 4.5 }
 ```
 
 ### Database credentials
@@ -114,6 +122,7 @@ With Docker, copy `.env.example` to `.env` and set at least `DATABASE_PASS`. `.e
 
 ### Tariff rules
 
+- `tariffs` is a list of price lists, each with `valid_from` (local date, `YYYY-MM-DD`), `weekday` and `weekend` blocks. A price list applies from 00:00 on its date until the next one starts; the oldest one also applies before its date.
 - Prices are in `currency` per kWh.
 - Cost is calculated from `charge_energy_used` (energy drawn from the grid incl. charging losses — what your meter measures), falling back to `charge_energy_added` if missing.
 - Time blocks use `HH:MM` format. Use `"24:00"` for the end of the last block.
@@ -131,6 +140,13 @@ The container serves a simple page in the same style as TeslaMate (Bulma, bundle
 
 - **Locations** — add a place with **Add location**, or pick one of your existing **TeslaMate geofences** to fill in name, coordinates and radius.
 - **Tariffs** — enter time blocks (24-hour `HH:MM`) and prices per kWh for weekdays and weekends. **Add block** splits a block in two; changing a block's end moves the next block's start, so the day stays covered. A 24-hour bar (green = cheapest, red = most expensive) shows the tariff at a glance on the overview and updates live while editing; gaps or overlaps are pointed out before you save. “Same as Monday – Friday” copies the weekday tariff.
+- **Price lists over time** — each location has one or more price lists, each valid from a date (e.g. a new contract from 1 July). **New price list from date** copies the current one so you only change what changed. Every charge is priced with the price list valid on its (local) day; the oldest one also covers everything before it. Keep old price lists — they are your history and are needed to recalculate past charges.
+- **Recalculate** — for a location and a date range, preview old → new costs and write them. This **overwrites all costs** of charges at that location in the period, including costs entered in TeslaMate. Typical use: you install the tool, pick your home geo-fence, enter the price lists of the past years and recalculate them. Also available on the command line:
+
+  ```bash
+  python importer.py --recalculate home --from 2024-01-01 --to 2025-12-31 --dry-run
+  ```
+
 - **Calculate costs** — **Preview** shows what would be written; **Calculate & save** writes it. Costs are also calculated automatically every *N* hours (Settings, default 6 h), so no cron job is needed.
 - **Sessions** — the last 100 TeslaMate charging sessions with their location, grid energy, cost and price per kWh.
 - **Settings** — TeslaMate currency, default timezone and the automatic run interval.
@@ -290,7 +306,7 @@ docker-compose.yml
 
 ## 🔒 Safety
 
-- **Never overwrites existing costs** — only processes rows where `cost IS NULL`.
+- **Never overwrites existing costs automatically** — the normal run only processes rows where `cost IS NULL`. Only an explicit **Recalculate** (web or `--recalculate`) overwrites costs, for one location and a chosen period, after a preview.
 - **Validated before saving** — the web interface refuses tariffs with gaps or overlaps, so no partial cost is ever written.
 - **Login & CSRF protection** — `WEB_PASSWORD` protects the web interface; forms carry a CSRF token.
 - **Non-root container** — runs as `appuser` inside Docker.

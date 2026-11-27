@@ -87,6 +87,11 @@ FLAT_TARIFFS = [
     {"from": "00:00", "to": "24:00", "price": 5.0},
 ]
 
+def prices(weekday, weekend, valid_from="2020-01-01"):
+    """One price list (tariffs is a list of price lists)."""
+    return [{"valid_from": valid_from, "weekday": weekday, "weekend": weekend}]
+
+
 LOCATION = {
     "name": "home",
     "lat": 49.1951,
@@ -94,10 +99,7 @@ LOCATION = {
     "radius_m": 150,
     "currency": "CZK",
     "timezone": "UTC",
-    "tariffs": {
-        "weekday": WEEKDAY_TARIFFS,
-        "weekend": [{"from": "00:00", "to": "24:00", "price": 4.0}],
-    },
+    "tariffs": prices(WEEKDAY_TARIFFS, [{"from": "00:00", "to": "24:00", "price": 4.0}]),
 }
 
 
@@ -131,7 +133,7 @@ class TestCalculateCost:
 
     def test_flat_rate_1kwh_1hour(self):
         """1 kWh over 1 hour at flat 5.0 → cost ≈ 5.0"""
-        loc = {**LOCATION, "tariffs": {"weekday": FLAT_TARIFFS, "weekend": FLAT_TARIFFS}}
+        loc = {**LOCATION, "tariffs": prices(FLAT_TARIFFS, FLAT_TARIFFS)}
         # 2026-04-13 is a Monday
         start = self._utc(2026, 4, 13, 10, 0)
         end = self._utc(2026, 4, 13, 11, 0)
@@ -139,7 +141,7 @@ class TestCalculateCost:
         assert cost == pytest.approx(5.0, rel=1e-3)
 
     def test_decimal_kwh(self):
-        loc = {**LOCATION, "tariffs": {"weekday": FLAT_TARIFFS, "weekend": FLAT_TARIFFS}}
+        loc = {**LOCATION, "tariffs": prices(FLAT_TARIFFS, FLAT_TARIFFS)}
         start = self._utc(2026, 4, 13, 10, 0)
         end = self._utc(2026, 4, 13, 11, 0)
         assert calculate_cost(start, end, Decimal("1.00"), loc) == pytest.approx(5.0, rel=1e-3)
@@ -167,7 +169,7 @@ class TestCalculateCost:
 
     def test_partial_last_minute_not_overcounted(self):
         """30 s session with 1 kWh at flat 5.0 must cost 5.0, not 10.0."""
-        loc = {**LOCATION, "tariffs": {"weekday": FLAT_TARIFFS, "weekend": FLAT_TARIFFS}}
+        loc = {**LOCATION, "tariffs": prices(FLAT_TARIFFS, FLAT_TARIFFS)}
         start = self._utc(2026, 4, 13, 10, 0)
         end = start.replace(second=30)
         assert calculate_cost(start, end, 1.0, loc) == pytest.approx(5.0, rel=1e-9)
@@ -196,8 +198,7 @@ class TestCalculateCost:
     def test_weekend_boundary_uses_local_time(self):
         """Sunday 23:30 UTC is already Monday 00:30 CET → weekday NT 4.0, not weekend."""
         loc = {**LOCATION, "timezone": "Europe/Prague",
-               "tariffs": {"weekday": FLAT_TARIFFS,
-                           "weekend": [{"from": "00:00", "to": "24:00", "price": 1.0}]}}
+               "tariffs": prices(FLAT_TARIFFS, [{"from": "00:00", "to": "24:00", "price": 1.0}])}
         start = self._utc(2026, 1, 11, 23, 30)  # Sunday UTC
         end = self._utc(2026, 1, 12, 0, 30)
         assert calculate_cost(start, end, 1.0, loc) == pytest.approx(5.0, rel=1e-3)
@@ -209,14 +210,67 @@ class TestCalculateCost:
     def test_gap_raises_instead_of_pricing_zero(self):
         gap = [{"from": "00:00", "to": "06:00", "price": 4.0},
                {"from": "07:00", "to": "24:00", "price": 7.5}]
-        loc = {**LOCATION, "tariffs": {"weekday": gap, "weekend": gap}}
+        loc = {**LOCATION, "tariffs": prices(gap, gap)}
         with pytest.raises(TariffGapError):
             calculate_cost(self._utc(2026, 4, 13, 5, 0), self._utc(2026, 4, 13, 8, 0), 1.0, loc)
 
 
+class TestPriceLists:
+    """tariffs is a list of price lists valid from a local date."""
+    OLD = [{"from": "00:00", "to": "24:00", "price": 4.0}]
+    NEW = [{"from": "00:00", "to": "24:00", "price": 6.0}]
+
+    def _loc(self, tz="Europe/Prague"):
+        return {**LOCATION, "timezone": tz, "tariffs": [
+            {"valid_from": "2025-07-01", "weekday": self.NEW, "weekend": self.NEW},
+            {"valid_from": "2024-01-01", "weekday": self.OLD, "weekend": self.OLD},
+        ]}
+
+    def _utc(self, *args):
+        return datetime(*args, tzinfo=timezone.utc)
+
+    def test_price_list_by_date(self):
+        loc = self._loc()
+        assert calculate_cost(self._utc(2025, 3, 1, 10), self._utc(2025, 3, 1, 11), 1.0, loc) == 4.0
+        assert calculate_cost(self._utc(2025, 8, 1, 10), self._utc(2025, 8, 1, 11), 1.0, loc) == 6.0
+
+    def test_oldest_price_list_also_applies_before_its_date(self):
+        loc = self._loc()
+        assert calculate_cost(self._utc(2022, 5, 1, 10), self._utc(2022, 5, 1, 11), 1.0, loc) == 4.0
+
+    def test_switch_at_local_midnight(self):
+        """1 kWh 23:30–00:30 CEST across 2025-07-01 → half old (4.0), half new (6.0)."""
+        loc = self._loc()
+        start = self._utc(2025, 6, 30, 21, 30)   # 23:30 CEST
+        end = self._utc(2025, 6, 30, 22, 30)     # 00:30 CEST on July 1
+        assert calculate_cost(start, end, 1.0, loc) == pytest.approx(5.0)
+
+    def test_date_objects_from_yaml(self):
+        from datetime import date
+        loc = {**self._loc(), "tariffs": [
+            {"valid_from": date(2024, 1, 1), "weekday": self.OLD, "weekend": self.OLD}]}
+        validate_location(loc)
+        assert calculate_cost(self._utc(2025, 3, 1, 10), self._utc(2025, 3, 1, 11), 1.0, loc) == 4.0
+
+    @pytest.mark.parametrize("tariffs, message", [
+        ([], "no price lists"),
+        ({"weekday": [], "weekend": []}, "no price lists"),
+        ([{"valid_from": "2024-13-01", "weekday": OLD, "weekend": OLD}], "invalid start date"),
+        ([{"weekday": OLD, "weekend": OLD}], "invalid start date"),
+        ([{"valid_from": "2024-01-01", "weekday": OLD, "weekend": OLD},
+          {"valid_from": "2024-01-01", "weekday": OLD, "weekend": OLD}], "two price lists start on 2024-01-01"),
+        ([{"valid_from": "2024-01-01", "weekday": OLD, "weekend": OLD},
+          {"valid_from": "2025-01-01", "weekday": [{"from": "00:00", "to": "12:00", "price": 1}],
+           "weekend": OLD}], "from 2025-01-01: no tariff after 12:00"),
+    ])
+    def test_invalid_price_lists(self, tariffs, message):
+        with pytest.raises(ValueError, match=message):
+            validate_location({**LOCATION, "tariffs": tariffs})
+
+
 class TestValidateLocation:
     def _loc(self, weekday):
-        return {**LOCATION, "tariffs": {"weekday": weekday, "weekend": FLAT_TARIFFS}}
+        return {**LOCATION, "tariffs": prices(weekday, FLAT_TARIFFS)}
 
     def test_valid_config(self):
         validate_location(LOCATION)

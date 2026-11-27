@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: teslamate-private-charging-costs VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-27 21:08+0000\n"
+"POT-Creation-Date: 2026-11-27 21:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: uk\n"
@@ -20,6 +20,10 @@ msgstr ""
 "Generated-By: Babel 2.19.0\n"
 
 #, python-format
+msgid "%(days)s from %(date)s"
+msgstr "%(days)s з %(date)s"
+
+#, python-format
 msgid "%(days)s: '%(price)s' is not a valid price."
 msgstr "%(days)s: «%(price)s» — недійсна ціна."
 
@@ -29,6 +33,9 @@ msgstr "%(field)s: «%(value)s» — недійсне число."
 
 msgid "0 = only when you click “Calculate and save”."
 msgstr "0 = лише коли ви натискаєте «Обчислити та зберегти»."
+
+msgid "A location needs at least one price list."
+msgstr "Місце повинно мати принаймні один цінник."
 
 msgid "Add location"
 msgstr "Додати місце"
@@ -120,11 +127,24 @@ msgstr "Видалити"
 msgid "Delete %(name)s? Costs already written stay in TeslaMate."
 msgstr "Видалити %(name)s? Уже записана вартість залишиться в TeslaMate."
 
+msgid "Each charge is priced with the price list that was valid on its day."
+msgstr "Кожна зарядка рахується за цінником, що діяв того дня."
+
+msgid ""
+"Each price list applies from its date until the next one starts; the oldest one also applies to "
+"all earlier charges. Keep old price lists — they are needed to recalculate past charges."
+msgstr ""
+"Кожен цінник діє від своєї дати до початку наступного; найстаріший діє також для всіх попередніх "
+"зарядок. Зберігайте старі цінники — вони потрібні для перерахунку минулих зарядок."
+
 msgid "Edit"
 msgstr "Редагувати"
 
 msgid "End"
 msgstr "Кінець"
+
+msgid "Enter both dates as YYYY-MM-DD."
+msgstr "Введіть обидві дати у форматі РРРР-ММ-ДД."
 
 #, python-format
 msgid "Errors: %(n)s"
@@ -148,6 +168,13 @@ msgstr "Недійсні налаштування: %(error)s"
 
 msgid "Invalid or expired form token — reload the page and try again."
 msgstr "Недійсний або прострочений токен форми — перезавантажте сторінку та спробуйте ще раз."
+
+msgid "Invalid price lists — open the location to fix them."
+msgstr "Недійсні цінники — відкрийте місце, щоб їх виправити."
+
+#, python-format
+msgid "Invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Недійсна дата початку цінника «%(date)s» (очікується РРРР-ММ-ДД)."
 
 msgid "Language"
 msgstr "Мова"
@@ -221,12 +248,24 @@ msgid "Location '%(name)s', %(days)s: overlapping blocks around %(time)s."
 msgstr "Місце «%(name)s», %(days)s: проміжки перекриваються близько %(time)s."
 
 #, python-format
+msgid "Location '%(name)s': invalid start date '%(date)s' of a price list (expected YYYY-MM-DD)."
+msgstr "Місце «%(name)s»: недійсна дата початку цінника «%(date)s» (очікується РРРР-ММ-ДД)."
+
+#, python-format
 msgid "Location '%(name)s': missing '%(key)s'."
 msgstr "Місце «%(name)s»: бракує «%(key)s»."
 
 #, python-format
 msgid "Location '%(name)s': missing 'timezone'."
 msgstr "Місце «%(name)s»: бракує часового поясу."
+
+#, python-format
+msgid "Location '%(name)s': no price lists defined."
+msgstr "Місце «%(name)s»: цінники не задано."
+
+#, python-format
+msgid "Location '%(name)s': two price lists start on %(date)s."
+msgstr "Місце «%(name)s»: два цінники починаються %(date)s."
 
 #, python-format
 msgid "Location '%(name)s': unknown timezone '%(tz)s'."
@@ -260,6 +299,9 @@ msgstr "Потрібно вказати назву."
 msgid "New location"
 msgstr "Нове місце"
 
+msgid "New price list from date"
+msgstr "Новий цінник з дати"
+
 #, python-format
 msgid "Next run: %(time)s"
 msgstr "Наступний запуск: %(time)s"
@@ -282,6 +324,10 @@ msgstr "Без ціни"
 msgid "Overlap"
 msgstr "Перекриття"
 
+#, python-format
+msgid "Overwrite all costs at %(name)s in this period?"
+msgstr "Перезаписати всю вартість для %(name)s за цей період?"
+
 msgid "Per kWh"
 msgstr "за кВт·год"
 
@@ -290,6 +336,20 @@ msgstr "Виберіть гео-позицію з TeslaMate, щоб заповн
 
 msgid "Preview"
 msgstr "Попередній перегляд"
+
+msgid "Previous cost"
+msgstr "Попередня вартість"
+
+#, python-format
+msgid "Price list from %(date)s"
+msgstr "Цінник з %(date)s"
+
+msgid "Price lists"
+msgstr "Цінники"
+
+#, python-format
+msgid "Price lists: %(n)s"
+msgstr "Цінників: %(n)s"
 
 msgid "Private charging"
 msgstr "Приватна зарядка"
@@ -300,8 +360,26 @@ msgstr "Радіус"
 msgid "Radius must be positive."
 msgstr "Радіус має бути додатним."
 
+msgid "Recalculate"
+msgstr "Перерахувати"
+
+msgid "Recalculate and overwrite"
+msgstr "Перерахувати та перезаписати"
+
+msgid "Recalculate costs"
+msgstr "Перерахунок вартості"
+
+msgid "Recalculate costs…"
+msgstr "Перерахувати вартість…"
+
+msgid "Recalculation overwrites ALL costs of charges at this location in the selected period"
+msgstr "Перерахунок перезапише ВСЮ вартість зарядок у цьому місці за вибраний період"
+
 msgid "Remove"
 msgstr "Прибрати"
+
+msgid "Remove price list"
+msgstr "Прибрати цінник"
 
 msgid "Run automatically every (hours)"
 msgstr "Запускати автоматично кожні (годин)"
@@ -341,6 +419,9 @@ msgstr "Час тарифів — місцевий час у цьому часо
 msgid "TeslaMate database"
 msgstr "База даних TeslaMate"
 
+msgid "The start date must not be after the end date."
+msgstr "Дата початку не може бути пізніше за дату завершення."
+
 msgid "Time zone"
 msgstr "Часовий пояс"
 
@@ -362,6 +443,10 @@ msgid "Unexpected error: %(error)s"
 msgstr "Неочікувана помилка: %(error)s"
 
 #, python-format
+msgid "Unknown location '%(name)s'."
+msgstr "Невідоме місце «%(name)s»."
+
+#, python-format
 msgid "Unknown timezone '%(tz)s'."
 msgstr "Невідомий часовий пояс «%(tz)s»."
 
@@ -372,11 +457,19 @@ msgstr "Оновлено: %(n)s"
 msgid "User"
 msgstr "Користувач"
 
+msgid "Valid from"
+msgstr "Діє з"
+
 msgid "Web App"
 msgstr "Веб Додаток"
 
 msgid "Write costs to TeslaMate now?"
 msgstr "Записати вартість у TeslaMate зараз?"
+
+msgid "including costs entered in TeslaMate and costs calculated earlier. Check the preview first."
+msgstr ""
+"включно з вартістю, введеною в TeslaMate, і раніше обчисленою. Спершу перегляньте попередній "
+"перегляд."
 
 msgid "pending"
 msgstr "очікує"

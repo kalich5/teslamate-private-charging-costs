@@ -9,6 +9,7 @@ import yaml
 # Order in which top-level keys are written, so the file stays readable.
 _KEY_ORDER = ("BASE_CURRENCY", "TIMEZONE", "SCHEDULE_HOURS", "DATABASE", "LOCATIONS")
 _LOCATION_KEY_ORDER = ("name", "lat", "lon", "radius_m", "currency", "timezone", "tariffs")
+_PRICE_LIST_KEY_ORDER = ("valid_from", "weekday", "weekend")
 
 HEADER = """\
 # TeslaMate Private Charging Costs — config.yaml
@@ -46,7 +47,14 @@ def _ordered(d: dict, order: tuple) -> dict:
 
 def dump(config: dict) -> str:
     config = _ordered(config, _KEY_ORDER)
-    config["LOCATIONS"] = [_ordered(loc, _LOCATION_KEY_ORDER) for loc in config.get("LOCATIONS", [])]
+    locations = []
+    for loc in config.get("LOCATIONS", []):
+        loc = _ordered(loc, _LOCATION_KEY_ORDER)
+        if isinstance(loc.get("tariffs"), list):
+            loc["tariffs"] = sorted((_ordered(p, _PRICE_LIST_KEY_ORDER) for p in loc["tariffs"]),
+                                    key=lambda p: str(p.get("valid_from", "")))
+        locations.append(loc)
+    config["LOCATIONS"] = locations
     return HEADER + "\n" + yaml.safe_dump(config, sort_keys=False, allow_unicode=True,
                                           default_flow_style=None, width=100)
 
